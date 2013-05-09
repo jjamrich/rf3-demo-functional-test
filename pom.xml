@@ -9,14 +9,43 @@
 	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
-			<id>jboss-public-repository-group</id>
-            <name>Jboss Repository for Maven</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-		</repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-qa-releases</id>
+            <url>http://nexus.qa.jboss.com:8081/nexus/content/repositories/releases</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-qa-snapshots-repository</id>
+            <url>http://nexus.qa.jboss.com:8081/nexus/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <updatePolicy>daily</updatePolicy>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
 	<properties>
 		<demo.artifactId.suffix />
-		<demo.version>${project.version}</demo.version>
+		<!-- demo.version>${project.version}</demo.version-->
+		<demo.version>3.3.1.SP3</demo.version>
 		<demo.classifier></demo.classifier>
 		<demo.location></demo.location>
 		<resources.dir>${project.build.directory}/test-classes</resources.dir>
@@ -33,6 +62,19 @@
 		<demo.deployable.directory>${project.build.directory}</demo.deployable.directory>
 		<demo.deployable.file>richfaces-demo.war</demo.deployable.file>
 		<jsf.majorVersion>1</jsf.majorVersion>
+		<version.selenium>2.31.0</version.selenium>
+		<!-- arquillian versions -->
+        <arquillian.bom.version>1.0.3.Final</arquillian.bom.version>
+        <arquillian.tomcat.version>1.0.0.CR4</arquillian.tomcat.version>
+        <arquillian.drone.version>1.1.0.Final</arquillian.drone.version>
+        <arquillian.graphene-testng.version>2.0.0.Alpha3</arquillian.graphene-testng.version>
+        <arquillian.graphene-webdriver.version>2.0.0.Beta1-SNAPSHOT</arquillian.graphene-webdriver.version>
+        <arquillian.jboss-as6.version>1.0.0.CR3</arquillian.jboss-as6.version>
+        <arquillian.glassfish3-1.version>1.0.0.CR3</arquillian.glassfish3-1.version>
+        <arquillian.openshift-express>1.0.0.Beta1</arquillian.openshift-express>
+        <arquillian.android.version>1.0.0.Alpha2</arquillian.android.version>
+        <shrinkwrap.descriptors.version>2.0.0-alpha-4</shrinkwrap.descriptors.version>
+        <version.jbossas7-1>7.1.1.Final</version.jbossas7-1>
 	</properties>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -62,7 +104,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.4.3</version>
+				<version>2.12</version>
 				<configuration>
 					<!--
 						Skip the normal tests, we'll run them in the integration-test
@@ -108,7 +150,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.4.3</version>
+						<version>2.12</version>
 						<executions>
 							<execution>
 								<id>surefire-it</id>
@@ -135,7 +177,7 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+		<!-- profile>
 			<id>local-selenium-session</id>
 			<activation>
 				<property>
@@ -176,9 +218,9 @@
 								<configuration>
 									<tasks>
 										<concat destfile="${resources.dir}/custom-extensions.js"
-											fixlastline="yes">
+											fixlastline="yes"-->
 											<!--  space-separated list of files -->
-											<filelist dir="${extensions.dir}"
+											<!-- filelist dir="${extensions.dir}"
 												files="jquery.js jbossqa-extensions.js rfqa-extensions.js" />
 										</concat>
 									</tasks>
@@ -223,7 +265,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile-->
 		<profile>
 			<id>jsf2_0</id>
 			<activation>
@@ -275,7 +317,7 @@
 			</build>
 		</profile>
 		<!--  Container Profile -->
-		<profile>
+		<!-- profile>
 			<id>container</id>
 			<activation>
 				<property>
@@ -287,7 +329,7 @@
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>
-						<version>1.0-beta-2</version>
+						<version>1.2.0</version>
 						<executions>
 							<execution>
 								<id>install-container</id>
@@ -299,9 +341,11 @@
 							<execution>
 								<id>start-container</id>
 								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>deploy</goal>
-									<goal>start</goal>
+								<goals>									
+									<goal>start</goal--><!-- order is important to 'pingURL' working correctly. 
+                                                            Using 'pingURL' is necessary to avoid start run surefire before application is deployed.
+                                                            Application deployment is not synchronized on JBoss AS 7.1.x -->
+                                    <!-- goal>deploy</goal>
 								</goals>
 							</execution>
 							<execution>
@@ -319,7 +363,7 @@
 								<append>false</append>
 								<zipUrlInstaller>
 									<url>${container.installer.url}</url>
-									<installDir>${project.basedir}/target/installs</installDir>
+									<extractDir>${project.basedir}/target/installs</extractDir>
 								</zipUrlInstaller>
 							</container>
 							<configuration>
@@ -337,6 +381,8 @@
 										<properties>
 											<context>${context.path}</context>
 										</properties>
+										<pingURL>${context.root}${context.path}/welcome.jsf</pingURL>
+										<pingTimeout>60000</pingTimeout>
 									</deployable>
 								</deployables>
 							</deployer>
@@ -344,7 +390,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile-->
 		<profile>
 			<id>container-demoapp-deployable-dependency</id>
 			<activation>
@@ -431,8 +477,65 @@
 				</plugins>
 			</build>
 		</profile>
+        <!-- Container: JBoss AS 7.1.X -->
+        <!-- profile>
+            <id>container-jboss-eap6</id>
+            <activation>
+                <property>
+                    <name>containerId</name>
+                    <value>jboss71x</value>
+                </property>
+            </activation>
+            <properties>
+                <container.home>${project.build.directory}/installs/jboss-eap-${container.version}/${container.unflatted.dir}</container.home>
+                <container.configuration>standalone</container.configuration>
+                <container.configuration.home>${container.home}/${container.configuration}</container.configuration.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <version>1.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>undeploy-container</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <configuration>
+                                <home>${container.configuration.home}</home>
+                                <type>existing</type>                                
+                                <properties>
+                                    <cargo.jboss.configuration>${container.configuration}</cargo.jboss.configuration>
+                                    <cargo.rmi.port>1099</cargo.rmi.port>
+                                </properties>                                
+                            </configuration>                            
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile-->
+        <!-- profile>
+            <id>container-jboss-eap6-installation</id>
+            <activation>
+                <property>
+                    <name>containerId</name>
+                    <value>jboss71x</value>
+                </property>
+            </activation>
+            <properties>
+                <container.version>6.0.1</container.version>
+                <container.unflatted.dir>jboss-eap-6.0</container.unflatted.dir>                
+            </properties>
+        </profile-->
+        
 		<!-- Container: JBoss AS 6.X -->
-		<profile>
+		<!-- profile>
 			<id>container-jboss6x</id>
 			<activation>
 				<property>
@@ -441,7 +544,7 @@
 				</property>
 			</activation>
 			<properties>
-				<container.home>${project.build.directory}/installs/jboss-${container.version}/${container.unflatted.dir}</container.home>
+				<container.home>${project.build.directory}/installs/jboss-eap-${container.version}/${container.unflatted.dir}</container.home>
 				<container.configuration>default</container.configuration>
 				<container.configuration.home>${container.home}/server/${container.configuration}</container.configuration.home>
 			</properties>
@@ -449,8 +552,9 @@
 				<plugins>
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven2-plugin</artifactId>
-						<version>1.0.1-alpha-2</version>
+						<artifactId>cargo-maven2-plugin</artifactId-->
+						<!-- version>1.0.1-alpha-2</version-->
+                        <!-- version>1.2.0</version>
 						<executions>
 							<execution>
 								<id>undeploy-container</id>
@@ -483,13 +587,13 @@
 				</property>
 			</activation>
 			<properties>
-				<container.version>6.0.0.M2</container.version>
-				<container.unflatted.dir>jboss-6.0.0.20100216-M2</container.unflatted.dir>
+				<container.version>6.0.0.Final</container.version>
+				<container.unflatted.dir>jboss-6.0.0.Final</container.unflatted.dir>
 				<container.installer.url>http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-${container.version}/jboss-${container.version}.zip</container.installer.url>
 			</properties>
-		</profile>
+		</profile-->
 		<!-- Container: JBoss AS 5.X -->
-		<profile>
+		<!-- profile>
 			<id>container-jboss5x</id>
 			<activation>
 				<property>
@@ -544,9 +648,9 @@
 				<container.version>5.1.0.GA</container.version>
 				<container.installer.url>http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-${container.version}/jboss-${container.version}.zip</container.installer.url>
 			</properties>
-		</profile>
+		</profile-->
 		<!--  Container: Tomcat 6.X -->
-		<profile>
+		<!-- profile>
 			<id>container-tomcat6x</id>
 			<activation>
 				<property>
@@ -585,8 +689,8 @@
 				<container.version>6.0.20</container.version>
 				<container.installer.url>http://www.apache.org/dist/tomcat/tomcat-6/v${container.version}/bin/apache-tomcat-${container.version}.zip</container.installer.url>
 			</properties>
-		</profile>
-		<profile>
+		</profile-->
+		<!-- profile>
 			<id>press-key-to-shutdown-server</id>
 			<build>
 				<plugins>
@@ -609,17 +713,158 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile-->
+		
+		<profile>
+            <id>jbossas-remote-7-1</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.spec</groupId>
+                    <artifactId>jboss-javaee-6.0</artifactId>
+                    <version>1.0.0.Final</version>
+                    <type>pom</type>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.as</groupId>
+                    <artifactId>jboss-as-arquillian-container-remote</artifactId>
+                    <version>${version.jbossas7-1}</version>
+                </dependency>
+                <dependency>
+		            <groupId>org.jboss.arquillian.protocol</groupId>
+		            <artifactId>arquillian-protocol-servlet</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+            </dependencies>
+            <!-- build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <arquillian.launch>jbossas-remote-7-1</arquillian.launch>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build-->
+        </profile>
+        
+        <profile>
+            <id>jbosseap-managed-6-1</id>
+            <properties>
+                <metamer.classifier>jbas71</metamer.classifier>
+                <showcase.classifier>jbas71</showcase.classifier>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.as</groupId>
+                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
+                    <version>7.1.3.Final</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <tasks>
+                                        <unzip src="${eap61Zip}" dest="${project.build.directory}" />
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <arquillian.launch>jbosseap-managed-6-1</arquillian.launch>
+                            </systemProperties>
+                            <environmentVariables>
+                                <JBOSS_HOME>${jbossEAP61Home}</JBOSS_HOME>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
 	</profiles>
+	
+	<dependencyManagement>
+	   <dependencies>
+	       <dependency>
+	            <groupId>org.jboss.arquillian</groupId>
+	            <artifactId>arquillian-bom</artifactId>
+	            <version>${arquillian.bom.version}</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+	       </dependency>
+	       <dependency>
+                <groupId>org.jboss.arquillian.extension</groupId>
+                <artifactId>arquillian-drone-bom</artifactId>
+                <version>${arquillian.drone.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+	   </dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
-		<dependency>
+	    <dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>5.9</version>
+			<version>6.1.1</version>
+			<!-- version>5.9</version-->
 			<scope>test</scope>
-			<classifier>jdk15</classifier>
+			<!-- classifier>jdk15</classifier-->
 		</dependency>
-		<dependency>
+		<!-- migrate to junit since it is easies way how to configure Drone (and docs describe case with junit) -->
+		<!-- migration avoided due to impact to all test classes: required migration of all asserts and annotations -->
+		<!-- dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency-->
+		
+		<!-- Selenium -->
+        <!-- dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-server</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency-->
+
+		<!--dependency>
 			<groupId>org.seleniumhq.selenium.client-drivers</groupId>
 			<artifactId>selenium-java-client-driver</artifactId>
 			<version>1.0.1</version>
@@ -636,13 +881,13 @@
 					<artifactId>org.mortbay.jetty</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
+		</dependency-->
+		<!--dependency>
 			<groupId>org.jboss.test</groupId>
 			<artifactId>richfaces-selenium</artifactId>
 			<version>1.0.0.GA</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -655,5 +900,39 @@
 			<version>1.4</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Arquillian dependencies -->
+		
+		<!-- Se2 dependency according to docs -->
+		<!-- dependency>
+		    <groupId>org.jboss.arquillian.extension</groupId>
+		    <artifactId>arquillian-drone-webdriver-depchain</artifactId>
+		    <type>pom</type>
+		    <scope>test</scope>
+		</dependency-->		
+		<dependency>
+            <groupId>org.jboss.arquillian.graphene</groupId>
+            <artifactId>arquillian-graphene</artifactId>
+            <version>${arquillian.graphene-testng.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+		
+        <dependency>
+            <groupId>org.jboss.arquillian.testng</groupId>
+            <artifactId>arquillian-testng-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- dependency>
+		    <groupId>org.jboss.arquillian.junit</groupId>
+		    <artifactId>arquillian-junit-container</artifactId>
+		    <scope>test</scope>
+		</dependency-->
+        <!-- dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-drone-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        -->
 	</dependencies>
 </project>
