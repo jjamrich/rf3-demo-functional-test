@@ -22,14 +22,17 @@
 
 package org.jboss.richfaces.integrationTest.stateManager;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotSame;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -44,7 +47,7 @@ import org.testng.annotations.Test;
 public class StateManagerTestCase extends AbstractSeleniumRichfacesTestCase {
 
     private final String LOC_HIDDEN_INPUT_PREFORMATTED = getLoc("HIDDEN_INPUT_PREFORMATTED");
-    private final String LOC_LINK = getLoc("LINK");
+    private final JQueryLocator LOC_LINK = jq(getLoc("LINK"));
 
     /**
      * Tests behavior of the application after Ajax request. It clicks on the link in the form on the page. There are
@@ -56,7 +59,7 @@ public class StateManagerTestCase extends AbstractSeleniumRichfacesTestCase {
         getValuesAndVerify(oldValues);
 
         selenium.click(LOC_LINK);
-        Wait.failWith("The form did not change").until(new Condition() {
+        Wait.waitSelenium.failWith("The form did not change").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return selenium.getText(LOC_LINK).equals("(To login)");
             }
@@ -96,7 +99,7 @@ public class StateManagerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     private void getValuesAndVerify(String[] values) {
         for (int i = 0; i < 3; i++) {
-            values[i] = selenium.getAttribute(format(LOC_HIDDEN_INPUT_PREFORMATTED, i));
+            values[i] = selenium.getAttribute(jq(format(LOC_HIDDEN_INPUT_PREFORMATTED, i)), Attribute.VALUE);
         }
 
         assertEquals(values[0], values[1],

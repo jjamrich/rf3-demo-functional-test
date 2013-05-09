@@ -22,14 +22,17 @@
 
 package org.jboss.richfaces.integrationTest.panelMenu;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -57,7 +60,7 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	// locators
 	private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-	private final String LOC_PANEL = getLoc("PANEL");
+	private final JQueryLocator LOC_PANEL = jq(getLoc("PANEL"));
 	
 	private final String LOC_GROUP_N_IMAGE_BEFORE = getLoc("GROUP_N_IMAGE_BEFORE");
 	private final String LOC_GROUP_N_IMAGE_AFTER = getLoc("GROUP_N_IMAGE_AFTER");
@@ -119,18 +122,18 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 	public void testSubgroup() {
 		String text = null;
 		
-		selenium.click(format(LOC_GROUP_N_TEXT, 1));
+		selenium.click(jq(format(LOC_GROUP_N_TEXT, 1)));
 
 		// image before subgroup name
-		text = selenium.getAttribute(format(LOC_ITEM_M_N_IMAGE_BEFORE, 1, 3));
+		text = selenium.getAttribute(jq(format(LOC_ITEM_M_N_IMAGE_BEFORE, 1, 3)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconDisc"), MSG_DISK_BEFORE_GROUP_NAME);
 
 		// subgroup name
-		text = selenium.getText(format(LOC_ITEM_M_N_TEXT, 1, 3));
+		text = selenium.getText(jq(format(LOC_ITEM_M_N_TEXT, 1, 3)));
 		assertEquals(text, "Group 2.4", MSG_NAME_OF_GROUP);
 
 		// image after subgroup name
-		text = selenium.getAttribute(format(LOC_ITEM_M_N_IMAGE_AFTER, 1, 3));
+		text = selenium.getAttribute(jq(format(LOC_ITEM_M_N_IMAGE_AFTER, 1, 3)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconSpacer"), MSG_IMAGE_AFTER_GROUP_NAME_SPACER);
 
 		for (int i = 0; i < 3; i++) {
@@ -138,10 +141,10 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 		}
 
 		// click Group 2.4
-		selenium.click(format(LOC_ITEM_M_N_TEXT, 1, 3));
+		selenium.click(jq(format(LOC_ITEM_M_N_TEXT, 1, 3)));
 
 		// image after subgroup name
-		text = selenium.getAttribute(format(LOC_ITEM_M_N_IMAGE_AFTER, 1, 3));
+		text = selenium.getAttribute(jq(format(LOC_ITEM_M_N_IMAGE_AFTER, 1, 3)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconSpacer"), MSG_IMAGE_AFTER_GROUP_NAME_SPACER);
 
 		for (int i = 0; i < 3; i++) {
@@ -149,7 +152,7 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 			assertTrue(isDisplayed(format(LOC_SUBITEM_M_STYLE, i)), format(MSG_SUBITEM_M_VISIBLE, i + 1));
 			
 			// check the image left of the item
-			text = selenium.getAttribute(format(LOC_SUBITEM_M_IMAGE, i));
+			text = selenium.getAttribute(jq(format(LOC_SUBITEM_M_IMAGE, i)), Attribute.SRC);
 			assertTrue(text.contains("PanelMenuIconGrid"), MSG_IMAGE_BEFORE_ITEM_GRID);
 		}
 	}
@@ -168,13 +171,13 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 		// check items on the first level (1.1, 1.2, etc.)
 		for (int i = 0; i < 3; i++) {
 		    final int newI = i;
-		    selenium.click(format(LOC_GROUP_N_TEXT, i));
+		    selenium.click(jq(format(LOC_GROUP_N_TEXT, i)));
 			
 		    for (int j = 0; j < 3; j++) {
 			    final int newJ = j;
-			    selenium.click(format(LOC_ITEM_M_N_TEXT, i, j));
+			    selenium.click(jq(format(LOC_ITEM_M_N_TEXT, i, j)));
 				
-				Wait.until(new Condition() {
+				Wait.waitSelenium.until(new SeleniumCondition() {
                     public boolean isTrue() {
                         return format("Item {0}.{1} selected", newI + 1, newJ + 1).equals(selenium.getText(LOC_PANEL));
                     }
@@ -186,12 +189,12 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 		}
 
 		// check items on the second level (2.4.1, 2.4.2, 2.4.3)
-		selenium.click(format(LOC_ITEM_M_N_TEXT, 1, 3));
+		selenium.click(jq(format(LOC_ITEM_M_N_TEXT, 1, 3)));
 		for (int i = 0; i < 3; i++) {
 		    final int newI = i;
-		    selenium.click(format(LOC_SUBITEM_M_TEXT, i));
+		    selenium.click(jq(format(LOC_SUBITEM_M_TEXT, i)));
 			
-		    Wait.until(new Condition() {
+		    Wait.waitSelenium.until(new SeleniumCondition() {
                 public boolean isTrue() {
                     return format("Item 2.4.{0} selected", newI + 1).equals(selenium.getText(LOC_PANEL));
                 }
@@ -230,25 +233,25 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 		String text = null;
 		
 		// spacer before group name
-		text = selenium.getAttribute(format(LOC_GROUP_N_IMAGE_BEFORE, index));
+		text = selenium.getAttribute(jq(format(LOC_GROUP_N_IMAGE_BEFORE, index)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconSpacer"), MSG_IMAGE_BEFORE_GROUP_NAME);
 
 		// group name
-		text = selenium.getText(format(LOC_GROUP_N_TEXT, index));
+		text = selenium.getText(jq(format(LOC_GROUP_N_TEXT, index)));
 		assertEquals(text, "Group " + (index + 1), MSG_NAME_OF_GROUP);
 
 		// image after group name
-		text = selenium.getAttribute(format(LOC_GROUP_N_IMAGE_AFTER, index));
+		text = selenium.getAttribute(jq(format(LOC_GROUP_N_IMAGE_AFTER, index)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconChevronDown"), MSG_IMAGE_AFTER_GROUP_NAME_DOWN);
 
 		for (int i = 0; i < 3; i++) {
 			assertFalse(isDisplayed(format(LOC_ITEM_M_N_STYLE, index, i)), format(MSG_ITEM_M_N_NOT_VISIBLE, index + 1, i + 1));
 		}
 
-		selenium.click(format(LOC_GROUP_N_TEXT, index));
+		selenium.click(jq(format(LOC_GROUP_N_TEXT, index)));
 
 		// image after group name
-		text = selenium.getAttribute(format(LOC_GROUP_N_IMAGE_AFTER, index));
+		text = selenium.getAttribute(jq(format(LOC_GROUP_N_IMAGE_AFTER, index)), Attribute.SRC);
 		assertTrue(text.contains("PanelMenuIconChevronUp"), MSG_IMAGE_AFTER_GROUP_NAME_UP);
 
 		for (int i = 0; i < 3; i++) {
@@ -256,7 +259,7 @@ public class PanelMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 			assertTrue(isDisplayed(format(LOC_ITEM_M_N_STYLE, index, i)), format(MSG_ITEM_M_N_VISIBLE, index + 1, i + 1));
 			
 			// check the image left of the item
-			text = selenium.getAttribute(format(LOC_ITEM_M_N_IMAGE_BEFORE, index, i));
+			text = selenium.getAttribute(jq(format(LOC_ITEM_M_N_IMAGE_BEFORE, index, i)), Attribute.SRC);
 			assertTrue(text.contains("PanelMenuIconGrid"), MSG_IMAGE_BEFORE_ITEM_GRID);
 		}
 	}

@@ -22,16 +22,21 @@
 
 package org.jboss.richfaces.integrationTest.paint2d;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
+import java.net.URL;
 
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.utils.URLUtils;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.utils.URLUtils;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -77,12 +82,12 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
 
     // locators
     private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_INPUT_TEXT = getLoc("INPUT_TEXT");
-    private final String LOC_INPUT_COLOR = getLoc("INPUT_COLOR");
-    private final String LOC_BUTTON_APPLY_COLOR = getLoc("BUTTON_APPLY_COLOR");
-    private final String LOC_SHADOW_SLIDER = getLoc("SHADOW_SLIDER");
-    private final String LOC_SHADOW_SLIDER_HANDLE = getLoc("SHADOW_SLIDER_HANDLE");
-    private final String LOC_IMAGE = getLoc("IMAGE");
+    private final JQueryLocator LOC_INPUT_TEXT = jq(getLoc("INPUT_TEXT"));
+    private final JQueryLocator LOC_INPUT_COLOR = jq(getLoc("INPUT_COLOR"));
+    private final JQueryLocator LOC_BUTTON_APPLY_COLOR = jq(getLoc("BUTTON_APPLY_COLOR"));
+    private final JQueryLocator LOC_SHADOW_SLIDER = jq(getLoc("SHADOW_SLIDER"));
+    private final JQueryLocator LOC_SHADOW_SLIDER_HANDLE = jq(getLoc("SHADOW_SLIDER_HANDLE"));
+    private final JQueryLocator LOC_IMAGE = jq(getLoc("IMAGE"));
 
     /**
      * Tests all component on the page as they appear after the page is loaded.
@@ -97,7 +102,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         text = selenium.getValue(LOC_INPUT_COLOR);
         assertEquals(text, MSG_INITIAL_STATE_INPUT_COLOR, "Color of the image.");
 
-        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_INITIAL_STATE_SHADOW_SLIDER_HANDLE, "Size of the shadow.");
 
         assertEquals(getImageHash(), MSG_INITIAL_STATE_HASH, "Hash of the image.");
@@ -111,7 +116,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_TEXT, "XoXoXoXoX");
         selenium.typeKeys(LOC_INPUT_TEXT, " "); // why is this necessary?
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_TEXT_HASH_1);
             }
@@ -120,7 +125,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_TEXT, "Red Hat");
         selenium.typeKeys(LOC_INPUT_TEXT, " "); // why is this necessary?
         
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_TEXT_HASH_2);
             }
@@ -136,7 +141,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_COLOR, "fbff00");
         selenium.click(LOC_BUTTON_APPLY_COLOR);
         
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_COLOR_HASH_1);
             }
@@ -145,7 +150,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_COLOR, "00ffbb");
         selenium.click(LOC_BUTTON_APPLY_COLOR);
         
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_COLOR_HASH_2);
             }
@@ -157,34 +162,34 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testChangeShadow() {
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "0,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(0,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_SHADOW_SLIDER_HANDLE_1, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_SHADOW_HASH_1);
             }
         });
 
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "96,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(96,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_SHADOW_SLIDER_HANDLE_2, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_SHADOW_HASH_2);
             }
         });
         
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "191,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(191,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_SHADOW_SLIDER_HANDLE_3, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_SHADOW_HASH_3);
             }
@@ -201,7 +206,7 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_COLOR, "894bd6");
         selenium.click(LOC_BUTTON_APPLY_COLOR);
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_TEXT_AND_COLOR_HASH);
             }
@@ -215,12 +220,12 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testChangeTextAndShadow() {
         selenium.type(LOC_INPUT_TEXT, "RichFaces");
 
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "159,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(159,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_TEXT_AND_SHADOW_SLIDER_HANDLE, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_TEXT_AND_SHADOW_HASH);
             }
@@ -235,12 +240,12 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_COLOR, "6bab57");
         selenium.click(LOC_BUTTON_APPLY_COLOR);
 
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "96,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(96,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_COLOR_AND_SHADOW_SLIDER_HANDLE, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_COLOR_AND_SHADOW_HASH);
             }
@@ -257,12 +262,12 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_INPUT_COLOR, "e8a54c");
         selenium.click(LOC_BUTTON_APPLY_COLOR);
 
-        selenium.mouseDownAt(LOC_SHADOW_SLIDER, "127,0");
+        selenium.mouseDownAt(LOC_SHADOW_SLIDER, new Point(127,0));
         selenium.mouseUp(LOC_SHADOW_SLIDER);
-        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, "left").replace("px", ""));
+        int position = Integer.parseInt(getStyle(LOC_SHADOW_SLIDER_HANDLE, new CssProperty("left")).replace("px", ""));
         assertEquals(position, MSG_CHANGE_ALL_SLIDER_HANDLE, "Position of the slider's handle.");
 
-        Wait.failWith("Hash of the image.").until(new Condition() {
+        Wait.waitSelenium.failWith("Hash of the image.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getImageHash().equals(MSG_CHANGE_ALL_HASH);
             }
@@ -314,12 +319,11 @@ public class Paint2DTestCase extends AbstractSeleniumRichfacesTestCase {
     */
    private String getImageHash() {
        // create URL of the image
-       int index = selenium.getLocation().indexOf('/', 7);
-       String tmp = selenium.getLocation().substring(0, index);
-       tmp += selenium.getAttribute(LOC_IMAGE + "@src");
+       String imgSrc = selenium.getAttribute(LOC_IMAGE, Attribute.SRC);
+       URL url = URLUtils.buildUrl(selenium.getLocation(), imgSrc);
 
        try {
-           return URLUtils.resourceMd5Digest(tmp);
+           return URLUtils.resourceMd5Digest(url.toString());
        } catch (IOException e) {
            e.printStackTrace();
            fail(e.getMessage());

@@ -21,8 +21,12 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.beanValidator;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -34,10 +38,13 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	private String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
 	private String LOC_BUTTON_SUBMIT = getLoc("BUTTON_SUBMIT");
 	private String LOC_VALIDATION_MESSAGE_RELATIVE = getLoc("VALIDATION_MESSAGE_RELATIVE");
+	
+	private final String INPUT_LOC_FORMAT = "input[id$={0}]";
+    
 	private String LOC_INPUT_NAME = getLoc("INPUT_NAME");
 	private String LOC_INPUT_AGE = getLoc("INPUT_AGE");
 	private String LOC_INPUT_EMAIL = getLoc("INPUT_EMAIL");
-
+	
 	private final String MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM = getMsg("INPUT_VALUE_IS_LESS_THAN_MINIMUM");
 	private final String MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM = getMsg("INPUT_VALUE_IS_GREATER_THAN_MAXIMUM");
 	private final String MSG_INPUT_VALID_NAME = getMsg("INPUT_VALID_NAME");
@@ -56,7 +63,7 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	private final String MSG_OUTPUT_MUST_BE_A_NUMBER = getMsg("OUTPUT_MUST_BE_A_NUMBER");
 	private final String MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY = getMsg("OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY");
 	private final String MSG_OUTPUT_NOT_WELL_FORMED_EMAIL = getMsg("OUTPUT_NOT_WELL_FORMED_EMAIL");
-
+	
 	/**
 	 * Try type no chars in input name and checks that value required message
 	 * will appear.
@@ -64,8 +71,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testNameValueRequired() {
 		final String validationMessage = format(MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY, LOC_INPUT_NAME);
-		typeAndSubmit(LOC_INPUT_NAME, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), validationMessage);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_NAME)), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(validationMessage));
 	}
 
 	/**
@@ -74,8 +81,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testNameMinimumLength() {
-		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_NAME)), MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
 	}
 
 	/**
@@ -84,8 +91,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testNameMaximumLength() {
-		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_NAME)), MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
 	}
 
 	/**
@@ -94,8 +101,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testNameOnlySpacesPattern() {
-		typeAndSubmit(LOC_INPUT_NAME, " ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_NAME)), " ");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES));
 	}
 
 	/**
@@ -107,8 +114,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		// first violate validation error
 		testNameValueRequired();
 		// then try valid input
-		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALID_NAME);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), "");
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_NAME)), MSG_INPUT_VALID_NAME);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(""));
 	}
 
 	/**
@@ -117,8 +124,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testAgeValueRequired() {
-		typeAndSubmit(LOC_INPUT_AGE, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MAY_NOT_BE_NULL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_AGE)), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(MSG_OUTPUT_MAY_NOT_BE_NULL));
 	}
 
 	/**
@@ -127,8 +134,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testAgeMinimumValue() {
-		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_MUST_BE_LESS_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_AGE)), MSG_INPUT_MUST_BE_LESS_THAN_OR_EQUAL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL));
 	}
 
 	/**
@@ -137,8 +144,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testAgeMaximumValue() {
-		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_AGE)), MSG_INPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL));
 	}
 
 	/**
@@ -148,8 +155,9 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testAgeIntegerOnly() {
 		final String validationMessage = format(MSG_OUTPUT_MUST_BE_A_NUMBER, LOC_INPUT_AGE);
-		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_IS_NOT_NUMBER);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitGui.until(Graphene.elementPresent.locator(jq(LOC_INPUT_AGE)));
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_AGE)), MSG_INPUT_IS_NOT_NUMBER);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -161,8 +169,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		// first violate validation error
 		testAgeValueRequired();
 		// then try valid input
-		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_VALID_AGE);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), "");
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_AGE)), MSG_INPUT_VALID_AGE);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(""));
 	}
 
 	/**
@@ -171,8 +179,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testEmailMayNotBeNullOrEmpty() {
-		typeAndSubmit(LOC_INPUT_EMAIL, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_EMAIL)), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_EMAIL))).text(MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY));
 	}
 
 	/**
@@ -181,8 +189,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testEmailOnlySpaces() {
-		typeAndSubmit(LOC_INPUT_EMAIL, " ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_EMAIL)), " ");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -191,8 +199,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testEmailBad1() {
-		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_1);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_EMAIL)), MSG_INPUT_NOT_WELL_FORMED_EMAIL_1);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -201,8 +209,8 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testEmailBad2() {
-		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_2);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_EMAIL)), MSG_INPUT_NOT_WELL_FORMED_EMAIL_2);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -214,13 +222,13 @@ public class BeanValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		// first violate validation error
 		testEmailMayNotBeNullOrEmpty();
 		// then try valid input
-		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_WELL_FORMED_EMAIL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), "");
+		typeAndSubmit(jq(format(INPUT_LOC_FORMAT, LOC_INPUT_EMAIL)), MSG_INPUT_WELL_FORMED_EMAIL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_EMAIL))).text(""));
 	}
 	
-	private void typeAndSubmit(String locator, String value) {
+	private void typeAndSubmit(JQueryLocator locator, String value) {
 		selenium.type(locator, value);
-		selenium.click(LOC_BUTTON_SUBMIT);
+		selenium.click(jq(LOC_BUTTON_SUBMIT));
 	}
 
 	private String getMessageFor(String locator) {

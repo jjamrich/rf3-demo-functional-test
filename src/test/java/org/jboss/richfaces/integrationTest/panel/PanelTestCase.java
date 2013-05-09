@@ -22,10 +22,11 @@
 
 package org.jboss.richfaces.integrationTest.panel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -48,13 +49,13 @@ public class PanelTestCase extends AbstractSeleniumRichfacesTestCase {
 
     // locators
     private final String LOC_FIRST_DIVS = getLoc("FIRST_DIVS");
-    private final String LOC_FIRST_HEADER = getLoc("FIRST_HEADER");
-    private final String LOC_SECOND_DIVS = getLoc("SECOND_DIVS");
-    private final String LOC_THIRD_DIVS = getLoc("THIRD_DIVS");
-    private final String LOC_THIRD_HEADER = getLoc("THIRD_HEADER");
-    private final String LOC_THIRD_NESTED_PANELS = getLoc("THIRD_NESTED_PANELS");
-    private final String LOC_LEFT_NESTED_PANEL_LIST_LI = getLoc("LEFT_NESTED_PANEL_LIST_LI");
-    private final String LOC_RIGHT_NESTED_PANEL_LIST_LI = getLoc("RIGHT_NESTED_PANEL_LIST_LI");
+    private final JQueryLocator LOC_FIRST_HEADER = jq(getLoc("FIRST_HEADER"));
+    private final JQueryLocator LOC_SECOND_DIVS = jq(getLoc("SECOND_DIVS"));
+    private final JQueryLocator LOC_THIRD_DIVS = jq(getLoc("THIRD_DIVS"));
+    private final JQueryLocator LOC_THIRD_HEADER = jq(getLoc("THIRD_HEADER"));
+    private final JQueryLocator LOC_THIRD_NESTED_PANELS = jq(getLoc("THIRD_NESTED_PANELS"));
+    private final JQueryLocator LOC_LEFT_NESTED_PANEL_LIST_LI = jq(getLoc("LEFT_NESTED_PANEL_LIST_LI"));
+    private final JQueryLocator LOC_RIGHT_NESTED_PANEL_LIST_LI = jq(getLoc("RIGHT_NESTED_PANEL_LIST_LI"));
 
     /**
      * Tests the first example. It verifies that there are both header and body

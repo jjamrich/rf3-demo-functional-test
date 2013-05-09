@@ -21,14 +21,16 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.log;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -38,10 +40,10 @@ import org.testng.annotations.Test;
 public class LogTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	private final String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private final String LOC_INPUT_TEXT = getLoc("INPUT_TEXT");
-	private final String LOC_BUTTON_CLEAR = getLoc("BUTTON_CLEAR");
-	private final String LOC_OUTPUT_LOG_CONSOLE = getLoc("OUTPUT_LOG_CONSOLE");
-	private final String LOC_DIV_LOG_CONSOLE_ENTRY = getLoc("DIV_LOG_CONSOLE_ENTRY");
+	private final JQueryLocator LOC_INPUT_TEXT = jq(getLoc("INPUT_TEXT"));
+	private final JQueryLocator LOC_BUTTON_CLEAR = jq(getLoc("BUTTON_CLEAR"));
+	private final JQueryLocator LOC_OUTPUT_LOG_CONSOLE = jq(getLoc("OUTPUT_LOG_CONSOLE"));
+	private final JQueryLocator LOC_DIV_LOG_CONSOLE_ENTRY = jq(getLoc("DIV_LOG_CONSOLE_ENTRY"));
 
 	private final String MSG_INPUT_SAMPLE = getMsg("INPUT_SAMPLE");
 	private final String MSG_OUTPUT_DEBUG = getMsg("OUTPUT_DEBUG");
@@ -86,7 +88,7 @@ public class LogTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_TEXT, MSG_INPUT_SAMPLE);
 		selenium.fireEvent(LOC_INPUT_TEXT, Event.KEYUP);
 
-		Wait.failWith("Count of log entries never increase").until(new Condition() {
+		Wait.waitSelenium.failWith("Count of log entries never increase").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return getJQueryCount(LOC_DIV_LOG_CONSOLE_ENTRY) > startCount;
 			}
@@ -101,7 +103,7 @@ public class LogTestCase extends AbstractSeleniumRichfacesTestCase {
 	private void clearLog() {
 		selenium.click(LOC_BUTTON_CLEAR);
 
-		Wait.failWith("Text of the console never get without entries (clear button only)").until(new Condition() {
+		Wait.waitSelenium.failWith("Text of the console never get without entries (clear button only)").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String consoleText = selenium.getText(LOC_OUTPUT_LOG_CONSOLE);
 				return MSG_OUTPUT_CLEAR.equals(StringUtils.trim(consoleText));
@@ -110,8 +112,8 @@ public class LogTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	private void waitForLogStabilize() {
-		Wait.failWith("Log stabilized in entry count in given time").interval(3000).timeout(9000).until(
-				new Condition() {
+		Wait.waitSelenium.failWith("Log stabilized in entry count in given time").interval(3000).timeout(9000).until(
+				new SeleniumCondition() {
 					int count = -1;
 
 					public boolean isTrue() {

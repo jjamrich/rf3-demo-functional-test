@@ -21,16 +21,21 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataFilterSlider;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.testng.Assert.*;
-
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumWaiting;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.jboss.test.selenium.waiting.Wait.Waiting;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -39,14 +44,14 @@ import org.testng.annotations.Test;
  */
 public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 
-	private final String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private final String LOC_TABLE_ROWS = getLoc("TABLE_ROWS");
+	private final JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+	private final JQueryLocator LOC_TABLE_ROWS = jq(getLoc("TABLE_ROWS"));
 	private final String LOC_TD_MILEAGE_PREFORMATTED = getLoc("TD_MILEAGE_PREFORMATTED");
 	private final String LOC_TD_BRAND_PREFORMATTED = getLoc("TD_BRAND_PREFORMATTED");
 	private final String LOC_LINK_BRAND_PREFORMATTED = getLoc("LINK_BRAND_PREFORMATTED");
-	private final String LOC_DIV_SLIDER_HANDLE = getLoc("DIV_SLIDER_HANDLE");
-	private final String LOC_DIV_SLIDER_TRACK = getLoc("DIV_SLIDER_TRACK");
-	private final String LOC_INPUT_MAX_PRICE = getLoc("INPUT_MAX_PRICE");
+	private final JQueryLocator LOC_DIV_SLIDER_HANDLE = jq(getLoc("DIV_SLIDER_HANDLE"));
+	private final JQueryLocator LOC_DIV_SLIDER_TRACK = jq(getLoc("DIV_SLIDER_TRACK"));
+	private final JQueryLocator LOC_INPUT_MAX_PRICE = jq(getLoc("INPUT_MAX_PRICE"));
 
 	private final int MSG_COUNT_MAX_ROWS = Integer.valueOf(getMsg("COUNT_MAX_ROWS"));
 	private final String MSG_CHOICES_OF_BRANDS = getMsg("CHOICES_OF_BRANDS");
@@ -114,19 +119,19 @@ public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 	}
 
 	private void testBrand(String brand) {
-		final String locLinkBrand = format(LOC_LINK_BRAND_PREFORMATTED, brand);
+		final JQueryLocator locLinkBrand = jq(format(LOC_LINK_BRAND_PREFORMATTED, brand));
 
 		final String tableText = selenium.getText(LOC_TABLE_COMMON);
 		selenium.click(locLinkBrand);
 
-		Wait.dontFail().timeout(5000).until(new Condition() {
-			public boolean isTrue() {
-				return !tableText.equals(selenium.getText(LOC_TABLE_COMMON));
-			}
-		});
+		Wait.waitSelenium.dontFail().timeout(5000).until(new SeleniumCondition() {
+            public boolean isTrue() {
+                return !tableText.equals(selenium.getText(LOC_TABLE_COMMON));
+            }
+        });
 
-		for (int row = 1; row <= getJQueryCount(LOC_TABLE_ROWS); row++) {
-			String rowBrand = selenium.getText(format(LOC_TD_BRAND_PREFORMATTED, row));
+		for (int row = 1; row <= selenium.getCount(LOC_TABLE_ROWS); row++) {
+			String rowBrand = selenium.getText(jq(format(LOC_TD_BRAND_PREFORMATTED, row)));
 
 			assertEquals(rowBrand, brand, "In all rows must be the defined brand");
 		}
@@ -142,10 +147,10 @@ public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 	private List<Integer> checkAllMileagesMaxAndReturnItsList(int maxMileage) {
 		List<Integer> list = new LinkedList<Integer>();
 		
-		int rowCount = getJQueryCount(LOC_TABLE_ROWS);
+		int rowCount = selenium.getCount(LOC_TABLE_ROWS);
 		
 		for (int row = 1; row <= rowCount; row++) {
-			int rowMileage = Double.valueOf(selenium.getText(format(LOC_TD_MILEAGE_PREFORMATTED, row))).intValue();
+			int rowMileage = Double.valueOf(selenium.getText(jq(format(LOC_TD_MILEAGE_PREFORMATTED, row)))).intValue();
 
 			assertTrue(rowMileage <= maxMileage, format(
 					"All mileages in table must be lesser than selected value ({0}), but '{1}' isn't", maxMileage,
@@ -163,14 +168,14 @@ public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 	private void clickSliderAtPercent(double percent) {
 	    final Number handlePosition = selenium.getElementPositionLeft(LOC_DIV_SLIDER_HANDLE);
 
-		int width = selenium.getElementWidth(LOC_DIV_SLIDER_TRACK).intValue();
-		int height = selenium.getElementHeight(LOC_DIV_SLIDER_TRACK).intValue();
-		String coords = format("{0,number,integer},{1}", width * percent / 100, height / 2);
+		int width = selenium.getElementWidth(LOC_DIV_SLIDER_TRACK);
+		int height = selenium.getElementHeight(LOC_DIV_SLIDER_TRACK);
+		Point coords = new Point((int)Math.round(width * percent / 100), height / 2); //format("{0,number,integer},{1}", width * percent / 100, height / 2);
 
 		selenium.mouseDownAt(LOC_DIV_SLIDER_TRACK, coords);
 		selenium.mouseUpAt(LOC_DIV_SLIDER_TRACK, coords);
 
-		Wait.failWith("Slider never changes left position").until(new Condition() {
+		Wait.waitSelenium.failWith("Slider never changes left position").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return !handlePosition.equals(selenium.getElementPositionLeft(LOC_DIV_SLIDER_HANDLE));
 			}
@@ -179,9 +184,9 @@ public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 		waitTableTextStabilizes.until(conditionTableTextStabilizes);
 	}
 	
-	private Waiting waitTableTextStabilizes = Wait.interval(1000).timeout(15000).failWith("Table text never got stabilized");
+	private SeleniumWaiting waitTableTextStabilizes = Wait.waitSelenium.interval(1000).timeout(15000).failWith("Table text never got stabilized");
 	
-	private Condition conditionTableTextStabilizes = new Condition() {
+	private SeleniumCondition conditionTableTextStabilizes = new SeleniumCondition() {
         String memory;
         int count = 0;
 
@@ -212,6 +217,6 @@ public class DataFilterSliderTestCase extends AbstractDataIterationTestCase {
 	protected void loadPage() {
 		openComponent("Data Filter Slider");
 		scrollIntoView(LOC_FIELDSET_HEADER, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

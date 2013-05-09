@@ -21,11 +21,16 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.tooltip;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.testng.annotations.Test;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
@@ -33,16 +38,16 @@ import org.testng.annotations.Test;
  */
 public class TooltipDataTableTestCase extends AbstractSeleniumRichfacesTestCase {
 
-	private final String LOC_FIELDSET_HEADER_2 = getLoc("FIELDSET_HEADER_2");
+	private final JQueryLocator LOC_FIELDSET_HEADER_2 = jq(getLoc("FIELDSET_HEADER_2"));
 	private final String LOC_TD_PREFORMATTED = getLoc("TD_PREFORMATTED");
-	private final String LOC_OUTPUT_TOOLTIP_MAKE = getLoc("OUTPUT_TOOLTIP_MAKE");
-    private final String LOC_OUTPUT_TOOLTIP_MODEL = getLoc("OUTPUT_TOOLTIP_MODEL");
-    private final String LOC_OUTPUT_TOOLTIP_YEAR = getLoc("OUTPUT_TOOLTIP_YEAR");
+	private final JQueryLocator LOC_OUTPUT_TOOLTIP_MAKE = jq(getLoc("OUTPUT_TOOLTIP_MAKE"));
+    private final JQueryLocator LOC_OUTPUT_TOOLTIP_MODEL = jq(getLoc("OUTPUT_TOOLTIP_MODEL"));
+    private final JQueryLocator LOC_OUTPUT_TOOLTIP_YEAR = jq(getLoc("OUTPUT_TOOLTIP_YEAR"));
 	
     private final String LOC_TD_MAKE_RELATIVE_TO_LABEL = getLoc("TD_MAKE_RELATIVE_TO_LABEL");
 	private final String LOC_TD_MAKE_RELATIVE_TO_ACTIVE_TOOLTIP_AREA = getLoc("TD_MAKE_RELATIVE_TO_ACTIVE_TOOLTIP_AREA");
 
-	private final String MSG_EVENT_COORDS_FOR_TABLE = getMsg("EVENT_COORDS_FOR_TABLE");
+	private final Point COORDS_FOR_TABLE = new Point(2, 2);
 	
 	// FIXME test works locally but not in Hudson, fails on line 61 -- waitForElementAppears(LOC_OUTPUT_TOOLTIP_MAKE)
 	//@Test
@@ -50,18 +55,18 @@ public class TooltipDataTableTestCase extends AbstractSeleniumRichfacesTestCase 
 		int rows = getJQueryCount(format(LOC_TD_PREFORMATTED, 0, Column.MAKE));
 
 		for (int row = 1; row <= rows; row++) {
-		    final String locCellMake = format(LOC_TD_PREFORMATTED, row, Column.MAKE);
-			final String locCellModel = format(LOC_TD_PREFORMATTED, row, Column.MODEL);
-			final String locCellYear = format(LOC_TD_PREFORMATTED, row, Column.YEAR);
-			final String locActiveTooltipArea = format(LOC_TD_MAKE_RELATIVE_TO_ACTIVE_TOOLTIP_AREA, locCellMake);
+		    final JQueryLocator locCellMake = jq(format(LOC_TD_PREFORMATTED, row, Column.MAKE));
+			final JQueryLocator locCellModel = jq(format(LOC_TD_PREFORMATTED, row, Column.MODEL));
+			final JQueryLocator locCellYear = jq(format(LOC_TD_PREFORMATTED, row, Column.YEAR));
+			final JQueryLocator locActiveTooltipArea = jq(format(LOC_TD_MAKE_RELATIVE_TO_ACTIVE_TOOLTIP_AREA, locCellMake));
 
 			if (row == 1)
-				selenium.mouseMoveAt(locActiveTooltipArea, MSG_EVENT_COORDS_FOR_TABLE);
-			mouseOverAt(locActiveTooltipArea, MSG_EVENT_COORDS_FOR_TABLE);
+				selenium.mouseMoveAt(locActiveTooltipArea, COORDS_FOR_TABLE);
+			mouseOverAt(locActiveTooltipArea, COORDS_FOR_TABLE);
 			waitForElementAppears(LOC_OUTPUT_TOOLTIP_MAKE);
 
-			assertEquals(selenium.getText(LOC_OUTPUT_TOOLTIP_MAKE), selenium.getText(format(
-					LOC_TD_MAKE_RELATIVE_TO_LABEL, locCellMake)));
+			assertEquals(selenium.getText(LOC_OUTPUT_TOOLTIP_MAKE), selenium.getText(jq(format(
+					LOC_TD_MAKE_RELATIVE_TO_LABEL, locCellMake))));
 			assertEquals(selenium.getText(LOC_OUTPUT_TOOLTIP_MODEL), selenium.getText(locCellModel));
 			assertEquals(selenium.getText(LOC_OUTPUT_TOOLTIP_YEAR), selenium.getText(locCellYear));
 
@@ -76,30 +81,30 @@ public class TooltipDataTableTestCase extends AbstractSeleniumRichfacesTestCase 
 		public static final int YEAR = 2;
 	}
 
-	private void waitForElementAppears(final String locator) {
-		waitModelUpdate.until(new Condition() {
+	private void waitForElementAppears(final JQueryLocator locator) {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isElementPresent(locator);
 			}
 		});
 	}
 	
-	private void waitForElementDisappears(final String locator) {
-		waitModelUpdate.until(new Condition() {
+	private void waitForElementDisappears(final JQueryLocator locator) {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return !isElementPresent(locator);
 			}
 		});
 	}
 	
-	private boolean isElementPresent(String locator) {
-		return !"0".equals(selenium.getEval(format("jqFind('{0}:visible').size()", locator.replaceFirst("^jquery=", "").trim())));
+	private boolean isElementPresent(JQueryLocator locator) {
+		return !"0".equals(selenium.getEval(new JavaScript(format("jqFind('{0}:visible').size()", locator.getRawLocator()).trim())));
 	}
 
 	protected void loadPage() {
 		openComponent("ToolTip");
 		openTab("Use ToolTip with DataTable");
 		scrollIntoView(LOC_FIELDSET_HEADER_2, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

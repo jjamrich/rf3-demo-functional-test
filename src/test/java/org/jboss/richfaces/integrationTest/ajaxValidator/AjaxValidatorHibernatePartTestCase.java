@@ -21,7 +21,11 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxValidator;
 
+import org.jboss.arquillian.ajocado.Graphene;
 import org.testng.annotations.Test;
+
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
@@ -61,7 +65,8 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	public void testNameValueRequired() {
 		final String validationMessage = format(MSG_OUTPUT_VALUE_REQUIRED_PREFORMATTED, LOC_INPUT_HIBERNATE_NAME);
 		typeAndBlur(LOC_INPUT_HIBERNATE_NAME, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), validationMessage);
+		// waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_NAME))).text(validationMessage));
 	}
 
 	/**
@@ -71,7 +76,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testNameMinimumLength() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_NAME, MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_NAME))).text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testNameMaximumLength() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_NAME, MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_NAME))).text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
 	}
 
 	/**
@@ -91,7 +96,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testNameOnlySpacesPattern() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_NAME, " ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_NAME))).text(MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES));
 	}
 
 	/**
@@ -104,7 +109,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 		testNameValueRequired();
 		// then try valid input
 		typeAndBlur(LOC_INPUT_HIBERNATE_NAME, MSG_INPUT_HIBERNATE_VALID_INPUT);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_NAME), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_NAME))).text(""));
 	}
 
 	/**
@@ -114,7 +119,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testAgeValueRequired() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_AGE, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_AGE), MSG_OUTPUT_MAY_NOT_BE_NULL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_AGE))).text(MSG_OUTPUT_MAY_NOT_BE_NULL));
 	}
 
 	/**
@@ -124,7 +129,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testAgeMinimumValue() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_AGE, MSG_INPUT_MUST_BE_LESS_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_AGE), MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_AGE))).text(MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL));
 	}
 
 	/**
@@ -134,7 +139,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testAgeMaximumValue() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_AGE, MSG_INPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_AGE), MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_AGE))).text(MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL));
 	}
 
 	/**
@@ -145,7 +150,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	public void testAgeIntegerOnly() {
 		final String validationMessage = format(MSG_OUTPUT_MUST_BE_A_NUMBER, LOC_INPUT_HIBERNATE_AGE);
 		typeAndBlur(LOC_INPUT_HIBERNATE_AGE, MSG_INPUT_IS_NOT_NUMBER);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_AGE), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -158,7 +163,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 		testAgeValueRequired();
 		// then try valid input
 		typeAndBlur(LOC_INPUT_HIBERNATE_AGE, MSG_INPUT_VALID_AGE);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_AGE), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_AGE))).text(""));
 	}
 
 	/**
@@ -168,7 +173,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testEmailMayNotBeNullOrEmpty() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_EMAIL, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL), MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL))).text(MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY));
 	}
 
 	/**
@@ -178,7 +183,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testEmailOnlySpaces() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_EMAIL, " ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -188,7 +193,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testEmailBad1() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_1);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -198,7 +203,7 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 	@Test
 	public void testEmailBad2() {
 		typeAndBlur(LOC_INPUT_HIBERNATE_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_2);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL))).text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
 	}
 
 	/**
@@ -211,6 +216,6 @@ public class AjaxValidatorHibernatePartTestCase extends AbstractAjaxValidatorTes
 		testEmailMayNotBeNullOrEmpty();
 		// then try valid input
 		typeAndBlur(LOC_INPUT_HIBERNATE_EMAIL, MSG_INPUT_WELL_FORMED_EMAIL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_HIBERNATE_EMAIL))).text(""));
 	}
 }

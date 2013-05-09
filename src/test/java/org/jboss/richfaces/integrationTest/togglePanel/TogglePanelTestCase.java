@@ -22,11 +22,13 @@
 
 package org.jboss.richfaces.integrationTest.togglePanel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -44,10 +46,10 @@ public class TogglePanelTestCase extends AbstractSeleniumRichfacesTestCase {
 	private final String MSG_PANEL_NOT_VISIBLE_PREFORMATTED = getMsg("PANEL_NOT_VISIBLE_PREFORMATTED");
 
 	// locators
-	private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-	private final String LOC_CLICK_ME_BUTTON = getLoc("CLICK_ME_BUTTON");
-	private final String LOC_CLICK_ME_BUTTON_A = getLoc("CLICK_ME_BUTTON_A");
-	private final String LOC_CLOSE_BUTTON = getLoc("CLOSE_BUTTON");
+	private final JQueryLocator LOC_EXAMPLE_HEADER = jq(getLoc("EXAMPLE_HEADER"));
+	private final JQueryLocator LOC_CLICK_ME_BUTTON = jq(getLoc("CLICK_ME_BUTTON"));
+	private final JQueryLocator LOC_CLICK_ME_BUTTON_A = jq(getLoc("CLICK_ME_BUTTON_A"));
+	private final JQueryLocator LOC_CLOSE_BUTTON = jq(getLoc("CLOSE_BUTTON"));
 	private final String LOC_PANEL_PREFORMATTED = getLoc("PANEL_PREFORMATTED");
 	private final String LOC_PREVIOUS_BUTTON_PREFORMATTED = getLoc("PREVIOUS_BUTTON_PREFORMATTED");
 	private final String LOC_NEXT_BUTTON_PREFORMATTED = getLoc("NEXT_BUTTON_PREFORMATTED");
@@ -94,25 +96,25 @@ public class TogglePanelTestCase extends AbstractSeleniumRichfacesTestCase {
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 3)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 3));
 
 		// click next -- move to the 2nd panel
-		selenium.click(format(LOC_NEXT_BUTTON_PREFORMATTED, 1));
+		selenium.click(jq(format(LOC_NEXT_BUTTON_PREFORMATTED, 1)));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 1)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 1));
 		assertTrue(isDisplayed(format(LOC_PANEL_PREFORMATTED, 2)), format(MSG_PANEL_VISIBLE_PREFORMATTED, 2));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 3)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 3));
 
 		// click next -- move to the 3rd panel
-		selenium.click(format(LOC_NEXT_BUTTON_PREFORMATTED, 2));
+		selenium.click(jq(format(LOC_NEXT_BUTTON_PREFORMATTED, 2)));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 1)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 1));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 2)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 2));
 		assertTrue(isDisplayed(format(LOC_PANEL_PREFORMATTED, 3)), format(MSG_PANEL_VISIBLE_PREFORMATTED, 3));
 
 		// click previous -- move to the 2nd panel
-		selenium.click(format(LOC_PREVIOUS_BUTTON_PREFORMATTED, 3));
+		selenium.click(jq(format(LOC_PREVIOUS_BUTTON_PREFORMATTED, 3)));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 1)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 1));
 		assertTrue(isDisplayed(format(LOC_PANEL_PREFORMATTED, 2)), format(MSG_PANEL_VISIBLE_PREFORMATTED, 2));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 3)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 3));
 
 		// click previous -- move to the 1st panel
-		selenium.click(format(LOC_PREVIOUS_BUTTON_PREFORMATTED, 2));
+		selenium.click(jq(format(LOC_PREVIOUS_BUTTON_PREFORMATTED, 2)));
 		assertTrue(isDisplayed(format(LOC_PANEL_PREFORMATTED, 1)), format(MSG_PANEL_VISIBLE_PREFORMATTED, 1));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 2)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 2));
 		assertFalse(isDisplayed(format(LOC_PANEL_PREFORMATTED, 3)), format(MSG_PANEL_NOT_VISIBLE_PREFORMATTED, 3));

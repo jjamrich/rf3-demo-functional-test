@@ -22,12 +22,16 @@
 
 package org.jboss.richfaces.integrationTest.inputNumberSlider;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -53,20 +57,20 @@ public class InputNumberSliderTestCase extends
 
 	// locators
 	private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-	private final String LOC_FIRST = format(getLoc("SLIDER_N"), 0);
-	private final String LOC_FIRST_HANDLE = format(getLoc("SLIDER_N_HANDLE"), 0);
-	private final String LOC_FIRST_TIP = format(getLoc("SLIDER_N_TIP"), 0);
-	private final String LOC_FIRST_INPUT = format(getLoc("SLIDER_N_INPUT"), 0);
+	private final JQueryLocator LOC_FIRST = jq(format(getLoc("SLIDER_N"), 0));
+	private final JQueryLocator LOC_FIRST_HANDLE = jq(format(getLoc("SLIDER_N_HANDLE"), 0));
+	private final JQueryLocator LOC_FIRST_TIP = jq(format(getLoc("SLIDER_N_TIP"), 0));
+	private final JQueryLocator LOC_FIRST_INPUT = jq(format(getLoc("SLIDER_N_INPUT"), 0));
 
-	private final String LOC_SECOND = format(getLoc("SLIDER_N"), 1);
-	private final String LOC_SECOND_HANDLE = format(getLoc("SLIDER_N_HANDLE"), 1);
-	private final String LOC_SECOND_TIP = format(getLoc("SLIDER_N_TIP"), 1);
-	private final String LOC_SECOND_INPUT = format(getLoc("SLIDER_N_INPUT"), 1);
+	private final JQueryLocator LOC_SECOND = jq(format(getLoc("SLIDER_N"), 1));
+	private final JQueryLocator LOC_SECOND_HANDLE = jq(format(getLoc("SLIDER_N_HANDLE"), 1));
+	private final JQueryLocator LOC_SECOND_TIP = jq(format(getLoc("SLIDER_N_TIP"), 1));
+	private final JQueryLocator LOC_SECOND_INPUT = jq(format(getLoc("SLIDER_N_INPUT"), 1));
 
-	private final String LOC_THIRD = format(getLoc("SLIDER_N"), 2);
-	private final String LOC_THIRD_HANDLE = format(getLoc("SLIDER_N_HANDLE"), 2);
-	private final String LOC_THIRD_TIP = format(getLoc("SLIDER_N_TIP"), 2);
-	private final String LOC_THIRD_INPUT = format(getLoc("SLIDER_N_INPUT"), 2);
+	private final JQueryLocator LOC_THIRD = jq(format(getLoc("SLIDER_N"), 2));
+	private final JQueryLocator LOC_THIRD_HANDLE = jq(format(getLoc("SLIDER_N_HANDLE"), 2));
+	private final JQueryLocator LOC_THIRD_TIP = jq(format(getLoc("SLIDER_N_TIP"), 2));
+	private final JQueryLocator LOC_THIRD_INPUT = jq(format(getLoc("SLIDER_N_INPUT"), 2));
 	
 	// tolerance (in pixels)
 	private final int DELTA = 14;
@@ -83,7 +87,7 @@ public class InputNumberSliderTestCase extends
 		assertTrue(Math.abs(getOffset(LOC_FIRST_TIP) - 75) < DELTA, format(MSG_TIP_N_PX, 75));
 		assertFalse(isDisplayed(LOC_FIRST_TIP), MSG_TIP_SHOULD_NOT_BE_VISIBLE);
 
-		selenium.mouseDownAt(LOC_FIRST, "20,3");
+		selenium.mouseDownAt(LOC_FIRST, new Point(20, 3));
 		assertTrue(isDisplayed(LOC_FIRST_TIP), MSG_TIP_SHOULD_BE_VISIBLE);
 		selenium.mouseUp(LOC_FIRST);
 
@@ -155,7 +159,7 @@ public class InputNumberSliderTestCase extends
 		assertTrue(Math.abs(getOffset(LOC_SECOND_TIP) - 96) < DELTA, format(MSG_TIP_N_PX, 96));
 		assertFalse(isDisplayed(LOC_SECOND_TIP), MSG_TIP_SHOULD_NOT_BE_VISIBLE);
 
-		selenium.mouseDownAt(LOC_SECOND, "20,3");
+		selenium.mouseDownAt(LOC_SECOND, new Point(20,3));
 		// it is a slider without tip so it cannot be visible
 		assertFalse(isDisplayed(LOC_SECOND_TIP), MSG_TIP_SHOULD_NOT_BE_VISIBLE);
 		selenium.mouseUp(LOC_SECOND);
@@ -181,7 +185,7 @@ public class InputNumberSliderTestCase extends
 		assertTrue(Math.abs(getOffset(LOC_THIRD_TIP) - 225) < DELTA, format(MSG_TIP_N_PX, 225));
 		assertFalse(isDisplayed(LOC_THIRD_TIP), MSG_TIP_SHOULD_NOT_BE_VISIBLE);
 
-		selenium.mouseDownAt(LOC_THIRD, "20,3");
+		selenium.mouseDownAt(LOC_THIRD, new Point(20,3));
 		// slider does not use the tip so it has to be invisible
 		assertFalse(isDisplayed(LOC_THIRD_TIP), MSG_TIP_SHOULD_NOT_BE_VISIBLE);
 		selenium.mouseUp(LOC_THIRD);
@@ -275,13 +279,13 @@ public class InputNumberSliderTestCase extends
 	 * Returns the offset of the element for given locator. It returns the
 	 * 'left' attribute.
 	 */
-	private int getOffset(String locator) {
-		String jquery = locator.replaceAll("^jquery=", "");
+	private int getOffset(JQueryLocator locator) {
+		String jquery = locator.getRawLocator().replaceAll("^jquery=", "");
 		String eval = "var inDocument = this.browserbot.getCurrentWindow().document;"
 				+ "var handle = $('{0}', inDocument); var hidden = handle.css('display') === 'none';"
 				+ "hidden ? handle.css('display', '') : true;" + "var result = handle.position().left;"
 				+ "hidden ? handle.css('display','none') : true;" + "result";
-		return Integer.parseInt(selenium.getEval(format(eval, jquery)));
+		return Integer.parseInt(selenium.getEval(new JavaScript(format(eval, jquery))));
 	}
 
 	/**

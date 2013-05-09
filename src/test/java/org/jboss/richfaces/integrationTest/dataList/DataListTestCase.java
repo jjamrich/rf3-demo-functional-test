@@ -21,10 +21,10 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataList;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertTrue;
 
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**

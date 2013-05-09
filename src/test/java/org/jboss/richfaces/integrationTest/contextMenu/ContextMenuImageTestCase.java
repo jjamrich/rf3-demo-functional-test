@@ -22,10 +22,14 @@
 
 package org.jboss.richfaces.integrationTest.contextMenu;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -36,11 +40,12 @@ import org.testng.annotations.Test;
  */
 public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase {
 
-    private final String LOC_FIRST_HEADER = getLoc("FIRST_HEADER");
-    private final String LOC_FIRST_IMAGE = getLoc("FIRST_IMAGE");
-    private final String LOC_FIRST_CONTEXT_MENU = getLoc("FIRST_CONTEXT_MENU");
-    private final String LOC_FIRST_ZOOM_IN = getLoc("FIRST_ZOOM_IN");
-    private final String LOC_FIRST_ZOOM_OUT = getLoc("FIRST_ZOOM_OUT");
+    private final JQueryLocator LOC_FIRST_IMAGE = jq(getLoc("FIRST_IMAGE"));
+    private final JQueryLocator LOC_FIRST_CONTEXT_MENU = jq(getLoc("FIRST_CONTEXT_MENU"));
+    private final JQueryLocator LOC_FIRST_ZOOM_IN = jq(getLoc("FIRST_ZOOM_IN"));
+    private final JQueryLocator LOC_FIRST_ZOOM_OUT = jq(getLoc("FIRST_ZOOM_OUT"));
+
+    private static final Event contextMenu = new Event("contextmenu");
 
     /**
      * Clicks into image and verifies that the context menu is displayed.
@@ -48,11 +53,11 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
     @Test
     public void testImageContextMenu() {
         // open context menu
-        selenium.fireEvent(LOC_FIRST_IMAGE, "contextmenu");
+        selenium.fireEvent(LOC_FIRST_IMAGE, contextMenu);
 
         // check that context menu is visible
-        waitForElement(LOC_FIRST_CONTEXT_MENU);
-        assertTrue(isDisplayed(LOC_FIRST_CONTEXT_MENU), "Context menu should be visible.");
+        Graphene.waitAjax.until(Graphene.elementPresent.locator((LOC_FIRST_CONTEXT_MENU)));
+        assertTrue(Graphene.elementVisible.locator(LOC_FIRST_CONTEXT_MENU).isTrue(), "Context menu should be visible.");
     }
 
     /**
@@ -63,12 +68,12 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
     @Test
     public void testZoomIn() {
         // get the size of image at the beginning
-        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
-        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE);
+        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE);
 
         // open context menu
-        selenium.fireEvent(LOC_FIRST_IMAGE, "contextmenu");
-        waitForElement(LOC_FIRST_ZOOM_IN);
+        selenium.fireEvent(LOC_FIRST_IMAGE, contextMenu);
+        Graphene.waitAjax.until(Graphene.elementPresent.locator(LOC_FIRST_ZOOM_IN));
 
         // zoom in
         selenium.click(LOC_FIRST_ZOOM_IN);
@@ -77,11 +82,11 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
         selenium.click(LOC_FIRST_ZOOM_IN);
 
         // get the size of image after zooming in
-        int width = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
+        int width = selenium.getElementWidth(LOC_FIRST_IMAGE);
         assertTrue(width > originalWidth, format(
                 "After zooming in, the image should be bigger (width {0}px -> {1}px).", originalWidth, width));
 
-        int height = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int height = selenium.getElementHeight(LOC_FIRST_IMAGE);
         assertTrue(height > originalHeight, format(
                 "After zooming in, the image should be bigger (height {0}px -> {1}px).", originalHeight, height));
     }
@@ -94,12 +99,12 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
     @Test
     void testZoomOut() {
         // get the size of image at the beginning
-        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
-        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE);
+        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE);
 
         // open context menu
-        selenium.fireEvent(LOC_FIRST_IMAGE, "contextmenu");
-        waitForElement(LOC_FIRST_ZOOM_OUT);
+        selenium.fireEvent(LOC_FIRST_IMAGE, contextMenu);
+        Graphene.waitAjax.until(Graphene.elementPresent.locator(LOC_FIRST_ZOOM_OUT));
 
         // zoom out
         selenium.click(LOC_FIRST_ZOOM_OUT);
@@ -108,11 +113,11 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
         selenium.click(LOC_FIRST_ZOOM_OUT);
 
         // get the size of image after zooming out
-        int width = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
+        int width = selenium.getElementWidth(LOC_FIRST_IMAGE);
         assertTrue(originalWidth > width, format(
                 "After zooming out, the image should be smaller (width {0}px -> {1}px).", originalWidth, width));
 
-        int height = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int height = selenium.getElementHeight(LOC_FIRST_IMAGE);
         assertTrue(originalHeight > height, format(
                 "After zooming out, the image should be smaller (height {0}px -> {1}px).", originalHeight, height));
     }
@@ -126,24 +131,24 @@ public class ContextMenuImageTestCase extends AbstractSeleniumRichfacesTestCase 
     @Test
     void testZoomInZoomOut() {
         // get the size of image at the beginning
-        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
-        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int originalWidth = selenium.getElementWidth(LOC_FIRST_IMAGE);
+        int originalHeight = selenium.getElementHeight(LOC_FIRST_IMAGE);
 
         // open context menu
-        selenium.fireEvent(LOC_FIRST_IMAGE, "contextmenu");
-        waitForElement(LOC_FIRST_ZOOM_IN);
+        selenium.fireEvent(LOC_FIRST_IMAGE, contextMenu);
+        Graphene.waitAjax.until(Graphene.elementPresent.locator(LOC_FIRST_ZOOM_IN));
 
         selenium.click(LOC_FIRST_ZOOM_IN);
         selenium.click(LOC_FIRST_ZOOM_OUT);
 
         // get the size of image after zooming in and out
         // it does not zoom accurately so there has to be some tolerance
-        int width = selenium.getElementWidth(LOC_FIRST_IMAGE).intValue();
+        int width = selenium.getElementWidth(LOC_FIRST_IMAGE);
         assertTrue(Math.abs(width - originalWidth) < 3, format(
                 "After zooming in and out, the image should have the same size (width {0}px -> {1}px).", originalWidth,
                 width));
 
-        int height = selenium.getElementHeight(LOC_FIRST_IMAGE).intValue();
+        int height = selenium.getElementHeight(LOC_FIRST_IMAGE);
         assertTrue(Math.abs(height - originalHeight) < 3, format(
                 "After zooming in and out, the image should have the same size (height {0}px -> {1}px).",
                 originalHeight, height));

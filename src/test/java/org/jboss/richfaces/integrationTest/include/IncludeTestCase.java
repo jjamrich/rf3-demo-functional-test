@@ -21,12 +21,15 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.include;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -35,17 +38,17 @@ import org.testng.annotations.Test;
  */
 public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 
-	private String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private String LOC_BUTTON_PREVIOUS = getLoc("BUTTON_PREVIOUS");
-	private String LOC_BUTTON_NEXT = getLoc("BUTTON_NEXT");
-	private String LOC_INPUT_FIRSTNAME = getLoc("INPUT_FIRSTNAME");
-	private String LOC_INPUT_LASTNAME = getLoc("INPUT_LASTNAME");
-	private String LOC_INPUT_COMPANY = getLoc("INPUT_COMPANY");
-	private String LOC_INPUT_NOTES = getLoc("INPUT_NOTES");
-	private String LOC_OUTPUT_FIRSTNAME = getLoc("OUTPUT_FIRSTNAME");
-	private String LOC_OUTPUT_LASTNAME = getLoc("OUTPUT_LASTNAME");
-	private String LOC_OUTPUT_COMPANY = getLoc("OUTPUT_COMPANY");
-	private String LOC_OUTPUT_NOTES = getLoc("OUTPUT_NOTES");
+	private JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+	private JQueryLocator LOC_BUTTON_PREVIOUS = jq(getLoc("BUTTON_PREVIOUS"));
+	private JQueryLocator LOC_BUTTON_NEXT = jq(getLoc("BUTTON_NEXT"));
+	private JQueryLocator LOC_INPUT_FIRSTNAME = jq(getLoc("INPUT_FIRSTNAME"));
+	private JQueryLocator LOC_INPUT_LASTNAME = jq(getLoc("INPUT_LASTNAME"));
+	private JQueryLocator LOC_INPUT_COMPANY = jq(getLoc("INPUT_COMPANY"));
+	private JQueryLocator LOC_INPUT_NOTES = jq(getLoc("INPUT_NOTES"));
+	private JQueryLocator LOC_OUTPUT_FIRSTNAME = jq(getLoc("OUTPUT_FIRSTNAME"));
+	private JQueryLocator LOC_OUTPUT_LASTNAME = jq(getLoc("OUTPUT_LASTNAME"));
+	private JQueryLocator LOC_OUTPUT_COMPANY = jq(getLoc("OUTPUT_COMPANY"));
+	private JQueryLocator LOC_OUTPUT_NOTES = jq(getLoc("OUTPUT_NOTES"));
 
 	private String MSG_INPUT_SAMPLE_PREFORMATTED = getMsg("INPUT_SAMPLE_PREFORMATTED");
 	private String MSG_MESSAGE_COMPANY_REQUIRED = getMsg("MESSAGE_COMPANY_REQUIRED");
@@ -90,7 +93,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_COMPANY, format(MSG_INPUT_SAMPLE_PREFORMATTED, 3));
 		selenium.click(LOC_BUTTON_NEXT);
 
-		Wait.failWith("Switching to second page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to second page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isSecondPage();
 			}
@@ -98,7 +101,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		selenium.click(LOC_BUTTON_PREVIOUS);
 
-		Wait.failWith("Switching to first page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to first page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isFirstPage();
 			}
@@ -112,7 +115,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_LASTNAME, format(MSG_INPUT_SAMPLE_PREFORMATTED, 2));
 		selenium.click(LOC_BUTTON_NEXT);
 
-		Wait.failWith("Switching to second page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to second page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isSecondPage();
 			}
@@ -125,7 +128,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_NOTES, format(MSG_INPUT_SAMPLE_PREFORMATTED, 4));
 		selenium.click(LOC_BUTTON_NEXT);
 
-		Wait.failWith("Switching to last page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to last page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isLastPage();
 			}
@@ -145,7 +148,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_COMPANY, format(MSG_INPUT_SAMPLE_PREFORMATTED, 3));
 		selenium.click(LOC_BUTTON_NEXT);
 
-		Wait.failWith("Switching to second page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to second page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isSecondPage();
 			}
@@ -154,7 +157,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.type(LOC_INPUT_NOTES, format(MSG_INPUT_SAMPLE_PREFORMATTED, 4));
 		selenium.click(LOC_BUTTON_NEXT);
 
-		Wait.failWith("Switching to last page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to last page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isLastPage();
 			}
@@ -169,7 +172,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 	private void goThroughStepsBack() {
 		selenium.click(LOC_BUTTON_PREVIOUS);
 
-		Wait.failWith("Switching to second page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to second page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isSecondPage();
 			}
@@ -179,7 +182,7 @@ public class IncludeTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		selenium.click(LOC_BUTTON_PREVIOUS);
 
-		Wait.failWith("Switching to first page failed").until(new Condition() {
+		Wait.waitSelenium.failWith("Switching to first page failed").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return isFirstPage();
 			}

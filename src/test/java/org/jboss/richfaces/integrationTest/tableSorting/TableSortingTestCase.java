@@ -21,11 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.tableSorting;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.locator.attribute.DefaultAttributeLocator;
+import org.jboss.arquillian.ajocado.locator.option.OptionLabelLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -34,14 +40,14 @@ import org.testng.annotations.Test;
  */
 public class TableSortingTestCase extends AbstractDataIterationTestCase {
 
-	private final String LOC_TH_STATE = getLoc("TH_STATE");
-	private final String LOC_TH_CAPITAL = getLoc("TH_CAPITAL");
+	private final JQueryLocator LOC_TH_STATE = jq(getLoc("TH_STATE"));
+	private final JQueryLocator LOC_TH_CAPITAL = jq(getLoc("TH_CAPITAL"));
 	private final String LOC_IMG_SRC_SORT_ICON_RELATIVE = getLoc("IMG_SRC_SORT_ICON_RELATIVE");
-	private final String LOC_IMG_SRC_SORT_ICON_STATE = format(LOC_IMG_SRC_SORT_ICON_RELATIVE, LOC_TH_STATE);
-	private final String LOC_IMG_SRC_SORT_ICON_CAPITAL = format(LOC_IMG_SRC_SORT_ICON_RELATIVE, LOC_TH_CAPITAL);
+	private final JQueryLocator LOC_IMG_SRC_SORT_ICON_STATE = jq(format(LOC_IMG_SRC_SORT_ICON_RELATIVE, LOC_TH_STATE));
+	private final JQueryLocator LOC_IMG_SRC_SORT_ICON_CAPITAL = jq(format(LOC_IMG_SRC_SORT_ICON_RELATIVE, LOC_TH_CAPITAL));
 	private final String LOC_TD_STATE_PREFORMATTED = getLoc("TD_STATE_PREFORMATTED");
 	private final String LOC_TD_CAPITAL_PREFORMATTED = getLoc("TD_CAPITAL_PREFORMATTED");
-	private final String LOC_BUTTON_SORT = getLoc("BUTTON_SORT");
+	private final JQueryLocator LOC_BUTTON_SORT = jq(getLoc("BUTTON_SORT"));
 	private final String LOC_SELECT_COLUMN_PREFORMATTED = getLoc("SELECT_COLUMN_PREFORMATTED");
 	private final String LOC_SELECT_ORDER_PREFORMATTED = getLoc("SELECT_ORDER_PREFORMATTED");
 	private final String[] LOC_LIST_OF_TD_PREFORMATTED = new String[] { getLoc("TD_PREFORMATTED_1"),
@@ -63,34 +69,38 @@ public class TableSortingTestCase extends AbstractDataIterationTestCase {
 		scrollIntoView(LOC_TH_STATE, true);
 
 		// sort by state column
-		String locIconSrc = selenium.getAttribute(LOC_IMG_SRC_SORT_ICON_STATE);
+		String locIconSrc = selenium.getAttribute(LOC_IMG_SRC_SORT_ICON_STATE, Attribute.SRC);
 
 		selenium.click(LOC_TH_STATE);
 
-		locIconSrc = waitForAttributeChangesAndReturn(LOC_IMG_SRC_SORT_ICON_STATE, locIconSrc);
+		locIconSrc = waitForAttributeChangesAndReturn(
+		    new DefaultAttributeLocator<JQueryLocator>(LOC_IMG_SRC_SORT_ICON_STATE, Attribute.SRC), locIconSrc);
 
 		checkSorting(LOC_TD_STATE_PREFORMATTED);
 
 		// sort by state column reverse order
 		selenium.click(LOC_TH_STATE);
 
-		waitForAttributeChanges(LOC_IMG_SRC_SORT_ICON_STATE, locIconSrc);
+		waitForAttributeChanges(
+		    new DefaultAttributeLocator<JQueryLocator>(LOC_IMG_SRC_SORT_ICON_STATE, Attribute.SRC), locIconSrc);
 
 		checkSorting(LOC_TD_STATE_PREFORMATTED);
 
 		// sort by capital column
-		locIconSrc = selenium.getAttribute(LOC_IMG_SRC_SORT_ICON_CAPITAL);
+		locIconSrc = selenium.getAttribute(LOC_IMG_SRC_SORT_ICON_CAPITAL, Attribute.SRC);
 
 		selenium.click(LOC_TH_CAPITAL);
 
-		locIconSrc = waitForAttributeChangesAndReturn(LOC_IMG_SRC_SORT_ICON_CAPITAL, locIconSrc);
+		locIconSrc = waitForAttributeChangesAndReturn(
+		    new DefaultAttributeLocator<JQueryLocator>(LOC_IMG_SRC_SORT_ICON_CAPITAL, Attribute.SRC), locIconSrc);
 
 		checkSorting(LOC_TD_CAPITAL_PREFORMATTED);
 
 		// sort by capital column reverse order
 		selenium.click(LOC_TH_CAPITAL);
 
-		waitForAttributeChanges(LOC_IMG_SRC_SORT_ICON_CAPITAL, locIconSrc);
+		waitForAttributeChanges(
+		    new DefaultAttributeLocator<JQueryLocator>(LOC_IMG_SRC_SORT_ICON_CAPITAL, Attribute.SRC), locIconSrc);
 
 		checkSorting(LOC_TD_CAPITAL_PREFORMATTED);
 	}
@@ -114,23 +124,23 @@ public class TableSortingTestCase extends AbstractDataIterationTestCase {
 			final String msgColumnName = association[1];
 			final String msgColumnOrder = association[2];
 
-			final String locSelectColumn = format(LOC_SELECT_COLUMN_PREFORMATTED, msgLabel);
-			final String locSelectOrder = format(LOC_SELECT_ORDER_PREFORMATTED, msgLabel);
+			final JQueryLocator locSelectColumn = jq(format(LOC_SELECT_COLUMN_PREFORMATTED, msgLabel));
+			final JQueryLocator locSelectOrder = jq(format(LOC_SELECT_ORDER_PREFORMATTED, msgLabel));
 
-			Wait.failWith(format("Given SELECTs never appeared - '{0}', '{1}'", locSelectColumn, locSelectOrder))
-					.until(new Condition() {
+			Wait.waitSelenium.failWith(format("Given SELECTs never appeared - '{0}', '{1}'", locSelectColumn, locSelectOrder))
+					.until(new SeleniumCondition() {
 						public boolean isTrue() {
 							return selenium.isElementPresent(locSelectColumn)
 									&& selenium.isElementPresent(locSelectOrder);
 						}
 					});
 			
-			selenium.select(locSelectColumn, msgColumnName);
-			selenium.select(locSelectOrder, msgColumnOrder);
+			selenium.select(locSelectColumn, new OptionLabelLocator(msgColumnName));
+			selenium.select(locSelectOrder, new OptionLabelLocator(msgColumnOrder));
 			
-			Wait.failWith("Sort table button never got enabled").until(new Condition() {
+			Wait.waitSelenium.failWith("Sort table button never got enabled").until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return !selenium.isElementPresent(format("{0}[disabled]", LOC_BUTTON_SORT));
+					return !selenium.isElementPresent(jq(format("{0}[disabled]", LOC_BUTTON_SORT)));
 				}
 			});
 		}
@@ -139,7 +149,7 @@ public class TableSortingTestCase extends AbstractDataIterationTestCase {
 		String tableText = getTableText();
 
 		selenium.click(LOC_BUTTON_SORT);
-		waitForTextChanges(LOC_TABLE_COMMON, tableText);
+		waitForTextChangesAndReturn(LOC_TABLE_COMMON, tableText);
 
 		checkSortingForColumnOrder(LOC_LIST_OF_TD_PREFORMATTED);
 	}
@@ -147,6 +157,6 @@ public class TableSortingTestCase extends AbstractDataIterationTestCase {
 	protected void loadPage() {
 		openComponent("Table Sorting");
 
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

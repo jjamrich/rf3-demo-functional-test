@@ -22,9 +22,12 @@
 package org.jboss.richfaces.integrationTest.extendedDataTable;
 
 import static org.testng.Assert.assertTrue;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.test.selenium.dom.Event;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.testng.annotations.Test;
 
 /**
@@ -45,8 +48,8 @@ public class FilteringTestCase extends AbstractExtendedDataTableTestCase {
 	 */
 	@Test
 	public void testFiltering() {
-		final String locInputStateFilter = preformatFilterInput(LOC_TH_STATE);
-		final String locInputCapitalFilter = preformatFilterInput(LOC_TH_CAPITAL);
+		final JQueryLocator locInputStateFilter = jq(preformatFilterInput(jq(LOC_TH_STATE)));
+		final JQueryLocator locInputCapitalFilter = jq(preformatFilterInput(jq(LOC_TH_CAPITAL)));
 
 		assertTrue(MSG_LIST_OF_STATE_PREFIXES.length == MSG_LIST_OF_CAPITAL_PREFIXES.length,
 				"Length of state and capital prefixes must be same");
@@ -68,15 +71,15 @@ public class FilteringTestCase extends AbstractExtendedDataTableTestCase {
 	}
 
 	private void checkFiltering() {
-		final String inputFilterState = preformatFilterInput(LOC_TH_STATE);
-		final String inputFilterCapital = preformatFilterInput(LOC_TH_CAPITAL);
+		final JQueryLocator inputFilterState = jq(preformatFilterInput(jq(LOC_TH_STATE)));
+		final JQueryLocator inputFilterCapital = jq(preformatFilterInput(jq(LOC_TH_CAPITAL)));
 		final String cellsState = preformatColumn(LOC_TH_STATE);
 		final String cellsCapital = preformatColumn(LOC_TH_CAPITAL);
 
 		String statePrefix = selenium.getValue(inputFilterState);
 		String capitalPrefix = selenium.getValue(inputFilterCapital);
 
-		int rows = getJQueryCount(format(cellsState, 0));
+		int rows = getJQueryCount(jq(format(cellsState, 0)));
 
 		for (int row = 1; row <= rows; row++) {
 			if (row == 1 && browserIsInternetExplorer()) {
@@ -84,12 +87,12 @@ public class FilteringTestCase extends AbstractExtendedDataTableTestCase {
 			}
 			
 			if (statePrefix.length() > 0) {
-				String state = selenium.getText(format(cellsState, row));
+				String state = selenium.getText(jq(format(cellsState, row)));
 				assertTrue(state.startsWith(statePrefix), format("'{0}' doesn't start with prefix '{1}'", state,
 						statePrefix));
 			}
 			if (capitalPrefix.length() > 0) {
-				String capital = selenium.getText(format(cellsCapital, row));
+				String capital = selenium.getText(jq(format(cellsCapital, row)));
 				assertTrue(capital.startsWith(capitalPrefix), format("'{0}' doesn't start with prefix '{1}'", capital,
 						capitalPrefix));
 			}

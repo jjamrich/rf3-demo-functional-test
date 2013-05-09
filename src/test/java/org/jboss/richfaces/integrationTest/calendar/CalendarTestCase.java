@@ -22,19 +22,21 @@
 
 package org.jboss.richfaces.integrationTest.calendar;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.option.OptionIndexLocator;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -91,13 +93,13 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testClickIntoDateInput() {
-        assertFalse(isDisplayed(LOC_CALENDAR), "The calendar component should not be visible at the beginning.");
+        assertFalse(selenium.isVisible(jq(LOC_CALENDAR)), "The calendar component should not be visible at the beginning.");
 
-        selenium.click(LOC_DATE_INPUT);
-        assertTrue(isDisplayed(LOC_CALENDAR), "The calendar component should be visible after clicking to date input.");
+        selenium.click(jq(LOC_DATE_INPUT));
+        assertTrue(selenium.isVisible(jq(LOC_CALENDAR)), "The calendar component should be visible after clicking to date input.");
 
-        selenium.click(LOC_DATE_INPUT);
-        assertFalse(isDisplayed(LOC_CALENDAR),
+        selenium.click(jq(LOC_DATE_INPUT));
+        assertFalse(selenium.isVisible(jq(LOC_CALENDAR)),
                 "The calendar component should not be visible after second click to date input.");
     }
 
@@ -111,14 +113,14 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testClickOnDateButton() {
-        assertFalse(isDisplayed(LOC_CALENDAR), "The calendar component should not be visible at the beginning.");
+        assertFalse(selenium.isVisible(jq(LOC_CALENDAR)), "The calendar component should not be visible at the beginning.");
 
-        selenium.click(LOC_DATE_BUTTON);
-        assertTrue(isDisplayed(LOC_CALENDAR),
+        selenium.click(jq(LOC_DATE_BUTTON));
+        assertTrue(selenium.isVisible(jq(LOC_CALENDAR)),
                 "The calendar component should be visible after clicking on calendar button.");
 
-        selenium.click(LOC_DATE_BUTTON);
-        assertFalse(isDisplayed(LOC_CALENDAR),
+        selenium.click(jq(LOC_DATE_BUTTON));
+        assertFalse(selenium.isVisible(jq(LOC_CALENDAR)),
                 "The calendar component should not be visible after second click on calendar button.");
     }
 
@@ -133,42 +135,42 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testNavigation() {
-        selenium.click(LOC_DATE_BUTTON);
+        selenium.click(jq(LOC_DATE_BUTTON));
 
         // LOC_MONTH_YEAR_LABEL contains e.g. "August, 2009"
-        Month month = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
-        int year = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        Month month = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
+        int year = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
 
-        selenium.click(LOC_DOUBLE_LEFT_ARROW);
-        int newYear = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        selenium.click(jq(LOC_DOUBLE_LEFT_ARROW));
+        int newYear = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
         assertEquals(newYear, year - 1,
                 "Calendar should show the previous year after clicking on the left double arrow.");
 
-        selenium.click(LOC_LEFT_ARROW);
-        Month newMonth = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
+        selenium.click(jq(LOC_LEFT_ARROW));
+        Month newMonth = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
         assertEquals(newMonth, Month.previous(month),
                 "Calendar should show the previous month after clicking on the left arrow.");
 
-        selenium.click(LOC_TODAY_BUTTON);
-        newMonth = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
+        selenium.click(jq(LOC_TODAY_BUTTON));
+        newMonth = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
         assertEquals(newMonth, month, "Calendar should show today's month after clicking on \"today\".");
-        newYear = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        newYear = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
         assertEquals(newYear, year, "Calendar should show today's month after clicking on \"today\".");
 
         // TODO check also the day
 
-        selenium.click(LOC_DOUBLE_RIGHT_ARROW);
-        newYear = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        selenium.click(jq(LOC_DOUBLE_RIGHT_ARROW));
+        newYear = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
         assertEquals(newYear, year + 1,
                 "Calendar should show the following year after clicking on the right double arrow.");
 
-        selenium.click(LOC_RIGHT_ARROW);
-        newMonth = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
+        selenium.click(jq(LOC_RIGHT_ARROW));
+        newMonth = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
         assertEquals(newMonth, Month.following(month),
                 "Calendar should show the following month after clicking on the right arrow.");
 
-        selenium.click(LOC_CLOSE_BUTTON);
-        assertFalse(isDisplayed(LOC_CALENDAR),
+        selenium.click(jq(LOC_CLOSE_BUTTON));
+        assertFalse(selenium.isVisible(jq(LOC_CALENDAR)),
                 "The calendar component should not be visible after second click on calendar button.");
     }
 
@@ -180,23 +182,23 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testChooseDateAndClean() {
-        selenium.click(LOC_DATE_BUTTON);
-        Month month = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
-        int year = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        selenium.click(jq(LOC_DATE_BUTTON));
+        Month month = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
+        int year = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
 
-        String date = selenium.getText(LOC_RANDOM_DAY);
-        assertFalse(belongsClass("rich-calendar-select", LOC_RANDOM_DAY), format(
+        String date = selenium.getText(jq(LOC_RANDOM_DAY));
+        assertFalse(belongsClass("rich-calendar-select", jq(LOC_RANDOM_DAY)), format(
                 "The date {0} should not be selected.", date));
 
-        selenium.click(LOC_RANDOM_DAY);
-        selenium.click(LOC_APPLY_BUTTON);
+        selenium.click(jq(LOC_RANDOM_DAY));
+        selenium.click(jq(LOC_APPLY_BUTTON));
 
-        date = selenium.getText(LOC_RANDOM_DAY);
-        assertTrue(belongsClass("rich-calendar-select", LOC_RANDOM_DAY), format("The date {0} should be selected.",
+        date = selenium.getText(jq(LOC_RANDOM_DAY));
+        assertTrue(selenium.belongsClass(jq(LOC_RANDOM_DAY), "rich-calendar-select"), format("The date {0} should be selected.",
                 date));
 
-        selenium.click(LOC_APPLY_BUTTON);
-        String dateTime = selenium.getValue(LOC_DATE_INPUT);
+        selenium.click(jq(LOC_APPLY_BUTTON));
+        String dateTime = selenium.getValue(jq(LOC_DATE_INPUT));
         StringBuilder expected = new StringBuilder(date);
         expected.append("/");
         expected.append(month.ordinal() + 1);
@@ -205,10 +207,10 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
         expected.append(" 12:00");
         assertEquals(dateTime, expected.toString(), "Date and time should appear in input field.");
 
-        selenium.click(LOC_DATE_BUTTON);
-        selenium.click(LOC_CLEAN_BUTTON);
-        selenium.click(LOC_APPLY_BUTTON);
-        dateTime = selenium.getText(LOC_DATE_INPUT);
+        selenium.click(jq(LOC_DATE_BUTTON));
+        selenium.click(jq(LOC_CLEAN_BUTTON));
+        selenium.click(jq(LOC_APPLY_BUTTON));
+        dateTime = selenium.getText(jq(LOC_DATE_INPUT));
         assertEquals(dateTime, "", "Date input field should be empty.");
     }
 
@@ -219,12 +221,12 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testPopupModeCheckbox() {
-        String attr = selenium.getAttribute(LOC_CALENDAR + "@style");
-        selenium.click(LOC_POPUP_MODE_CHECKBOX);
-        waitForAttributeChanges(LOC_CALENDAR + "@style", attr);
+        String attr = selenium.getAttribute(jq(LOC_CALENDAR).getAttribute(Attribute.STYLE));
+        selenium.click(jq(LOC_POPUP_MODE_CHECKBOX));
+        waitForAttributeChanges(jq(LOC_CALENDAR).getAttribute(Attribute.STYLE), attr);
 
-        assertFalse(isDisplayed(LOC_DATE_INPUT), "Date input field should be hidden.");
-        assertFalse(isDisplayed(LOC_INPUTS), "Calendar's button should be hidden.");
+        assertFalse(selenium.isVisible(jq(LOC_DATE_INPUT)), "Date input field should be hidden.");
+        assertFalse(selenium.isVisible(jq(LOC_INPUTS)), "Calendar's button should be hidden.");
     }
 
     /**
@@ -235,23 +237,30 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testApplyButtonCheckbox() {
-        selenium.click(LOC_APPLY_BUTTON_CHECKBOX);
+        selenium.click(jq(LOC_APPLY_BUTTON_CHECKBOX));
         waitFor(1000);
-        selenium.click(LOC_DATE_INPUT);
+        selenium.click(jq(LOC_DATE_INPUT));
 
         // LOC_MONTH_YEAR_LABEL contains e.g. "August, 2009"
-        Month month = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
-        int year = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        Month month = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
+        int year = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
 
-        String date = selenium.getText(LOC_RANDOM_DAY);
-        selenium.click(LOC_RANDOM_DAY);
-        Wait.timeout(15000).failWith(format("The date {0} should be selected.", date)).until(new Condition() {
+        String date = selenium.getText(jq(LOC_RANDOM_DAY));
+        selenium.click(jq(LOC_RANDOM_DAY));
+        /*
+         Wait.timeout(15000).failWith(format("The date {0} should be selected.", date)).until(new Condition() {
             public boolean isTrue() {
                 return belongsClass("rich-calendar-select", LOC_RANDOM_DAY);
             }
         });
+        */
+        Graphene.waitModel.until(new SeleniumCondition() {
+            public boolean isTrue() {
+                return belongsClass("rich-calendar-select", jq(LOC_RANDOM_DAY));
+            }
+        });
 
-        String dateTime = selenium.getValue(LOC_DATE_INPUT);
+        String dateTime = selenium.getValue(jq(LOC_DATE_INPUT));
         StringBuilder expected = new StringBuilder(date);
         expected.append("/");
         expected.append(month.ordinal() + 1);
@@ -269,19 +278,19 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testLocale() {
         // choose German localization
-        selenium.click(format(LOC_LOCALE_SELECT, 1));
+        selenium.click(jq(format(LOC_LOCALE_SELECT, 1)));
 
         waitFor(1000);
-        selenium.click(LOC_DATE_BUTTON);
-        selenium.click(LOC_RANDOM_DAY);
+        selenium.click(jq(LOC_DATE_BUTTON));
+        selenium.click(jq(LOC_RANDOM_DAY));
 
         String month1 = new SimpleDateFormat("MMMMM", new Locale("de")).format(new Date());
-        String month2 = selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim();
+        String month2 = selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim();
 
         assertTrue(month1.equalsIgnoreCase(month2), "The name of the month is not localized.");
 
         // get the label of second day
-        String text = selenium.getText(format(LOC_DAY_LABEL,1));
+        String text = selenium.getText(jq(format(LOC_DAY_LABEL,1)));
         assertTrue(!"Mon".equalsIgnoreCase(text), "The name of the second day is not localized.");
 
         // TODO find out whether the following strings should be translated
@@ -315,20 +324,20 @@ public class CalendarTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testDataPatternSelect() {
-        selenium.select(LOC_DATE_PATTERN_SELECT, "index=1");
+        selenium.select(jq(LOC_DATE_PATTERN_SELECT), new OptionIndexLocator(1));
 
         waitFor(1000);
-        selenium.click(LOC_DATE_BUTTON);
-        selenium.click(LOC_RANDOM_DAY);
-        selenium.click(LOC_APPLY_BUTTON);
+        selenium.click(jq(LOC_DATE_BUTTON));
+        selenium.click(jq(LOC_RANDOM_DAY));
+        selenium.click(jq(LOC_APPLY_BUTTON));
 
         // LOC_MONTH_YEAR_LABEL contains e.g. "August, 2009"
-        Month month = Month.valueOf(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[0].trim().toUpperCase());
-        int year = Integer.parseInt(selenium.getText(LOC_MONTH_YEAR_LABEL).split(",")[1].trim());
+        Month month = Month.valueOf(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[0].trim().toUpperCase());
+        int year = Integer.parseInt(selenium.getText(jq(LOC_MONTH_YEAR_LABEL)).split(",")[1].trim());
 
-        String date = selenium.getText(LOC_RANDOM_DAY);
+        String date = selenium.getText(jq(LOC_RANDOM_DAY));
 
-        String dateTime = selenium.getValue(LOC_DATE_INPUT);
+        String dateTime = selenium.getValue(jq(LOC_DATE_INPUT));
         StringBuilder expected = new StringBuilder(date);
         expected.append("/");
         expected.append(month.ordinal() + 1);

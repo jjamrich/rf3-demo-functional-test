@@ -21,13 +21,16 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.jsFunction;
 
-import org.apache.commons.lang.StringUtils;
-import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Condition;
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertTrue;
 
-import org.testng.annotations.BeforeMethod;
+import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
 import org.testng.annotations.Test;
 
 /**
@@ -36,7 +39,7 @@ import org.testng.annotations.Test;
  */
 public class JSFunctionTestCase extends AbstractSeleniumRichfacesTestCase {
 	private final String LOC_SPAN_HOVER_ACTIVATED = getLoc("SPAN_HOVER_ACTIVATED");
-	private final String LOC_OUTPUT_NAME = getLoc("OUTPUT_NAME");
+	private final JQueryLocator LOC_OUTPUT_NAME = jq(getLoc("OUTPUT_NAME"));
 
 	private final String[] MSG_NAMES = StringUtils.split(getMsg("NAMES"), ',');
 
@@ -48,13 +51,13 @@ public class JSFunctionTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testHoveringNames() {
 		for (final String msgName : MSG_NAMES) {
-			final String span = format(LOC_SPAN_HOVER_ACTIVATED, msgName);
+			final JQueryLocator span = jq(format(LOC_SPAN_HOVER_ACTIVATED, msgName));
 
 			assertTrue(StringUtils.isBlank(selenium.getText(LOC_OUTPUT_NAME)), "Output name should be blank");
 
 			selenium.fireEvent(span, Event.MOUSEOVER);
 
-			waitModelUpdate.failWith(format("Output name never changed to '{0}'", msgName)).until(new Condition() {
+			Wait.waitSelenium.failWith(format("Output name never changed to '{0}'", msgName)).until(new SeleniumCondition() {
 				public boolean isTrue() {
 					return msgName.equals(selenium.getText(LOC_OUTPUT_NAME));
 				}
@@ -62,7 +65,7 @@ public class JSFunctionTestCase extends AbstractSeleniumRichfacesTestCase {
 
 			selenium.fireEvent(span, Event.MOUSEOUT);
 
-			waitModelUpdate.failWith("Output name never changed to blank").until(new Condition() {
+			Wait.waitSelenium.failWith("Output name never changed to blank").until(new SeleniumCondition() {
 				public boolean isTrue() {
 					return StringUtils.isBlank(selenium.getText(LOC_OUTPUT_NAME));
 				}

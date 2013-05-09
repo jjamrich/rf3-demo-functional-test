@@ -23,13 +23,19 @@
 package org.jboss.richfaces.integrationTest.suggestionBox;
 
 import static org.testng.Assert.assertEquals;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.Range;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.arquillian.ajocado.waiting.Wait;
 import org.testng.annotations.Test;
 
 import com.thoughtworks.selenium.SeleniumException;
@@ -60,26 +66,26 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String LOC_FIRST_SUGGESTION_BOX_PREFORMATTED = getLoc("FIRST_SUGGESTION_BOX_PREFORMATTED");
     private final String LOC_FIRST_TOWN_TABLE_PREFORMATTED = getLoc("FIRST_TOWN_TABLE_PREFORMATTED");
 
-    private final String LOC_FIRST_INPUT = getLoc("FIRST_INPUT");
-    private final String LOC_FIRST_BORDER_INPUT = getLoc("FIRST_BORDER_INPUT");
-    private final String LOC_FIRST_WIDTH_INPUT = getLoc("FIRST_WIDTH_INPUT");
-    private final String LOC_FIRST_HEIGHT_INPUT = getLoc("FIRST_HEIGHT_INPUT");
-    private final String LOC_FIRST_SHADOW_DEPTH_INPUT = getLoc("FIRST_SHADOW_DEPTH_INPUT");
-    private final String LOC_FIRST_SHADOW_OPACITY_INPUT = getLoc("FIRST_SHADOW_OPACITY_INPUT");
-    private final String LOC_FIRST_CELLPADDING_INPUT = getLoc("FIRST_CELLPADDING_INPUT");
+    private final JQueryLocator LOC_FIRST_INPUT = jq(getLoc("FIRST_INPUT"));
+    private final JQueryLocator LOC_FIRST_BORDER_INPUT = jq(getLoc("FIRST_BORDER_INPUT"));
+    private final JQueryLocator LOC_FIRST_WIDTH_INPUT = jq(getLoc("FIRST_WIDTH_INPUT"));
+    private final JQueryLocator LOC_FIRST_HEIGHT_INPUT = jq(getLoc("FIRST_HEIGHT_INPUT"));
+    private final JQueryLocator LOC_FIRST_SHADOW_DEPTH_INPUT = jq(getLoc("FIRST_SHADOW_DEPTH_INPUT"));
+    private final JQueryLocator LOC_FIRST_SHADOW_OPACITY_INPUT = jq(getLoc("FIRST_SHADOW_OPACITY_INPUT"));
+    private final JQueryLocator LOC_FIRST_CELLPADDING_INPUT = jq(getLoc("FIRST_CELLPADDING_INPUT"));
 
-    private final String LOC_FIRST_BORDER_STYLE = getLoc("FIRST_BORDER_STYLE");
-    private final String LOC_FIRST_WIDTH_STYLE = getLoc("FIRST_WIDTH_STYLE");
-    private final String LOC_FIRST_HEIGHT_STYLE = getLoc("FIRST_HEIGHT_STYLE");
-    private final String LOC_FIRST_SHADOW = getLoc("FIRST_SHADOW");
-    private final String LOC_FIRST_NOTHING_FOUND = getLoc("FIRST_NOTHING_FOUND");
-    private final String LOC_FIRST_CELLPADDING = getLoc("FIRST_CELLPADDING");
+    private final JQueryLocator LOC_FIRST_BORDER_STYLE = jq(getLoc("FIRST_BORDER_STYLE"));
+    private final JQueryLocator LOC_FIRST_WIDTH_STYLE = jq(getLoc("FIRST_WIDTH_STYLE"));
+    private final JQueryLocator LOC_FIRST_HEIGHT_STYLE = jq(getLoc("FIRST_HEIGHT_STYLE"));
+    private final JQueryLocator LOC_FIRST_SHADOW = jq(getLoc("FIRST_SHADOW"));
+    private final JQueryLocator LOC_FIRST_NOTHING_FOUND = jq(getLoc("FIRST_NOTHING_FOUND"));
+    private final JQueryLocator LOC_FIRST_CELLPADDING = jq(getLoc("FIRST_CELLPADDING"));
 
-    private final String LOC_SECOND_INPUT = getLoc("SECOND_INPUT");
-    private final String LOC_SECOND_BUTTON = getLoc("SECOND_BUTTON");
+    private final JQueryLocator LOC_SECOND_INPUT = jq(getLoc("SECOND_INPUT"));
+    private final JQueryLocator LOC_SECOND_BUTTON = jq(getLoc("SECOND_BUTTON"));
     private final String LOC_SECOND_SUGGESTION_LINES = getLoc("SECOND_SUGGESTION_LINES");
     private final String LOC_SECOND_SUGGESTION_BOX_PREFORMATTED = getLoc("SECOND_SUGGESTION_BOX_PREFORMATTED");
-    private final String LOC_SECOND_STATE = getLoc("SECOND_STATE");
+    private final JQueryLocator LOC_SECOND_STATE = jq(getLoc("SECOND_STATE"));
 
     /**
      * Tests inputting two cities separated by a comma. First it chooses Atlanta
@@ -93,39 +99,39 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_FIRST_INPUT, "at");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
         
-        waitForElement(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        waitForElement(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
 
-        selenium.click(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        selenium.click(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
 
         // select Madison
         selenium.type(LOC_FIRST_INPUT, selenium.getValue(LOC_FIRST_INPUT) + ",ma");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
 
-        waitForTextEquals(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0), "Wisconsin");
-        selenium.click(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        waitForTextEquals(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)), "Wisconsin");
+        selenium.click(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
 
-        String text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 0));
+        String text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 0)));
         assertEquals(text, "Georgia", format(MSG_TABLE_PREFORMATTED, 1, 0));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 1));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 1)));
         assertEquals(text, "Atlanta", format(MSG_TABLE_PREFORMATTED, 1, 1));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 2));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 2)));
         assertEquals(text, "Augusta", format(MSG_TABLE_PREFORMATTED, 1, 2));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 3));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 3)));
         assertEquals(text, "Columbus", format(MSG_TABLE_PREFORMATTED, 1, 3));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 0));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 0)));
         assertEquals(text, "Wisconsin", format(MSG_TABLE_PREFORMATTED, 2, 0));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 1));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 1)));
         assertEquals(text, "Milwaukee", format(MSG_TABLE_PREFORMATTED, 2, 1));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 2));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 2)));
         assertEquals(text, "Madison", format(MSG_TABLE_PREFORMATTED, 2, 2));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 3));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 3)));
         assertEquals(text, "Green Bay", format(MSG_TABLE_PREFORMATTED, 2, 3));
     }
 
@@ -141,9 +147,9 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_FIRST_INPUT, "[at");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
         
-        waitForElement(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        waitForElement(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
 
-        selenium.click(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        selenium.click(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
         selenium.type(LOC_FIRST_INPUT, selenium.getValue(LOC_FIRST_INPUT) + "]");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
 
@@ -151,33 +157,33 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_FIRST_INPUT, selenium.getValue(LOC_FIRST_INPUT) + "[ma");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
         
-        waitForTextEquals(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0), "Wisconsin");
-        selenium.click(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        waitForTextEquals(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)), "Wisconsin");
+        selenium.click(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
         selenium.type(LOC_FIRST_INPUT, selenium.getValue(LOC_FIRST_INPUT) + "]");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
 
-        String text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 0));
+        String text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 0)));
         assertEquals(text, "Georgia", format(MSG_TABLE_PREFORMATTED, 1, 0));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 1));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 1)));
         assertEquals(text, "Atlanta", format(MSG_TABLE_PREFORMATTED, 1, 1));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 2));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 2)));
         assertEquals(text, "Augusta", format(MSG_TABLE_PREFORMATTED, 1, 2));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 3));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 1, 3)));
         assertEquals(text, "Columbus", format(MSG_TABLE_PREFORMATTED, 1, 3));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 0));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 0)));
         assertEquals(text, "Wisconsin", format(MSG_TABLE_PREFORMATTED, 2, 0));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 1));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 1)));
         assertEquals(text, "Milwaukee", format(MSG_TABLE_PREFORMATTED, 2, 1));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 2));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 2)));
         assertEquals(text, "Madison", format(MSG_TABLE_PREFORMATTED, 2, 2));
 
-        text = selenium.getText(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 3));
+        text = selenium.getText(jq(format(LOC_FIRST_TOWN_TABLE_PREFORMATTED, 2, 3)));
         assertEquals(text, "Green Bay", format(MSG_TABLE_PREFORMATTED, 2, 3));
     }
 
@@ -193,8 +199,8 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_FIRST_INPUT, "aaa");
         selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
 
-        waitForElement(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
-        String text = selenium.getText(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0));
+        waitForElement(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
+        String text = selenium.getText(jq(format(LOC_FIRST_SUGGESTION_BOX_PREFORMATTED, 0)));
         assertEquals(text, "No capitals found", MSG_PREFORMATTEDO_CAPITALS_FOUND);
     }
 
@@ -210,11 +216,11 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 			selenium.type(LOC_FIRST_BORDER_INPUT, String.valueOf(i));
 			selenium.fireEvent(LOC_FIRST_BORDER_INPUT, Event.BLUR);
 			String result = range.getRoundedValue(i).toString();
-			Wait.failWith(format(MSG_SUGGESTION_BOX_BORDER_PREFORMATTED, String.valueOf(i))).until(
-					new StyleCondition(LOC_FIRST_BORDER_STYLE, "border-top-width", result));
-			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, "border-right-width"), result);
-			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, "border-bottom-width"), result);
-			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, "border-left-width"), result);
+			Wait.waitSelenium.failWith(format(MSG_SUGGESTION_BOX_BORDER_PREFORMATTED, String.valueOf(i))).until(
+					new StyleCondition(LOC_FIRST_BORDER_STYLE, CssProperty.BORDER_TOP_WIDTH, result));
+			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, CssProperty.BORDER_RIGHT_WIDTH), result);
+			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, CssProperty.BORDER_BOTTOM_WIDTH), result);
+			assertEquals(getStyleValue(LOC_FIRST_BORDER_STYLE, CssProperty.BORDER_LEFT_WIDTH), result);
 			assertEquals(selenium.getValue(LOC_FIRST_BORDER_INPUT), result);
 		}
 	}
@@ -227,13 +233,13 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_FIRST_INPUT, true);
 
         StepRange range = new StepRange(150, 350, 50);
-        final String locInput = LOC_FIRST_WIDTH_INPUT;
+        final JQueryLocator locInput = LOC_FIRST_WIDTH_INPUT;
 		for (int i : new int[] { 350, 149, 176, 351, 200, 150, 500 }) {
 			selenium.type(locInput, String.valueOf(i));
 			selenium.fireEvent(locInput, Event.BLUR);
 			String result = range.getRoundedValue(i).toString();
-			Wait.failWith(format(MSG_SUGGESTION_BOX_WIDTH_PREFORMATTED, String.valueOf(i))).until(
-					new StyleCondition(LOC_FIRST_WIDTH_STYLE, "width", result));
+			Wait.waitSelenium.failWith(format(MSG_SUGGESTION_BOX_WIDTH_PREFORMATTED, String.valueOf(i))).until(
+					new StyleCondition(LOC_FIRST_WIDTH_STYLE, CssProperty.WIDTH, result));
 			assertEquals(selenium.getValue(locInput), result);
 		}
     }
@@ -246,13 +252,13 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_FIRST_INPUT, true);
 
         StepRange range = new StepRange(100, 300, 50);
-        final String locInput = LOC_FIRST_HEIGHT_INPUT;
+        final JQueryLocator locInput = LOC_FIRST_HEIGHT_INPUT;
 		for (int i : new int[] { 300, 99, 176, 301, 200, 100, 400 }) {
 			selenium.type(locInput, String.valueOf(i));
 			selenium.fireEvent(locInput, Event.BLUR);
 			String result = range.getRoundedValue(i).toString();
-			Wait.failWith(format(MSG_SUGGESTION_BOX_HEIGHT_PREFORMATTED, String.valueOf(i))).until(
-					new StyleCondition(LOC_FIRST_HEIGHT_STYLE, "height", result));
+			Wait.waitSelenium.failWith(format(MSG_SUGGESTION_BOX_HEIGHT_PREFORMATTED, String.valueOf(i))).until(
+					new StyleCondition(LOC_FIRST_HEIGHT_STYLE, CssProperty.HEIGHT, result));
 			assertEquals(selenium.getValue(locInput), result);
 		}
     }
@@ -266,7 +272,7 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 		scrollIntoView(LOC_FIRST_INPUT, true);
 
 		StepRange range = new StepRange(3, 6, 1);
-		final String locInput = LOC_FIRST_SHADOW_DEPTH_INPUT;
+		final JQueryLocator locInput = LOC_FIRST_SHADOW_DEPTH_INPUT;
 		for (int i : new int[] { 7, 4, 2, 6, 3, 0, 8 }) {
 			selenium.type(locInput, String.valueOf(i));
 			selenium.fireEvent(locInput, Event.BLUR);
@@ -274,7 +280,7 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 				try {
 					selenium.type(LOC_FIRST_INPUT, StringUtils.repeat(String.valueOf(i), j));
 					selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
-					selenium.waitForCondition(format("jqFind('{0}').is(':visible')", removeJQueryPrefix(LOC_FIRST_SHADOW)), "5000");
+					selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':visible')", LOC_FIRST_SHADOW)), 5000l);
 					break;
 				} catch (SeleniumException e) {
 					if (j < 5 && e.getMessage().startsWith("Timed out")) {
@@ -284,12 +290,12 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 				}
 			}
 			String result = range.getRoundedValue(i).toString();
-			assertEquals(getStyleValue(LOC_FIRST_SHADOW, "top"), result, format(MSG_SUGGESTION_BOX_SHADOW_DEPTH_PREFORMATTED, i));
-			assertEquals(getStyleValue(LOC_FIRST_SHADOW, "left"), result, format(MSG_SUGGESTION_BOX_SHADOW_DEPTH_PREFORMATTED, i));
+			assertEquals(getStyleValue(LOC_FIRST_SHADOW, new CssProperty("top")), result, format(MSG_SUGGESTION_BOX_SHADOW_DEPTH_PREFORMATTED, i));
+			assertEquals(getStyleValue(LOC_FIRST_SHADOW, new CssProperty("left")), result, format(MSG_SUGGESTION_BOX_SHADOW_DEPTH_PREFORMATTED, i));
 			assertEquals(selenium.getValue(locInput), result);
 			selenium.click(LOC_FIRST_NOTHING_FOUND);
-			selenium.waitForCondition(format("jqFind('{0}').is(':hidden')", removeJQueryPrefix(LOC_FIRST_SHADOW)), "5000");
-			Wait.timeout(500).waitForTimeout();
+			selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':hidden')", LOC_FIRST_SHADOW)), 5000l);
+			Wait.waitSelenium.timeout(500).waitForTimeout();
 		}
 	}
 
@@ -301,15 +307,15 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_FIRST_INPUT, true);
         
         StepRange range = new StepRange(1, 9, 1);
-		final String locInput = LOC_FIRST_SHADOW_OPACITY_INPUT;
+		final JQueryLocator locInput = LOC_FIRST_SHADOW_OPACITY_INPUT;
 		for (int i : new int[] { 10, 5, 0, 9, 1, -1, 12 }) {
 			selenium.type(locInput, String.valueOf(i));
 			selenium.fireEvent(locInput, Event.BLUR);
 			selenium.type(LOC_FIRST_INPUT, String.valueOf(i));
 			selenium.fireEvent(LOC_FIRST_INPUT, Event.KEYDOWN);
 			String result = range.getRoundedValue(i).toString();
-			Wait.failWith(format(MSG_SUGGESTION_BOX_SHADOW_OPACITY_PREFORMATTED, String.valueOf(i))).until(
-					new StyleCondition(LOC_FIRST_SHADOW, "opacity", format("0.{0}", result)));
+			Wait.waitSelenium.failWith(format(MSG_SUGGESTION_BOX_SHADOW_OPACITY_PREFORMATTED, String.valueOf(i))).until(
+					new StyleCondition(LOC_FIRST_SHADOW, new CssProperty("opacity"), format("0.{0}", result)));
 			assertEquals(selenium.getValue(locInput), result);
 		}
     }
@@ -322,43 +328,43 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_FIRST_INPUT, true);
 
         selenium.type(LOC_FIRST_CELLPADDING_INPUT, "1");
-        Wait.until(new Condition() {
+        Wait.waitSelenium.until(new SeleniumCondition() {
             public boolean isTrue() {
-                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING)) == 1;
+                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING)) == 1;
             }
         });
 
-        int cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING));
+        int cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING));
         assertEquals(cellpadding, 1, format(MSG_SUGGESTION_BOX_CELLPADDING_PREFORMATTED, 1));
 
         selenium.type(LOC_FIRST_CELLPADDING_INPUT, "10");
-        Wait.until(new Condition() {
+        Wait.waitSelenium.until(new SeleniumCondition() {
             public boolean isTrue() {
-                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING)) == 10;
+                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING)) == 10;
             }
         });
 
-        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING));
+        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING));
         assertEquals(cellpadding, 10, format(MSG_SUGGESTION_BOX_CELLPADDING_PREFORMATTED, 10));
 
         selenium.type(LOC_FIRST_CELLPADDING_INPUT, "20");
-        Wait.until(new Condition() {
+        Wait.waitSelenium.until(new SeleniumCondition() {
             public boolean isTrue() {
-                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING)) == 20;
+                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING)) == 20;
             }
         });
 
-        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING));
+        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING));
         assertEquals(cellpadding, 20, format(MSG_SUGGESTION_BOX_CELLPADDING_PREFORMATTED, 20));
 
         selenium.type(LOC_FIRST_CELLPADDING_INPUT, "25"); // 25 -> 20
-        Wait.until(new Condition() {
+        Wait.waitSelenium.until(new SeleniumCondition() {
             public boolean isTrue() {
-                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING)) == 20;
+                return Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING)) == 20;
             }
         });
 
-        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING));
+        cellpadding = Integer.parseInt(selenium.getAttribute(LOC_FIRST_CELLPADDING, Attribute.CELLPADDING));
         assertEquals(cellpadding, 20, format(MSG_SUGGESTION_BOX_CELLPADDING_PREFORMATTED, 25));
     }
 
@@ -389,8 +395,8 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_SECOND_INPUT, "a");
         selenium.fireEvent(LOC_SECOND_INPUT, Event.KEYDOWN);
         
-        waitForElement(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1));
-        selenium.click(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1)); // Augusta
+        waitForElement(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1)));
+        selenium.click(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1))); // Augusta
 
         String state = selenium.getText(LOC_SECOND_STATE);
         assertEquals(state, "Maine", MSG_AUGUSTA_MAINE);
@@ -409,16 +415,16 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.type(LOC_SECOND_INPUT, "a");
         selenium.fireEvent(LOC_SECOND_INPUT, Event.KEYDOWN);
         
-        waitForElement(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1));
-        selenium.click(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1)); // Augusta
+        waitForElement(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1)));
+        selenium.click(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 1))); // Augusta
 
         selenium.type(LOC_SECOND_INPUT, selenium.getValue(LOC_SECOND_INPUT) + ",m");
         selenium.fireEvent(LOC_SECOND_INPUT, Event.KEYDOWN);
         
-        waitForTextEquals(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 2), "Madison");
-        selenium.click(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 2)); // Madison
+        waitForTextEquals(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 2)), "Madison");
+        selenium.click(jq(format(LOC_SECOND_SUGGESTION_BOX_PREFORMATTED, 2))); // Madison
 
-        Wait.failWith(MSG_AUGUSTA_MADISON_MAINE_WISCONSIN).until(new Condition() {
+        Wait.waitSelenium.failWith(MSG_AUGUSTA_MADISON_MAINE_WISCONSIN).until(new SeleniumCondition() {
             public boolean isTrue() {
                 return selenium.getText(LOC_SECOND_STATE).equals("Maine,Wisconsin");
             }
@@ -490,9 +496,9 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 	 * Condition for Wait.until(Condition) which waits for the item specified by
 	 * locator becomes in given style given value
 	 */
-	private class StyleCondition implements Condition {
-		private String locator;
-		private String style;
+	private class StyleCondition implements SeleniumCondition {
+		private JQueryLocator locator;
+		private CssProperty style;
 		private String value;
 		private String actualValue;
 
@@ -507,7 +513,7 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 		 *            of given style which we are testing on item specified by
 		 *            locator
 		 */
-		public StyleCondition(String locator, String style, String value) {
+		public StyleCondition(JQueryLocator locator, CssProperty style, String value) {
 			this.locator = locator;
 			this.style = style;
 			this.value = value;
@@ -534,8 +540,8 @@ public class SuggestionBoxTestCase extends AbstractSeleniumRichfacesTestCase {
 	 *            an style value what we want to pull out
 	 * @return the value of the subattribute
 	 */
-	private String getStyleValue(String loc, String attr) {
-		return getStyle(loc, attr).replaceFirst("px", "");
+	private String getStyleValue(JQueryLocator loc, CssProperty cssProperty) {
+		return getStyle(loc, cssProperty).replaceFirst("px", "");
 	}
 	
 	/**

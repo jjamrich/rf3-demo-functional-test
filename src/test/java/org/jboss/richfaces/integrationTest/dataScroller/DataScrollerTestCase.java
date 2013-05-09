@@ -21,12 +21,14 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataScroller;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -72,7 +74,7 @@ public class DataScrollerTestCase extends AbstractDataIterationTestCase {
 
 		int page = 2;
 		
-		Condition firstPageIsActive = new Condition() {
+		SeleniumCondition firstPageIsActive = new SeleniumCondition() {
 			public boolean isTrue() {
 				return 1 == getActivePage();
 			}
@@ -81,12 +83,12 @@ public class DataScrollerTestCase extends AbstractDataIterationTestCase {
 		gotoPage(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, page));
 
 		selenium.refresh();
-		Wait.until(firstPageIsActive);
+		Graphene.waitModel.until(firstPageIsActive);
 		
 		gotoPage(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, page));
 
 		loadPage();
-		Wait.until(firstPageIsActive);
+		Graphene.waitModel.until(firstPageIsActive);
 	}
 
 	/**
@@ -218,6 +220,6 @@ public class DataScrollerTestCase extends AbstractDataIterationTestCase {
 	protected void loadPage() {
 		openComponent("Data Scroller");
 		scrollIntoView(LOC_FIELDSET_HEADER, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

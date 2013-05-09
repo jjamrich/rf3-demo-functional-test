@@ -21,10 +21,14 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.extendedDataTable;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.testng.annotations.Test;
 
 /**
@@ -55,7 +59,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
      */
     @Test
     public void testSelectionModeNone() {
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_NONE);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_NONE);
 
         int[] rows, selectedRows;
 
@@ -66,7 +70,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
 
         loadPage();
 
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_NONE);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_NONE);
 
         rows = getRowSelection(MSG_INPUT_MULTIPLE_ROWS);
         multiSelection(rows);
@@ -80,7 +84,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
      */
     @Test
     public void testSelectionModeSingle() {
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_SINGLE);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_SINGLE);
 
         int[] rows, selectedRows;
 
@@ -91,7 +95,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
 
         loadPage();
 
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_SINGLE);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_SINGLE);
 
         rows = getRowSelection(MSG_INPUT_MULTIPLE_ROWS);
         multiSelection(rows);
@@ -105,7 +109,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
      */
     @Test
     public void testSelectionModeMulti() {
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_MULTI);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_MULTI);
 
         int[] rows, selectedRows;
 
@@ -116,7 +120,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
 
         loadPage();
 
-        selectMode(LOC_SELECT_SELECTION_MODE, MSG_OPTION_SELECTION_MULTI);
+        selectMode(jq(LOC_SELECT_SELECTION_MODE), MSG_OPTION_SELECTION_MULTI);
 
         rows = getRowSelection(MSG_INPUT_MULTIPLE_ROWS);
         multiSelection(rows);
@@ -126,7 +130,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
 
     private void checkSelection(int[] selectedRows) {
         if (rows == -1) {
-            rows = getJQueryCount(LOC_TR_SELECTED);
+            rows = getJQueryCount(jq(LOC_TR_SELECTED));
         }
 
         int[] notSelectedRows = new int[rows];
@@ -142,18 +146,18 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
         }
 
         for (final int row : selectedRows) {
-            Wait.timeout(3000).interval(100).failWith(format("Row nr. {0} should be selected.", row)).until(
-                    new Condition() {
+            Wait.waitSelenium.timeout(3000).interval(100).failWith(format("Row nr. {0} should be selected.", row)).until(
+                    new SeleniumCondition() {
                         public boolean isTrue() {
-                            return selenium.isElementPresent(format(LOC_TR_SELECTED, row));
+                            return selenium.isElementPresent(jq(format(LOC_TR_SELECTED, row)));
                         }
                     });
         }
         for (final int row : notSelectedRows) {
-            Wait.timeout(3000).interval(100).failWith(format("Row nr. {0} should not be selected.", row)).until(
-                    new Condition() {
+            Wait.waitSelenium.timeout(3000).interval(100).failWith(format("Row nr. {0} should not be selected.", row)).until(
+                    new SeleniumCondition() {
                         public boolean isTrue() {
-                            return !selenium.isElementPresent(format(LOC_TR_SELECTED, row));
+                            return !selenium.isElementPresent(jq(format(LOC_TR_SELECTED, row)));
                         }
                     });
         }
@@ -164,7 +168,7 @@ public class SelectingTestCase extends AbstractExtendedDataTableTestCase {
 
         for (int i = 0; i < rows.length; i++) {
             final int row = rows[i];
-            String cell = format(LOC_TD_PREFORMATTED, row, column);
+            JQueryLocator cell = jq(format(LOC_TD_PREFORMATTED, row, column));
 
             if (i > 0) {
                 selenium.controlKeyDown();

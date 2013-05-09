@@ -21,12 +21,15 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.push;
 
-import org.apache.commons.lang.StringUtils;
-import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.*;
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
-import org.testng.annotations.BeforeMethod;
+import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
 import org.testng.annotations.Test;
 
 /**
@@ -34,8 +37,8 @@ import org.testng.annotations.Test;
  * @version $Revision$
  */
 public class PushTestCase extends AbstractSeleniumRichfacesTestCase {
-	private final String LOC_BUTTON_POLL_CONTROL = getLoc("BUTTON_POLL_CONTROL");
-	private final String LOC_OUTPUT_TEXT = getLoc("OUTPUT_TEXT");
+	private final JQueryLocator LOC_BUTTON_POLL_CONTROL = jq(getLoc("BUTTON_POLL_CONTROL"));
+	private final JQueryLocator LOC_OUTPUT_TEXT = jq(getLoc("OUTPUT_TEXT"));
 
 	private final String MSG_OUTPUT_PUSH_ACTIVE = getMsg("OUTPUT_PUSH_ACTIVE");
 	private final String MSG_OUTPUT_PUSH_INACTIVE = getMsg("OUTPUT_PUSH_INACTIVE");
@@ -84,7 +87,7 @@ public class PushTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	private void checkPushingProgress() {
-	    Wait.failWith("Pushing was inactive but should be active").interval(200).timeout(10000).until(new Condition() {
+	    Wait.waitSelenium.failWith("Pushing was inactive but should be active").interval(200).timeout(10000).until(new SeleniumCondition() {
             public boolean isTrue() {
                 return isPushingActive();
             }
@@ -92,8 +95,8 @@ public class PushTestCase extends AbstractSeleniumRichfacesTestCase {
 	    
 		final String oldOutput = selenium.getText(LOC_OUTPUT_TEXT);
 
-		Wait.failWith("When waiting for text change, it never happen").interval(1000).timeout(20000).until(
-				new Condition() {
+		Wait.waitSelenium.failWith("When waiting for text change, it never happen").interval(1000).timeout(20000).until(
+				new SeleniumCondition() {
 					public boolean isTrue() {
 						String actualOutput = selenium.getText(LOC_OUTPUT_TEXT);
 
@@ -111,7 +114,7 @@ public class PushTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	private void checkPushingStopped() {
-	    Wait.failWith("Pushing was active but should be inactive").interval(200).timeout(10000).until(new Condition() {
+	    Wait.waitSelenium.failWith("Pushing was active but should be inactive").interval(200).timeout(10000).until(new SeleniumCondition() {
             public boolean isTrue() {
                 return !isPushingActive();
             }
@@ -133,7 +136,7 @@ public class PushTestCase extends AbstractSeleniumRichfacesTestCase {
 
 			selenium.click(LOC_BUTTON_POLL_CONTROL);
 
-			Wait.until(new Condition() {
+			Wait.waitSelenium.until(new SeleniumCondition() {
 				public boolean isTrue() {
 					return requiredPushingStatus == isPushingActive();
 				}

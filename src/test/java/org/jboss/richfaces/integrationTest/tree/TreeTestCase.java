@@ -22,14 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.tree;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -166,12 +167,12 @@ public class TreeTestCase extends AbstractSeleniumRichfacesTestCase {
 
         // click 'Chris Rea'
         waitForElement(format(LOC_CHRIS_REA_LINK_PREFORMATTED, index));
-        selenium.click(format(LOC_CHRIS_REA_LINK_PREFORMATTED, index));
+        selenium.click(jq(format(LOC_CHRIS_REA_LINK_PREFORMATTED, index)));
 
         // check Rea's child node
-        Wait.interval(2000).failWith("Name of the first child of first node.").until(new Condition() {
+        Wait.waitSelenium.interval(2000).failWith("Name of the first child of first node.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_CHRIS_REA_NODE_1_LABEL_PREFORMATTED, index)).equals(MSG_NODE_1_1_LABEL);
+                return selenium.getText(jq(format(LOC_CHRIS_REA_NODE_1_LABEL_PREFORMATTED, index))).equals(MSG_NODE_1_1_LABEL);
             }
         });
         
@@ -182,10 +183,10 @@ public class TreeTestCase extends AbstractSeleniumRichfacesTestCase {
                 "Node 1.1 should be collapsed -- wrong image.");
 
         // click 'The Road to Hell'
-        selenium.click(format(LOC_CHRIS_REA_NODE_1_LINK_PREFORMATTED, index));
+        selenium.click(jq(format(LOC_CHRIS_REA_NODE_1_LINK_PREFORMATTED, index)));
         
         // check the number of nodes
-        Wait.interval(2000).failWith("Number of children of node 1.1.").until(new Condition() {
+        Wait.waitSelenium.interval(2000).failWith("Number of children of node 1.1.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(format(LOC_CHRIS_REA_NODE_1_CHILDREN_PREFORMATTED, index)) == MSG_CHILDREN_COUNT_1_1;
             }
@@ -194,7 +195,7 @@ public class TreeTestCase extends AbstractSeleniumRichfacesTestCase {
         // get all nodes
         String label = null;
         for (int i = 0; i < 11; i++) {
-            label = selenium.getText(format(LOC_CHRIS_REA_NODE_1_N_LABEL_PREFORMATTED, index, i));
+            label = selenium.getText(jq(format(LOC_CHRIS_REA_NODE_1_N_LABEL_PREFORMATTED, index, i)));
             assertEquals(label, MSG_NODE_1_1_N_LABEL[i], format("Node 1.1.{0} should have name {1}.", i + 1, MSG_NODE_1_1_N_LABEL[0]));
         }
 

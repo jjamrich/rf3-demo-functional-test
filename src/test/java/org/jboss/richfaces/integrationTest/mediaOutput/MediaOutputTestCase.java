@@ -21,13 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.mediaOutput;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
+
 import java.io.IOException;
+import java.net.URL;
 
-import static org.testng.Assert.*;
-
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.utils.URLUtils;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.utils.URLUtils;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -37,8 +41,8 @@ import org.testng.annotations.Test;
 public class MediaOutputTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	private String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private String LOC_ATTRIBUTE_IMAGE_SRC = getLoc("ATTRIBUTE_IMAGE_SRC");
-	private String LOC_ATTRIBUTE_FLASH_HREF = getLoc("ATTRIBUTE_FLASH_HREF");
+	private JQueryLocator LOC_ATTRIBUTE_IMAGE = jq(getLoc("ATTRIBUTE_IMAGE"));
+	private JQueryLocator LOC_ATTRIBUTE_FLASH = jq(getLoc("ATTRIBUTE_FLASH"));
 
 	private String MSG_MD5DIGEST_IMAGE = getMsg("MD5DIGEST_IMAGE");
 	private String MSG_MD5DIGEST_FLASH = getMsg("MD5DIGEST_FLASH");
@@ -49,19 +53,15 @@ public class MediaOutputTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testImageMd5Digest() {
-		String imageSrc = selenium.getAttribute(LOC_ATTRIBUTE_IMAGE_SRC);
+		String imageSrc = selenium.getAttribute(LOC_ATTRIBUTE_IMAGE, Attribute.SRC);
 
-		try {
-			String url = URLUtils.buildUrl(selenium.getLocation(), imageSrc);
+		URL url = URLUtils.buildUrl(selenium.getLocation(), imageSrc);
 
-			try {
-				assertEquals(URLUtils.resourceMd5Digest(url), MSG_MD5DIGEST_IMAGE);
-			} catch (IOException e) {
-				fail("Getting resources from URL failed");
-			}
-		} catch (IOException e) {
-			fail(format("Building of URL failed: '{0}', '{1}'", selenium.getLocation(), imageSrc));
-		}
+        try {
+        	assertEquals(URLUtils.resourceMd5Digest(url.toString()), MSG_MD5DIGEST_IMAGE);
+        } catch (IOException e) {
+        	fail("Getting resources from URL failed");
+        }
 	}
 
 	/**
@@ -70,19 +70,15 @@ public class MediaOutputTestCase extends AbstractSeleniumRichfacesTestCase {
 	 */
 	@Test
 	public void testFlashMd5Digest() {
-		String flashHref = selenium.getAttribute(LOC_ATTRIBUTE_FLASH_HREF);
+		String flashHref = selenium.getAttribute(LOC_ATTRIBUTE_FLASH, Attribute.HREF);
 
-		try {
-			String url = URLUtils.buildUrl(selenium.getLocation(), flashHref);
+		URL url = URLUtils.buildUrl(selenium.getLocation(), flashHref);
 
-			try {
-				assertEquals(URLUtils.resourceMd5Digest(url), MSG_MD5DIGEST_FLASH);
-			} catch (IOException e) {
-				fail("Getting resources from URL failed");
-			}
-		} catch (IOException e) {
-			fail(format("Building of URL failed: '{0}', '{1}'", selenium.getLocation(), flashHref));
-		}
+        try {
+        	assertEquals(URLUtils.resourceMd5Digest(url.toString()), MSG_MD5DIGEST_FLASH);
+        } catch (IOException e) {
+        	fail("Getting resources from URL failed");
+        }
 	}
 
 	protected void loadPage() {

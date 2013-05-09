@@ -22,6 +22,8 @@
 
 package org.jboss.richfaces.integrationTest.separator;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -30,9 +32,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.utils.URLUtils;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.utils.URLUtils;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -67,7 +69,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testFirstSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 0), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 0)), CssProperty.HEIGHT);
         assertEquals(text, MSG_FIRST_HEIGHT, "Height of the separator.");
 
         text = getSeparatorHash(format(LOC_SEPARATOR_N, 0));
@@ -80,11 +82,11 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSecondSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 1), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 1)), CssProperty.HEIGHT);
         assertEquals(text, MSG_SECOND_HEIGHT, "Height of the separator.");
 
-        long widthFull = selenium.getElementWidth(format(LOC_SEPARATOR_N, 0)).longValue();
-        long width75 = selenium.getElementWidth(format(LOC_SEPARATOR_N, 1)).longValue();
+        int widthFull = selenium.getElementWidth(jq(format(LOC_SEPARATOR_N, 0)));
+        int width75 = selenium.getElementWidth(jq(format(LOC_SEPARATOR_N, 1)));
 
         assertTrue(Math.abs(width75 - widthFull * 0.75) < 1, "Width of the second separator isn't 75% of first");
 
@@ -98,7 +100,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testThirdSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 2), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 2)), CssProperty.HEIGHT);
         assertEquals(text, MSG_THIRD_HEIGHT, "Height of the separator.");
 
         text = getSeparatorHash(format(LOC_SEPARATOR_N, 2));
@@ -111,7 +113,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testFourthSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 3), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 3)), CssProperty.HEIGHT);
         assertEquals(text, MSG_FOURTH_HEIGHT, "Height of the separator.");
 
         text = getSeparatorHash(format(LOC_SEPARATOR_N, 3));
@@ -124,7 +126,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testFifthSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 4), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 4)), CssProperty.HEIGHT);
         assertEquals(text, MSG_FIFTH_HEIGHT, "Height of the separator.");
 
         text = getSeparatorHash(format(LOC_SEPARATOR_N, 4));
@@ -137,7 +139,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSixthSeparator() {
-        String text = getStyle(format(LOC_SEPARATOR_N, 5), "height");
+        String text = getStyle(jq(format(LOC_SEPARATOR_N, 5)), CssProperty.HEIGHT);
         assertEquals(text, MSG_SIXTH_HEIGHT, "Height of the separator.");
 
         text = getSeparatorHash(format(LOC_SEPARATOR_N, 5));
@@ -169,7 +171,7 @@ public class SeparatorTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     private String getSeparatorHash(String locator) {
         // create URL of the image
-        String url = getStyle(locator, "background-image");
+        String url = getStyle(jq(locator), CssProperty.BACKGROUND_IMAGE);
         Matcher matcher = Pattern.compile("url\\(\"?([^\"\\)]+)\"?\\)").matcher(url);
         if (matcher.matches()) {
         	url = matcher.group(1);

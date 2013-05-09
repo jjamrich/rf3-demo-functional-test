@@ -22,10 +22,12 @@
 
 package org.jboss.richfaces.integrationTest.spacer;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -43,21 +45,19 @@ public class SpacerTestCase extends AbstractSeleniumRichfacesTestCase {
     private final int MSG_SECOND_SPACER_WIDTH = Integer.parseInt(getMsg("SECOND_SPACER_WIDTH"));
 
     // locators
-    private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_FIRST_SPACER_HEIGHT = getLoc("FIRST_SPACER_HEIGHT");
-    private final String LOC_FIRST_SPACER_WIDTH = getLoc("FIRST_SPACER_WIDTH");
-    private final String LOC_SECOND_SPACER_HEIGHT = getLoc("SECOND_SPACER_HEIGHT");
-    private final String LOC_SECOND_SPACER_WIDTH = getLoc("SECOND_SPACER_WIDTH");
+    private final JQueryLocator LOC_EXAMPLE_HEADER = jq(getLoc("EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_FIRST_SPACER = jq(getLoc("FIRST_SPACER"));
+    private final JQueryLocator LOC_SECOND_SPACER = jq(getLoc("SECOND_SPACER"));
 
     /**
      * Tests the first spacer. Verifies its width and height.
      */
     @Test
     public void testFirstSpacer() {
-        int num = Integer.parseInt(selenium.getAttribute(LOC_FIRST_SPACER_HEIGHT));
+        int num = Integer.parseInt(selenium.getAttribute(LOC_FIRST_SPACER, Attribute.HEIGHT));
         assertEquals(num, MSG_FIRST_SPACER_HEIGHT, "Height of the spacer (in pixels).");
 
-        num = Integer.parseInt(selenium.getAttribute(LOC_FIRST_SPACER_WIDTH));
+        num = Integer.parseInt(selenium.getAttribute(LOC_FIRST_SPACER, Attribute.WIDTH));
         assertEquals(num, MSG_FIRST_SPACER_WIDTH, "Width of the spacer (in pixels).");
     }
 
@@ -66,10 +66,10 @@ public class SpacerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSecondSpacer() {
-        int num = Integer.parseInt(selenium.getAttribute(LOC_SECOND_SPACER_HEIGHT));
+        int num = Integer.parseInt(selenium.getAttribute(LOC_SECOND_SPACER, Attribute.HEIGHT));
         assertEquals(num, MSG_SECOND_SPACER_HEIGHT, "Height of the spacer (in pixels).");
 
-        num = Integer.parseInt(selenium.getAttribute(LOC_SECOND_SPACER_WIDTH));
+        num = Integer.parseInt(selenium.getAttribute(LOC_SECOND_SPACER, Attribute.WIDTH));
         assertEquals(num, MSG_SECOND_SPACER_WIDTH, "Width of the spacer (in pixels).");
     }
 

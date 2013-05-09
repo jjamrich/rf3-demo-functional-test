@@ -22,6 +22,9 @@
 
 package org.jboss.richfaces.integrationTest.colorPicker;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.jboss.arquillian.ajocado.utils.ColorUtils.convertToAWTColor;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotSame;
@@ -38,10 +41,11 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.utils.URLUtils;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import static org.jboss.test.selenium.utils.ColorUtils.convertToAWTColor;
-import org.jboss.test.selenium.utils.URLUtils;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -130,14 +134,17 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testInitialState() {
         // get color from the input field
-        Color inputColor = convertToAWTColor(selenium.getValue(LOC_COLOR_INPUT));
+        Color inputColor = convertToAWTColor(selenium.getValue(jq(LOC_COLOR_INPUT)));
 
         Map<Color, Integer> histogram = getHistogram();
         assertTrue(histogram.containsKey(inputColor),
                 "Image should have the same color as the one defined in input field.");
 
         // get color of the button
-        Color colorButton = convertToAWTColor(getStyle(LOC_COLOR_BUTTON, "background-color"));
+        // Color colorButton = convertToAWTColor(getStyle(LOC_COLOR_BUTTON, "background-color"));
+        // Color colorButton = convertToAWTColor(selenium.getAttribute(jq(LOC_COLOR_BUTTON), Attribute.STYLE), "background-color");
+        String backgroundColor = selenium.getStyle(jq(LOC_COLOR_BUTTON), CssProperty.BACKGROUND_COLOR);
+        Color colorButton = convertToAWTColor(backgroundColor);
 
         assertTrue(histogram.containsKey(colorButton), "Image should have the same color as the button.");
     }
@@ -148,13 +155,13 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testClickToColorArea() {
-        selenium.click(LOC_COLOR_BUTTON);
-        selenium.mouseDownAt(LOC_COLOR_AREA, "50,50");
-        selenium.click(LOC_APPLY_BUTTON);
+        selenium.click(jq(LOC_COLOR_BUTTON));
+        selenium.mouseDownAt(jq(LOC_COLOR_AREA), new Point(50, 50));
+        selenium.click(jq(LOC_APPLY_BUTTON));
         waitFor(1500);
 
         Map<Color, Integer> histogram = getHistogram();
-        Color inputColor = convertToAWTColor(selenium.getValue(LOC_COLOR_INPUT));
+        Color inputColor = convertToAWTColor(selenium.getValue(jq(LOC_COLOR_INPUT)));
 
         assertTrue(histogram.containsKey(inputColor),
                 "Image should have the same color as the one defined in input field.");
@@ -166,15 +173,15 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testValuesChange() {
-        selenium.click(LOC_COLOR_BUTTON);
+        selenium.click(jq(LOC_COLOR_BUTTON));
 
-        int red = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
-        int green = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
-        int blue = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
-        int hue = Integer.parseInt(selenium.getValue(LOC_HUE_VALUE));
-        int saturation = Integer.parseInt(selenium.getValue(LOC_SATURATION_VALUE));
-        int brightness = Integer.parseInt(selenium.getValue(LOC_BRIGHTNESS_VALUE));
-        String hexColor = selenium.getValue(LOC_HEX_COLOR);
+        int red = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
+        int green = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
+        int blue = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
+        int hue = Integer.parseInt(selenium.getValue(jq(LOC_HUE_VALUE)));
+        int saturation = Integer.parseInt(selenium.getValue(jq(LOC_SATURATION_VALUE)));
+        int brightness = Integer.parseInt(selenium.getValue(jq(LOC_BRIGHTNESS_VALUE)));
+        String hexColor = selenium.getValue(jq(LOC_HEX_COLOR));
 
         assertEquals(red, MSG_VALUES_CHANGE_RED_1, "Red before click.");
         assertEquals(green, MSG_VALUES_CHANGE_GREEN_1, "Green before click.");
@@ -184,15 +191,15 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(brightness, MSG_VALUES_CHANGE_BRIGHTNESS_1, "Brightness before click.");
         assertEquals(hexColor, MSG_VALUES_CHANGE_HEXCOLOR_1, "Hex value of color before click.");
 
-        selenium.clickAt(LOC_COLOR_AREA, "0,0");
+        selenium.clickAt(jq(LOC_COLOR_AREA), new Point(0, 0));
 
-        red = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
-        green = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
-        blue = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
-        hue = Integer.parseInt(selenium.getValue(LOC_HUE_VALUE));
-        saturation = Integer.parseInt(selenium.getValue(LOC_SATURATION_VALUE));
-        brightness = Integer.parseInt(selenium.getValue(LOC_BRIGHTNESS_VALUE));
-        hexColor = selenium.getValue(LOC_HEX_COLOR);
+        red = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
+        green = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
+        blue = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
+        hue = Integer.parseInt(selenium.getValue(jq(LOC_HUE_VALUE)));
+        saturation = Integer.parseInt(selenium.getValue(jq(LOC_SATURATION_VALUE)));
+        brightness = Integer.parseInt(selenium.getValue(jq(LOC_BRIGHTNESS_VALUE)));
+        hexColor = selenium.getValue(jq(LOC_HEX_COLOR));
 
         assertEquals(red, MSG_VALUES_CHANGE_RED_2, "Red component after white was selected (top left corner).");
         assertEquals(green, MSG_VALUES_CHANGE_GREEN_2, "Green component after white was selected (top left corner).");
@@ -214,12 +221,12 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testCursorPosition() {
-        selenium.click(LOC_COLOR_BUTTON);
-        selenium.mouseDownAt(LOC_COLOR_AREA, "50,20");
-        selenium.mouseUp(LOC_COLOR_AREA);
+        selenium.click(jq(LOC_COLOR_BUTTON));
+        selenium.mouseDownAt(jq(LOC_COLOR_AREA), new Point(50, 20));
+        selenium.mouseUp(jq(LOC_COLOR_AREA));
 
-        int x = Integer.parseInt(getStyle(LOC_CURSOR, "left").replace("px", ""));
-        int y = Integer.parseInt(getStyle(LOC_CURSOR, "top").replace("px", ""));
+        int x = Integer.parseInt(selenium.getStyle(jq(LOC_CURSOR), new CssProperty("left")).replace("px", ""));
+        int y = Integer.parseInt(selenium.getStyle(jq(LOC_CURSOR), new CssProperty("top")).replace("px", ""));
         assertTrue(Math.abs(x - 50) < 7, format("Cursor should move 50+-6px right (was {0}).", x));
         assertTrue(Math.abs(y - 20) < 7, format("Cursor should move 20+-6px down (was {0}).", y));
     }
@@ -229,20 +236,20 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSetRGBNumbers() {
-        String hex1 = selenium.getValue(LOC_HEX_COLOR);
-        String hue1 = selenium.getValue(LOC_HUE_VALUE);
-        String saturation1 = selenium.getValue(LOC_SATURATION_VALUE);
-        String brightness1 = selenium.getValue(LOC_BRIGHTNESS_VALUE);
+        String hex1 = selenium.getValue(jq(LOC_HEX_COLOR));
+        String hue1 = selenium.getValue(jq(LOC_HUE_VALUE));
+        String saturation1 = selenium.getValue(jq(LOC_SATURATION_VALUE));
+        String brightness1 = selenium.getValue(jq(LOC_BRIGHTNESS_VALUE));
 
         // change color to dark blue
-        selenium.type(LOC_RED_VALUE, "36");
-        selenium.type(LOC_GREEN_VALUE, "36");
-        selenium.type(LOC_BLUE_VALUE, "99");
+        selenium.type(jq(LOC_RED_VALUE), "36");
+        selenium.type(jq(LOC_GREEN_VALUE), "36");
+        selenium.type(jq(LOC_BLUE_VALUE), "99");
 
-        String hex2 = selenium.getValue(LOC_HEX_COLOR);
-        String hue2 = selenium.getValue(LOC_HUE_VALUE);
-        String saturation2 = selenium.getValue(LOC_SATURATION_VALUE);
-        String brightness2 = selenium.getValue(LOC_BRIGHTNESS_VALUE);
+        String hex2 = selenium.getValue(jq(LOC_HEX_COLOR));
+        String hue2 = selenium.getValue(jq(LOC_HUE_VALUE));
+        String saturation2 = selenium.getValue(jq(LOC_SATURATION_VALUE));
+        String brightness2 = selenium.getValue(jq(LOC_BRIGHTNESS_VALUE));
 
         assertFalse(hex1.equals(hex2), "Hex value of the selected color should have changed.");
         assertEquals(hex2, MSG_SET_RGB_NUMBERS_HEXCOLOR, "Hex value of the selected color should have changed.");
@@ -257,20 +264,20 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSetHSBNumbers() {
-        String hex1 = selenium.getValue(LOC_HEX_COLOR);
-        String red1 = selenium.getValue(LOC_RED_VALUE);
-        String green1 = selenium.getValue(LOC_GREEN_VALUE);
-        String blue1 = selenium.getValue(LOC_BLUE_VALUE);
+        String hex1 = selenium.getValue(jq(LOC_HEX_COLOR));
+        String red1 = selenium.getValue(jq(LOC_RED_VALUE));
+        String green1 = selenium.getValue(jq(LOC_GREEN_VALUE));
+        String blue1 = selenium.getValue(jq(LOC_BLUE_VALUE));
 
         // change color to light orange
-        selenium.type(LOC_HUE_VALUE, "36");
-        selenium.type(LOC_SATURATION_VALUE, "36");
-        selenium.type(LOC_BRIGHTNESS_VALUE, "99");
+        selenium.type(jq(LOC_HUE_VALUE), "36");
+        selenium.type(jq(LOC_SATURATION_VALUE), "36");
+        selenium.type(jq(LOC_BRIGHTNESS_VALUE), "99");
 
-        String hex2 = selenium.getValue(LOC_HEX_COLOR);
-        String red2 = selenium.getValue(LOC_RED_VALUE);
-        String green2 = selenium.getValue(LOC_GREEN_VALUE);
-        String blue2 = selenium.getValue(LOC_BLUE_VALUE);
+        String hex2 = selenium.getValue(jq(LOC_HEX_COLOR));
+        String red2 = selenium.getValue(jq(LOC_RED_VALUE));
+        String green2 = selenium.getValue(jq(LOC_GREEN_VALUE));
+        String blue2 = selenium.getValue(jq(LOC_BLUE_VALUE));
 
         assertFalse(hex1.equals(hex2), "Hex value of the selected color should have changed.");
         assertEquals(hex2, MSG_SET_HSB_NUMBERS_HEXCOLOR, "Hex value of the selected color should have changed.");
@@ -287,29 +294,29 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSetMaxValueRGBHSB() {
-        selenium.type(LOC_RED_VALUE, "500");
-        int number = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
+        selenium.type(jq(LOC_RED_VALUE), "500");
+        int number = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_RED, "Red should be set to 255 if bigger number was typed.");
 
-        selenium.type(LOC_GREEN_VALUE, "500");
-        number = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
+        selenium.type(jq(LOC_GREEN_VALUE), "500");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_GREEN, "Green should be set to 255 if bigger number was typed.");
 
-        selenium.type(LOC_BLUE_VALUE, "500");
-        number = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
+        selenium.type(jq(LOC_BLUE_VALUE), "500");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_BLUE, "Blue should be set to 255 if bigger number was typed.");
 
-        selenium.type(LOC_HUE_VALUE, "500");
-        number = Integer.parseInt(selenium.getValue(LOC_HUE_VALUE));
+        selenium.type(jq(LOC_HUE_VALUE), "500");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_HUE_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_HUE, "Hue should be set to 360 if bigger number was typed.");
 
-        selenium.type(LOC_SATURATION_VALUE, "500");
-        number = Integer.parseInt(selenium.getValue(LOC_SATURATION_VALUE));
+        selenium.type(jq(LOC_SATURATION_VALUE), "500");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_SATURATION_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_SATURATION,
                 "Saturation should be set to 100 if bigger number was typed.");
 
-        selenium.type(LOC_BRIGHTNESS_VALUE, "500");
-        number = Integer.parseInt(selenium.getValue(LOC_BRIGHTNESS_VALUE));
+        selenium.type(jq(LOC_BRIGHTNESS_VALUE), "500");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_BRIGHTNESS_VALUE)));
         assertEquals(number, MSG_SET_MAX_VALUE_BRIGHTNESS,
                 "Brightness should be set to 100 if bigger number was typed.");
     }
@@ -320,29 +327,29 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSetNegativeValueRGBHSB() {
-        selenium.type(LOC_RED_VALUE, "-2");
-        int number = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
+        selenium.type(jq(LOC_RED_VALUE), "-2");
+        int number = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_RED, "Red should be set to 0 if lower number was typed.");
 
-        selenium.type(LOC_GREEN_VALUE, "-2");
-        number = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
+        selenium.type(jq(LOC_GREEN_VALUE), "-2");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_GREEN, "Green should be set to 0 if lower number was typed.");
 
-        selenium.type(LOC_BLUE_VALUE, "-2");
-        number = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
+        selenium.type(jq(LOC_BLUE_VALUE), "-2");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_BLUE, "Blue should be set to 0 if lower number was typed.");
 
-        selenium.type(LOC_HUE_VALUE, "-2");
-        number = Integer.parseInt(selenium.getValue(LOC_HUE_VALUE));
+        selenium.type(jq(LOC_HUE_VALUE), "-2");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_HUE_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_HUE, "Hue should be set to 0 if lower number was typed.");
 
-        selenium.type(LOC_SATURATION_VALUE, "-2");
-        number = Integer.parseInt(selenium.getValue(LOC_SATURATION_VALUE));
+        selenium.type(jq(LOC_SATURATION_VALUE), "-2");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_SATURATION_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_SATURATION,
                 "Saturation should be set to 0 if lower number was typed.");
 
-        selenium.type(LOC_BRIGHTNESS_VALUE, "-2");
-        number = Integer.parseInt(selenium.getValue(LOC_BRIGHTNESS_VALUE));
+        selenium.type(jq(LOC_BRIGHTNESS_VALUE), "-2");
+        number = Integer.parseInt(selenium.getValue(jq(LOC_BRIGHTNESS_VALUE)));
         assertEquals(number, MSG_SET_NEGATIVE_VALUE_BRIGHTNESS,
                 "Brightness should be set to 0 if lower number was typed.");
     }
@@ -354,15 +361,15 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testCancelButton() {
-        Color original = convertToAWTColor(selenium.getValue(LOC_COLOR_INPUT));
-        selenium.click(LOC_COLOR_BUTTON);
+        Color original = convertToAWTColor(selenium.getValue(jq(LOC_COLOR_INPUT)));
+        selenium.click(jq(LOC_COLOR_BUTTON));
 
-        selenium.type(LOC_RED_VALUE, "100");
-        selenium.type(LOC_GREEN_VALUE, "255");
-        selenium.type(LOC_BLUE_VALUE, "100");
+        selenium.type(jq(LOC_RED_VALUE), "100");
+        selenium.type(jq(LOC_GREEN_VALUE), "255");
+        selenium.type(jq(LOC_BLUE_VALUE), "100");
 
-        selenium.click(LOC_CANCEL_BUTTON);
-        Color newColor = convertToAWTColor(selenium.getValue(LOC_COLOR_INPUT));
+        selenium.click(jq(LOC_CANCEL_BUTTON));
+        Color newColor = convertToAWTColor(selenium.getValue(jq(LOC_COLOR_INPUT)));
         assertEquals(newColor, original, "Color in input should not change after clicking on \"Cancel\"");
 
         Map<Color, Integer> histogram = getHistogram();
@@ -377,16 +384,16 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSlider() {
-        selenium.click(LOC_COLOR_BUTTON);
-        selenium.mouseDownAt(LOC_RAINBOW, "0,0");
-        selenium.mouseUp(LOC_RAINBOW);
+        selenium.click(jq(LOC_COLOR_BUTTON));
+        selenium.mouseDownAt(jq(LOC_RAINBOW), new Point(0, 0));
+        selenium.mouseUp(jq(LOC_RAINBOW));
 
-        String newColor = selenium.getValue(LOC_HEX_COLOR);
+        String newColor = selenium.getValue(jq(LOC_HEX_COLOR));
         assertEquals(newColor, MSG_SLIDER_HEXCOLOR_1, "Color should change to dark red after clicking on [0,0].");
 
-        int red = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
-        int green = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
-        int blue = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
+        int red = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
+        int green = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
+        int blue = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
 
         assertTrue(Math.abs(red - MSG_SLIDER_RED_VALUE_1) < 7, format(
                 "Red should be {0}+-6 (was {1}) when the slider is at the top.", MSG_SLIDER_RED_VALUE_1, red));
@@ -395,15 +402,15 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
         assertTrue(Math.abs(blue - MSG_SLIDER_BLUE_VALUE_1) < 7, format(
                 "Blue should be {0}+-6 (was {1}) when the slider is at the top.", MSG_SLIDER_BLUE_VALUE_1, blue));
 
-        selenium.mouseDownAt(LOC_RAINBOW, "0,151");
-        selenium.mouseUp(LOC_RAINBOW);
+        selenium.mouseDownAt(jq(LOC_RAINBOW), new Point(0,151));
+        selenium.mouseUp(jq(LOC_RAINBOW));
 
-        newColor = selenium.getValue(LOC_HEX_COLOR);
+        newColor = selenium.getValue(jq(LOC_HEX_COLOR));
         assertEquals(newColor, MSG_SLIDER_HEXCOLOR_2, "Color should change to dark red after clicking on [0,150].");
 
-        red = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
-        green = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
-        blue = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
+        red = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
+        green = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
+        blue = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
 
         assertTrue(Math.abs(red - MSG_SLIDER_RED_VALUE_2) < 7, format(
                 "Red should be {0}+-6 (was {1}) when the slider is at the bottom.", MSG_SLIDER_RED_VALUE_2, red));
@@ -412,12 +419,12 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
         assertTrue(Math.abs(blue - MSG_SLIDER_BLUE_VALUE_2) < 7, format(
                 "Blue should be {0}+-6 (was {1}) when the slider is at the bottom.", MSG_SLIDER_BLUE_VALUE_2, blue));
 
-        selenium.mouseDownAt(LOC_RAINBOW, "0,75");
-        selenium.mouseUp(LOC_RAINBOW);
+        selenium.mouseDownAt(jq(LOC_RAINBOW), new Point(0, 75));
+        selenium.mouseUp(jq(LOC_RAINBOW));
 
-        red = Integer.parseInt(selenium.getValue(LOC_RED_VALUE));
-        green = Integer.parseInt(selenium.getValue(LOC_GREEN_VALUE));
-        blue = Integer.parseInt(selenium.getValue(LOC_BLUE_VALUE));
+        red = Integer.parseInt(selenium.getValue(jq(LOC_RED_VALUE)));
+        green = Integer.parseInt(selenium.getValue(jq(LOC_GREEN_VALUE)));
+        blue = Integer.parseInt(selenium.getValue(jq(LOC_BLUE_VALUE)));
 
         assertTrue(Math.abs(red - MSG_SLIDER_RED_VALUE_3) < 7, format(
                 "Red should be {0}+-6 (was {1}) when the slider is in the middle.", MSG_SLIDER_RED_VALUE_3, red));
@@ -440,17 +447,17 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testLeftColorBox() {
-        Color leftBoxColor = convertToAWTColor(getStyle(LOC_CURRENT_COLOR_BOX, "background-color"));
-        Color expectedColor = convertToAWTColor("#" + selenium.getValue(LOC_HEX_COLOR));
+        Color leftBoxColor = convertToAWTColor(selenium.getStyle(jq(LOC_CURRENT_COLOR_BOX), CssProperty.BACKGROUND_COLOR));
+        Color expectedColor = convertToAWTColor("#" + selenium.getValue(jq(LOC_HEX_COLOR)));
 
         assertEquals(leftBoxColor, expectedColor, "At the beginning box should be of color from input field.");
 
-        selenium.type(LOC_RED_VALUE, "100");
-        selenium.type(LOC_GREEN_VALUE, "100");
-        selenium.type(LOC_BLUE_VALUE, "100");
+        selenium.type(jq(LOC_RED_VALUE), "100");
+        selenium.type(jq(LOC_GREEN_VALUE), "100");
+        selenium.type(jq(LOC_BLUE_VALUE), "100");
 
-        leftBoxColor = convertToAWTColor(getStyle(LOC_CURRENT_COLOR_BOX, "background-color"));
-        expectedColor = convertToAWTColor("#" + selenium.getValue(LOC_HEX_COLOR));
+        leftBoxColor = convertToAWTColor(selenium.getStyle(jq(LOC_CURRENT_COLOR_BOX), CssProperty.BACKGROUND_COLOR));
+        expectedColor = convertToAWTColor("#" + selenium.getValue(jq(LOC_HEX_COLOR)));
 
         assertEquals(leftBoxColor, expectedColor, "Color of the box should change afted a color was chosen.");
     }
@@ -461,17 +468,17 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testRightColorBox() {
-        Color rightBoxColor = convertToAWTColor(getStyle(LOC_ORIGINAL_COLOR_BOX, "background-color"));
-        Color expectedColor = convertToAWTColor("#" + selenium.getValue(LOC_HEX_COLOR));
+        Color rightBoxColor = convertToAWTColor(selenium.getStyle(jq(LOC_ORIGINAL_COLOR_BOX), CssProperty.BACKGROUND_COLOR));
+        Color expectedColor = convertToAWTColor("#" + selenium.getValue(jq(LOC_HEX_COLOR)));
 
         assertEquals(rightBoxColor, expectedColor, "At the beginning box should be of color from input field.");
 
-        selenium.type(LOC_RED_VALUE, "100");
-        selenium.type(LOC_GREEN_VALUE, "100");
-        selenium.type(LOC_BLUE_VALUE, "100");
+        selenium.type(jq(LOC_RED_VALUE), "100");
+        selenium.type(jq(LOC_GREEN_VALUE), "100");
+        selenium.type(jq(LOC_BLUE_VALUE), "100");
 
-        rightBoxColor = convertToAWTColor(getStyle(LOC_ORIGINAL_COLOR_BOX, "background-color"));
-        expectedColor = convertToAWTColor("#" + selenium.getValue(LOC_HEX_COLOR));
+        rightBoxColor = convertToAWTColor(selenium.getStyle(jq(LOC_ORIGINAL_COLOR_BOX), CssProperty.BACKGROUND_COLOR));
+        expectedColor = convertToAWTColor("#" + selenium.getValue(jq(LOC_HEX_COLOR)));
 
         assertNotSame(rightBoxColor, expectedColor, "Color of the box should change afted a color was chosen.");
     }
@@ -499,19 +506,13 @@ public class ColorPickerTestCase extends AbstractSeleniumRichfacesTestCase {
      *         that color
      */
     private Map<Color, Integer> getHistogram() {
-        final String src = selenium.getAttribute(LOC_IMAGE + "@src");
-        final String location = selenium.getLocation();
-        String url = null;
-        try {
-        	url = URLUtils.buildUrl(location, src);
-        } catch (MalformedURLException e) {
-        	e.printStackTrace();
-        	fail(format("Could not build an URL from location '{0}' and src '{1}'", location, src));
-        }
+        final String src = selenium.getAttribute(jq(LOC_IMAGE), Attribute.SRC);
+        final URL location = selenium.getLocation();
+        URL url = URLUtils.buildUrl(location, src);
 
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new URL(url));
+            image = ImageIO.read(url);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             fail("Could not create an URL object.");

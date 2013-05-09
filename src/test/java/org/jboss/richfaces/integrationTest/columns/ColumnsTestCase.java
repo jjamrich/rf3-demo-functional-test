@@ -21,17 +21,18 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.columns;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.testng.Assert.*;
-
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -56,17 +57,17 @@ public class ColumnsTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		String[][] map = getMapOfCells();
 
-		final String tableBeforeChange = selenium.getText(LOC_TABLE);
+		final String tableBeforeChange = selenium.getText(jq(LOC_TABLE));
 
-		selenium.click(format(LOC_TH_PREFORMATTED, sortColumn));
+		selenium.click(jq(format(LOC_TH_PREFORMATTED, sortColumn)));
 
 		sortByColumn(map, sortColumn, false);
 
-		Wait.dontFail().until(new Condition() {
-			public boolean isTrue() {
-				return !tableBeforeChange.equals(selenium.getText(LOC_TABLE));
-			}
-		});
+		Graphene.waitModel.until(new SeleniumCondition() {            
+            public boolean isTrue() {
+                return !tableBeforeChange.equals(selenium.getText(jq(LOC_TABLE)));
+            }
+        });
 
 		String[][] newMap = getMapOfCells();
 
@@ -84,25 +85,26 @@ public class ColumnsTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		String[][] map = getMapOfCells();
 
-		final String contextBeforeChange = selenium.getText(LOC_TABLE);
+		final String contextBeforeChange = selenium.getText(jq(LOC_TABLE));
 
-		selenium.click(format(LOC_TH_PREFORMATTED, sortColumn));
+		selenium.click(jq(format(LOC_TH_PREFORMATTED, sortColumn)));
 
 		sortByColumn(map, sortColumn, true);
 
-		Wait.dontFail().until(new Condition() {
-			public boolean isTrue() {
-				return !contextBeforeChange.equals(selenium.getText(LOC_TABLE));
-			}
-		});
+		Graphene.waitModel.until(new SeleniumCondition() {
+            
+            public boolean isTrue() {
+                return !contextBeforeChange.equals(selenium.getText(jq(LOC_TABLE)));
+            }
+        });
 
-		selenium.click(format(LOC_TH_PREFORMATTED, sortColumn));
+		selenium.click(jq(format(LOC_TH_PREFORMATTED, sortColumn)));
 
-		Wait.dontFail().until(new Condition() {
-			public boolean isTrue() {
-				return !contextBeforeChange.equals(selenium.getText(LOC_TABLE));
-			}
-		});
+		Graphene.waitModel.until(new SeleniumCondition() {            
+            public boolean isTrue() {
+                return !contextBeforeChange.equals(selenium.getText(jq(LOC_TABLE)));
+            }
+        });
 
 		String[][] newMap = getMapOfCells();
 
@@ -111,8 +113,8 @@ public class ColumnsTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	private String[][] getMapOfCells() {
-		final int columns = getJQueryCount(format(LOC_TD_PREFORMATTED, 1, 0));
-		final int rows = getJQueryCount(format(LOC_TD_PREFORMATTED, 0, 1));
+		final int columns = selenium.getCount(jq(format(LOC_TD_PREFORMATTED, 1, 0)));
+		final int rows = selenium.getCount(jq(format(LOC_TD_PREFORMATTED, 0, 1)));
 
 		String[][] map = new String[rows][columns];
 
@@ -120,7 +122,7 @@ public class ColumnsTestCase extends AbstractSeleniumRichfacesTestCase {
 			map[row - 1] = new String[columns];
 			for (int column = 1; column <= columns; column++) {
 				String cell = format(LOC_TD_PREFORMATTED, row, column);
-				map[row - 1][column - 1] = selenium.getText(cell);
+				map[row - 1][column - 1] = selenium.getText(jq(cell));
 			}
 		}
 		return map;
@@ -152,6 +154,6 @@ public class ColumnsTestCase extends AbstractSeleniumRichfacesTestCase {
 	protected void loadPage() {
 		openComponent("Columns");
 		scrollIntoView(LOC_TABLE, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

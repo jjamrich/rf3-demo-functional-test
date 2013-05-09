@@ -22,7 +22,13 @@
 package org.jboss.richfaces.integrationTest.extendedDataTable;
 
 import static org.testng.Assert.*;
-import org.jboss.test.selenium.dom.Event;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.testng.annotations.Test;
 
 /**
@@ -32,10 +38,10 @@ import org.testng.annotations.Test;
 public class GroupingTestCase extends AbstractExtendedDataTableTestCase {
 
 	private final String LOC_DIV_CONTEXT_MENU_FOR_COLUMN_RELATIVE = getLoc("DIV_CONTEXT_MENU_FOR_COLUMN_RELATIVE");
-	private final String LOC_MENU_ITEM_GROUP_BY_COLUMN = getLoc("MENU_ITEM_GROUP_BY_COLUMN");
+	private final JQueryLocator LOC_MENU_ITEM_GROUP_BY_COLUMN = jq(getLoc("MENU_ITEM_GROUP_BY_COLUMN"));
 	private final String LOC_TD_GROUP_PREFORMATTED = getLoc("TD_GROUP_PREFORMATTED");
 	private final String LOC_TR_PREFORMATTED = getLoc("TR_PREFORMATTED");
-	private final String LOC_BUTTON_MENU = format(LOC_DIV_CONTEXT_MENU_FOR_COLUMN_RELATIVE, LOC_TH_STATE);
+	private final JQueryLocator LOC_BUTTON_MENU = jq(format(LOC_DIV_CONTEXT_MENU_FOR_COLUMN_RELATIVE, LOC_TH_STATE));
 
 	private final String MSG_TR_CLASS = getMsg("TR_CLASS");
 
@@ -46,14 +52,14 @@ public class GroupingTestCase extends AbstractExtendedDataTableTestCase {
 	@Test
 	public void testGrouping() {
 		// use grouping by state
-		selenium.fireEvent(LOC_TH_STATE, Event.MOUSEOVER);
-		selenium.clickAt(LOC_BUTTON_MENU, "1,1");
+		selenium.fireEvent(jq(LOC_TH_STATE), Event.MOUSEOVER);
+		selenium.clickAt(LOC_BUTTON_MENU, new Point(1, 1));
 
-		waitForElement(LOC_MENU_ITEM_GROUP_BY_COLUMN);
+		Graphene.waitModel.until(Graphene.elementPresent.locator(LOC_MENU_ITEM_GROUP_BY_COLUMN));
 		selenium.click(LOC_MENU_ITEM_GROUP_BY_COLUMN);
 		waitForSplash();
 		
-		final int rows = getJQueryCount(format(LOC_TR_PREFORMATTED, 0)) -1;
+		final int rows = getJQueryCount(jq(format(LOC_TR_PREFORMATTED, 0))) -1;
 		
 		String expectedGroup = null;
 
@@ -62,15 +68,15 @@ public class GroupingTestCase extends AbstractExtendedDataTableTestCase {
 				continue;
 			}
 			
-		    if (belongsClass(MSG_TR_CLASS, format(LOC_TR_PREFORMATTED, row))) {
+		    if (belongsClass(MSG_TR_CLASS, jq(format(LOC_TR_PREFORMATTED, row)))) {
 				// table row is type group
-				expectedGroup = selenium.getText(format(LOC_TD_GROUP_PREFORMATTED, row)).replace("State Name: ", "").replace("(1)", "");
+				expectedGroup = selenium.getText(jq(format(LOC_TD_GROUP_PREFORMATTED, row))).replace("State Name: ", "").replace("(1)", "");
 			} else {
 				// table row is regular data row
 				assertNotNull(expectedGroup, format("First row in grouped table has to belong to class '{0}'",
 						MSG_TR_CLASS));
 
-				String actualGroup = selenium.getText(format(preformatColumn(LOC_TH_STATE), row));
+				String actualGroup = selenium.getText(jq(format(preformatColumn(LOC_TH_STATE), row)));
 
 				assertEquals(actualGroup, expectedGroup, format("Cell ('{0}', row {1}) doesn't belong to group '{2}'",
 						actualGroup, row, expectedGroup));

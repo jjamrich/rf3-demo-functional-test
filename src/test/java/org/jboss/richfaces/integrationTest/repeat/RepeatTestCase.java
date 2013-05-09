@@ -21,11 +21,16 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.repeat;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.locator.option.OptionIndexLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumRetriever;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -56,10 +61,10 @@ public class RepeatTestCase extends AbstractDataIterationTestCase {
 		for (int instance = 0; instance < rows * 2; instance++) {
 			final boolean isFirstIteration = (instance < rows);
 			final int row = 1 + (instance % rows);
-			final String locInputProposedPrice = format(LOC_INPUT_PROPOSED_PRICE_PREFORMATTED, row);
-			final String locSelectReason = format(LOC_SELECT_REASON_PREFORMATTED, row);
-			final String locOutputGrossMargin = format(LOC_OUTPUT_GROSS_MARGIN_PREFORMATTED, row);
-			final String locOutputSalesCost = format(LOC_OUTPUT_SALES_COST_PREFORMATTED, row);
+			final JQueryLocator locInputProposedPrice = jq(format(LOC_INPUT_PROPOSED_PRICE_PREFORMATTED, row));
+			final JQueryLocator locSelectReason = jq(format(LOC_SELECT_REASON_PREFORMATTED, row));
+			final JQueryLocator locOutputGrossMargin = jq(format(LOC_OUTPUT_GROSS_MARGIN_PREFORMATTED, row));
+			final JQueryLocator locOutputSalesCost = jq(format(LOC_OUTPUT_SALES_COST_PREFORMATTED, row));
 
 			int difference = (row % 2 == 0 ? 1 : -1) * (instance % 3);
 
@@ -76,19 +81,32 @@ public class RepeatTestCase extends AbstractDataIterationTestCase {
 			selenium.type(locInputProposedPrice, Double.toString(proposedPrice));
 
 			if (isFirstIteration) {
-				Wait.failWith("Reason selection never change from blank").waitForChange("", new Retrieve<String>() {
-					public String retrieve() {
-						return selenium.getValue(locSelectReason);
-					}
+				Wait.waitSelenium.failWith("Reason selection never change from blank").waitForChange("", new SeleniumRetriever<String>() {                
+                    String s;
+                    public void initializeValue() {
+                        s = retrieve();
+                    }
+
+                    public void setValue(String value) {
+                        s = value;
+                    }
+
+                    public String getValue() {
+                        return s;
+                    }
+
+                    public String retrieve() {
+                        return selenium.getValue(locSelectReason);
+                    }
 				});
 			} else {
-				waitForTextChanges(locOutputGrossMargin, grossMarginString);
+				waitForTextChangesAndReturn(locOutputGrossMargin, grossMarginString);
 			}
 
 			// select some option in reason
 			int options = getJQueryCount(locSelectReason + " *[value]");
 			assertTrue(options > 0);
-			selenium.select(locSelectReason, format("index={0}", row % options));
+			selenium.select(locSelectReason, new OptionIndexLocator(row % options));
 
 			grossMarginString = selenium.getText(locOutputGrossMargin);
 
@@ -106,7 +124,7 @@ public class RepeatTestCase extends AbstractDataIterationTestCase {
 		}
 
 		for (int row = 1; row <= rows; row++) {
-			final String outputGrossMargin = format(LOC_OUTPUT_GROSS_MARGIN_PREFORMATTED, row);
+			final JQueryLocator outputGrossMargin = jq(format(LOC_OUTPUT_GROSS_MARGIN_PREFORMATTED, row));
 
 			String grossMarginString = selenium.getText(outputGrossMargin);
 			assertEquals(grossMarginString, grossMargins[row - 1]);
@@ -121,6 +139,6 @@ public class RepeatTestCase extends AbstractDataIterationTestCase {
 	protected void loadPage() {
 		openComponent("Repeat");
 		scrollIntoView(LOC_FIELDSET_HEADER, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

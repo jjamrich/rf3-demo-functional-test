@@ -21,12 +21,15 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.outputPanel;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Condition;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -35,11 +38,11 @@ import org.testng.annotations.Test;
  */
 public class OutputPanelTestCase extends AbstractSeleniumRichfacesTestCase {
 
-    private String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-    private String LOC_INPUT_WRONG = getLoc("INPUT_WRONG");
-    private String LOC_INPUT_CORRECT = getLoc("INPUT_CORRECT");
+    private JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+    private JQueryLocator LOC_INPUT_WRONG = jq(getLoc("INPUT_WRONG"));
+    private JQueryLocator LOC_INPUT_CORRECT = jq(getLoc("INPUT_CORRECT"));
     private String LOC_OUTPUT_MESSAGE = getLoc("OUTPUT_MESSAGE");
-    private String LOC_OUTPUT_ERROR = getLoc("OUTPUT_ERROR");
+    private JQueryLocator LOC_OUTPUT_ERROR = jq(getLoc("OUTPUT_ERROR"));
 
     private String MSG_INPUT_CORRECT = getMsg("INPUT_CORRECT");
     private String MSG_INPUT_WRONG = getMsg("INPUT_WRONG");
@@ -83,12 +86,12 @@ public class OutputPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         enterTextAndCheckOutputAndErrorMessage(LOC_INPUT_CORRECT, MSG_INPUT_WRONG, false, true);
     }
 
-    private void enterTextAndCheckOutputAndErrorMessage(String locInput, final String msgText,
+    private void enterTextAndCheckOutputAndErrorMessage(JQueryLocator locInput, final String msgText,
             final boolean textShouldAppear, final boolean errorMessageShouldAppear) {
         selenium.type(locInput, msgText);
         selenium.fireEvent(locInput, Event.KEYUP);
 
-        waitModelUpdate.dontFail().until(new Condition() {
+        Wait.waitSelenium.dontFail().until(new SeleniumCondition() {
             public boolean isTrue() {
                 if (errorMessageShouldAppear || textShouldAppear) {
                     return getJQueryCount(format(LOC_OUTPUT_MESSAGE, msgText)) > 0

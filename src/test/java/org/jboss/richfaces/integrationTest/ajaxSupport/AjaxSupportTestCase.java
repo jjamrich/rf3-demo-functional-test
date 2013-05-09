@@ -21,10 +21,13 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxSupport;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -66,19 +69,24 @@ public class AjaxSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	public void nonEmpty() {
-		selenium.type(LOC_INPUT_TEXT, MSG_INPUT_NON_EMPTY);
-		selenium.fireEvent(LOC_INPUT_TEXT, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEXT), MSG_INPUT_NON_EMPTY);
+		selenium.fireEvent(jq(LOC_INPUT_TEXT), Event.KEYUP);
 
-		waitFor(Wait.DEFAULT_INTERVAL);
-		waitForTextEquals(LOC_OUTPUT_TEXT, MSG_INPUT_NON_EMPTY);
+		// waitForTextEquals(LOC_OUTPUT_TEXT, MSG_INPUT_NON_EMPTY);
+		Graphene.waitModel.until(new SeleniumCondition() {
+            public boolean isTrue() {
+                return MSG_INPUT_NON_EMPTY.equals(selenium.getText(jq(LOC_OUTPUT_TEXT)));
+            }
+		});
 	}
 
 	public void empty() {
-		selenium.type(LOC_INPUT_TEXT, "");
-		selenium.fireEvent(LOC_INPUT_TEXT, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEXT), "");
+		selenium.fireEvent(jq(LOC_INPUT_TEXT), Event.KEYUP);
 
 		waitFor(Wait.DEFAULT_INTERVAL);
-		waitForTextEquals(LOC_INPUT_TEXT, "");
+		// waitForTextEquals(jq(LOC_INPUT_TEXT), "");
+		Graphene.waitModel.until(Graphene.textEquals.locator(jq(LOC_INPUT_TEXT)).text(""));
 	}
 
 	protected void loadPage() {

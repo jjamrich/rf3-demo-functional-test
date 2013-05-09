@@ -21,14 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.keepAlive;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.locator.attribute.AttributeLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -36,14 +39,14 @@ import org.testng.annotations.Test;
  * @version $Revision$
  */
 public class KeepAliveTestCase extends AbstractSeleniumRichfacesTestCase {
-	private final String LOC_INPUT_INCORRECT1 = getLoc("INPUT_INCORRECT1");
-	private final String LOC_INPUT_INCORRECT2 = getLoc("INPUT_INCORRECT2");
-	private final String LOC_BUTTON_INCORRECT = getLoc("BUTTON_INCORRECT");
-	private final String LOC_OUTPUT_INCORRECT = getLoc("OUTPUT_INCORRECT");
-	private final String LOC_INPUT_CORRECT1 = getLoc("INPUT_CORRECT1");
-	private final String LOC_INPUT_CORRECT2 = getLoc("INPUT_CORRECT2");
-	private final String LOC_BUTTON_CORRECT = getLoc("BUTTON_CORRECT");
-	private final String LOC_OUTPUT_CORRECT = getLoc("OUTPUT_CORRECT");
+	private final JQueryLocator LOC_INPUT_INCORRECT1 = jq(getLoc("INPUT_INCORRECT1"));
+	private final JQueryLocator LOC_INPUT_INCORRECT2 = jq(getLoc("INPUT_INCORRECT2"));
+	private final JQueryLocator LOC_BUTTON_INCORRECT = jq(getLoc("BUTTON_INCORRECT"));
+	private final JQueryLocator LOC_OUTPUT_INCORRECT = jq(getLoc("OUTPUT_INCORRECT"));
+	private final JQueryLocator LOC_INPUT_CORRECT1 = jq(getLoc("INPUT_CORRECT1"));
+	private final JQueryLocator LOC_INPUT_CORRECT2 = jq(getLoc("INPUT_CORRECT2"));
+	private final JQueryLocator LOC_BUTTON_CORRECT = jq(getLoc("BUTTON_CORRECT"));
+	private final JQueryLocator LOC_OUTPUT_CORRECT = jq(getLoc("OUTPUT_CORRECT"));
 
 	private final String MSG_INPUT_FIRST_NUMBER = getMsg("INPUT_FIRST_NUMBER");
 	private final String MSG_INPUT_SECOND_NUMBER = getMsg("INPUT_SECOND_NUMBER");
@@ -66,7 +69,7 @@ public class KeepAliveTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.fireEvent(LOC_INPUT_INCORRECT2, Event.KEYUP);
 
 		// wait for "equal sign" button became enabled (lost disabled status)
-		Wait.failWith("Button \"=\" never became enabled").until(new ButtonDisabled(LOC_BUTTON_INCORRECT));
+		Wait.waitSelenium.failWith("Button \"=\" never became enabled").until(new ButtonDisabled(LOC_BUTTON_INCORRECT));
 
 		// try to count result
 		selenium.click(LOC_BUTTON_INCORRECT);
@@ -96,14 +99,14 @@ public class KeepAliveTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.fireEvent(LOC_INPUT_CORRECT2, Event.KEYUP);
 
 		// wait for "equal sign" button became enabled (lost disabled status)
-		Wait.failWith("Button \"=\" never became enabled").until(new ButtonDisabled(LOC_BUTTON_CORRECT));
+		Wait.waitSelenium.failWith("Button \"=\" never became enabled").until(new ButtonDisabled(LOC_BUTTON_CORRECT));
 
 		// try to count result
 		selenium.click(LOC_BUTTON_CORRECT);
 
 		// waiting for result became right - If this not happen, waiting
 		// timeouts and test fail
-		Wait.failWith("Result never became correct").until(new Condition() {
+		Wait.waitSelenium.failWith("Result never became correct").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String result = selenium.getText(LOC_OUTPUT_CORRECT);
 				return MSG_OUTPUT_RESULT_NUMBER.equals(result);
@@ -111,21 +114,22 @@ public class KeepAliveTestCase extends AbstractSeleniumRichfacesTestCase {
 		});
 	}
 	
-	private class ButtonDisabled implements Condition {
-		private String locButton;
+	private class ButtonDisabled implements SeleniumCondition {
+		private JQueryLocator locButton;
 		
-		public ButtonDisabled(String locButton) {
+		public ButtonDisabled(JQueryLocator locButton) {
 			this.locButton = locButton;
 		}
 		
 		public boolean isTrue() {
-			final String attrDisabled = format("{0} @disabled", locButton);
+			final AttributeLocator<JQueryLocator> attrDisabled = locButton.getAttribute(new Attribute("disabled"));
 			
-			if (!selenium.isElementPresent(attrDisabled)) {
+			
+			if (!selenium.isAttributePresent(attrDisabled)) {
 				return true;
 			}
 			
-			return "false".equals(selenium.getValue(attrDisabled));
+			return "false".equals(selenium.getAttribute(attrDisabled));
 		}
 		
 	}

@@ -21,16 +21,19 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.style;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+
 import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.testng.Assert.*;
-
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.utils.ColorUtils;
+import org.jboss.arquillian.ajocado.waiting.Wait;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.utils.ColorUtils;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -43,7 +46,7 @@ public class StyleTestCase extends AbstractSeleniumRichfacesTestCase {
 	private String LOC_LINK_DEEP_MARINE = getLoc("LINK_DEEP_MARINE");
 	private String LOC_LINK_BLUE_SKY = getLoc("LINK_BLUE_SKY");
 	private String LOC_LINK_JAPAN_CHERRY = getLoc("LINK_JAPAN_CHERRY");
-	private String LOC_PANEL = getLoc("PANEL");
+	private JQueryLocator LOC_PANEL = jq(getLoc("PANEL"));
 
 	private String MSG_COLOR_DEEP_MARINE = getMsg("COLOR_DEEP_MARINE");
 	private String MSG_COLOR_BLUE_SKY = getMsg("COLOR_BLUE_SKY");
@@ -67,14 +70,14 @@ public class StyleTestCase extends AbstractSeleniumRichfacesTestCase {
 		for (final String locLink : relation.keySet()) {
 			final String msgColor = relation.get(locLink);
 
-			selenium.click(locLink);
-			selenium.waitForPageToLoad(Long.toString(Wait.DEFAULT_TIMEOUT));
+			selenium.click(jq(locLink));
+			selenium.waitForPageToLoad(Wait.DEFAULT_TIMEOUT);
 			scrollIntoView(LOC_FIELDSET_HEADER, true);
 
 			Color expected = ColorUtils.convertToAWTColor(msgColor);
-			Color actual = ColorUtils.convertToAWTColor(getStyle(LOC_PANEL, "background-color"));
+			Color actual = ColorUtils.convertToAWTColor(getStyle(LOC_PANEL, CssProperty.BACKGROUND_COLOR));
 			assertEquals(actual, expected, format("background-color for '{0}' skin does not match", selenium
-					.getText(locLink)));
+					.getText(jq(locLink))));
 		}
 	}
 

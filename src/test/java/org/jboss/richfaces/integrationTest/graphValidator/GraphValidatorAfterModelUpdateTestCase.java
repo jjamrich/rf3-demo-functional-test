@@ -21,12 +21,14 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.graphValidator;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -89,7 +91,7 @@ public class GraphValidatorAfterModelUpdateTestCase extends AbstractSeleniumRich
 	@Test
 	public void testSumOfValuesTooGreat() {
 		for (int i = 1; i <= 3; i++) {
-			selenium.type(format(LOC_INPUT_ACTIVITY_HOURS_PREFORMATTED, i), MSG_INPUT_INVALID_SUM_TOO_GREAT);
+			selenium.type(jq(format(LOC_INPUT_ACTIVITY_HOURS_PREFORMATTED, i)), MSG_INPUT_INVALID_SUM_TOO_GREAT);
 		}
 		submitAndWaitForMessageAppears();
 
@@ -97,24 +99,24 @@ public class GraphValidatorAfterModelUpdateTestCase extends AbstractSeleniumRich
 	}
 
 	private void typeAndSubmit(String locator, String text) {
-		selenium.type(locator, text);
+		selenium.type(jq(locator), text);
 		submitAndWaitForMessageAppears();
 	}
 
 	private void submitAndWaitForMessageAppears() {
-		selenium.click(LOC_BUTTON_SUBMIT_ACTIVITIES);
+		selenium.click(jq(LOC_BUTTON_SUBMIT_ACTIVITIES));
 
-		Wait.failWith("Validation message never appeared").until(new Condition() {
+		Wait.waitSelenium.failWith("Validation message never appeared").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return selenium.isElementPresent(LOC_OUTPUT_VALIDATION_MESSAGE);
+				return selenium.isElementPresent(jq(LOC_OUTPUT_VALIDATION_MESSAGE));
 			}
 		});
 	}
 
 	private void validateMessages(String className, String text) {
-		assertEquals(selenium.getAttribute(LOC_CLASS_VALIDATION_MESSAGE), className,
+		assertEquals(selenium.getAttribute(jq(LOC_CLASS_VALIDATION_MESSAGE), Attribute.CLASS), className,
 				"Validation message's class is invalid");
-		assertEquals(selenium.getText(LOC_OUTPUT_VALIDATION_MESSAGE), text, "Given validation message isn't expected");
+		assertEquals(selenium.getText(jq(LOC_OUTPUT_VALIDATION_MESSAGE)), text, "Given validation message isn't expected");
 	}
 
 	protected void loadPage() {

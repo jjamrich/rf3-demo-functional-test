@@ -26,6 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.frame.AbstractFrameLocator;
+import org.jboss.arquillian.ajocado.locator.frame.FrameDomLocator;
+import org.jboss.arquillian.ajocado.locator.frame.FrameLocator;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 
@@ -48,13 +53,13 @@ public class SeleniumLoggingTestListener extends TestListenerAdapter {
 	/**
 	 * Must be specified to allow the logging facility
 	 */
-	private Selenium selenium;
+	private GrapheneSelenium selenium;
 
-	public void setSelenium(Selenium selenium) {
+	public void setSelenium(GrapheneSelenium selenium) {
 		this.selenium = selenium;
 	}
 
-	public Selenium getSelenium() {
+	public GrapheneSelenium getSelenium() {
 		return selenium;
 	}
 
@@ -98,8 +103,8 @@ public class SeleniumLoggingTestListener extends TestListenerAdapter {
 		if (selenium != null) {
 			String eval = String.format("/*\n%s\n%s\n%s\n*/", line, message, line);
 			try {
-				selenium.selectFrame("relative=top");
-				selenium.getEval(eval);
+				selenium.selectFrame(new FrameDomLocator("relative=top"));
+				selenium.getEval(new JavaScript(eval));
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

@@ -22,12 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.modalPanel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.geometry.Offset;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -46,21 +49,21 @@ public class ModalPanelTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String MSG_SECOND_PANEL_CONTENT = getMsg("SECOND_PANEL_CONTENT");
 
     // locators
-    private final String LOC_FIRST_EXAMPLE_HEADER = getLoc("FIRST_EXAMPLE_HEADER");
-    private final String LOC_FIRST_PANEL = getLoc("FIRST_PANEL");
-    private final String LOC_FIRST_PANEL_POSITION = getLoc("FIRST_PANEL_POSITION");
-    private final String LOC_FIRST_PANEL_OPEN = getLoc("FIRST_PANEL_OPEN");
-    private final String LOC_FIRST_PANEL_CLOSE = getLoc("FIRST_PANEL_CLOSE");
-    private final String LOC_FIRST_PANEL_HEADER = getLoc("FIRST_PANEL_HEADER");
-    private final String LOC_FIRST_PANEL_CONTENT = getLoc("FIRST_PANEL_CONTENT");
+    private final JQueryLocator LOC_FIRST_EXAMPLE_HEADER = jq(getLoc("FIRST_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_FIRST_PANEL = jq(getLoc("FIRST_PANEL"));
+    private final JQueryLocator LOC_FIRST_PANEL_POSITION = jq(getLoc("FIRST_PANEL_POSITION"));
+    private final JQueryLocator LOC_FIRST_PANEL_OPEN = jq(getLoc("FIRST_PANEL_OPEN"));
+    private final JQueryLocator LOC_FIRST_PANEL_CLOSE = jq(getLoc("FIRST_PANEL_CLOSE"));
+    private final JQueryLocator LOC_FIRST_PANEL_HEADER = jq(getLoc("FIRST_PANEL_HEADER"));
+    private final JQueryLocator LOC_FIRST_PANEL_CONTENT = jq(getLoc("FIRST_PANEL_CONTENT"));
 
-    private final String LOC_SECOND_EXAMPLE_HEADER = getLoc("SECOND_EXAMPLE_HEADER");
-    private final String LOC_SECOND_PANEL = getLoc("SECOND_PANEL");
-    private final String LOC_SECOND_PANEL_POSITION = getLoc("SECOND_PANEL_POSITION");
-    private final String LOC_SECOND_PANEL_OPEN = getLoc("SECOND_PANEL_OPEN");
-    private final String LOC_SECOND_PANEL_CLOSE = getLoc("SECOND_PANEL_CLOSE");
-    private final String LOC_SECOND_PANEL_HEADER = getLoc("SECOND_PANEL_HEADER");
-    private final String LOC_SECOND_PANEL_CONTENT = getLoc("SECOND_PANEL_CONTENT");
+    private final JQueryLocator LOC_SECOND_EXAMPLE_HEADER = jq(getLoc("SECOND_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_SECOND_PANEL = jq(getLoc("SECOND_PANEL"));
+    private final JQueryLocator LOC_SECOND_PANEL_POSITION = jq(getLoc("SECOND_PANEL_POSITION"));
+    private final JQueryLocator LOC_SECOND_PANEL_OPEN = jq(getLoc("SECOND_PANEL_OPEN"));
+    private final JQueryLocator LOC_SECOND_PANEL_CLOSE = jq(getLoc("SECOND_PANEL_CLOSE"));
+    private final JQueryLocator LOC_SECOND_PANEL_HEADER = jq(getLoc("SECOND_PANEL_HEADER"));
+    private final JQueryLocator LOC_SECOND_PANEL_CONTENT = jq(getLoc("SECOND_PANEL_CONTENT"));
 
     /**
      * Tests the first panel. First it checks that the panel is invisible
@@ -97,19 +100,19 @@ public class ModalPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_FIRST_EXAMPLE_HEADER, true);
         selenium.click(LOC_FIRST_PANEL_OPEN);
 
-        int firstX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "left").replace("px", ""));
-        int firstY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "top").replace("px", ""));
+        int firstX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int firstY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         for (int i = 0; i < 40; i++) {
             if (i % 2 == 0) {
-                selenium.dragAndDrop(LOC_FIRST_PANEL_HEADER, "+1,0");
+                selenium.dragAndDrop(LOC_FIRST_PANEL_HEADER, new Offset(+1,0));
             } else {
-                selenium.dragAndDrop(LOC_FIRST_PANEL_HEADER, "0,+1");
+                selenium.dragAndDrop(LOC_FIRST_PANEL_HEADER, new Offset(0,+1));
             }
         }
 
-        int secondX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "left").replace("px", ""));
-        int secondY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "top").replace("px", ""));
+        int secondX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int secondY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         assertEquals(secondX, firstX + 20, "Panel should move 20px right.");
         assertEquals(secondY, firstY + 20, "Panel should move 20px down.");
@@ -117,8 +120,8 @@ public class ModalPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_FIRST_PANEL_CLOSE);
         selenium.click(LOC_FIRST_PANEL_OPEN);
 
-        int thirdX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "left").replace("px", ""));
-        int thirdY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, "top").replace("px", ""));
+        int thirdX = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int thirdY = Integer.parseInt(getStyle(LOC_FIRST_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         assertEquals(thirdX, secondX, "Panel shouldn't move after closing and opening.");
         assertEquals(thirdY, secondY, "Panel shouldn't move after closing and opening.");
@@ -159,19 +162,19 @@ public class ModalPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         scrollIntoView(LOC_SECOND_EXAMPLE_HEADER, true);
         selenium.click(LOC_SECOND_PANEL_OPEN);
 
-        int firstX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "left").replace("px", ""));
-        int firstY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "top").replace("px", ""));
+        int firstX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int firstY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         for (int i = 0; i < 40; i++) {
             if (i % 2 == 0) {
-                selenium.dragAndDrop(LOC_SECOND_PANEL_HEADER, "+1,0");
+                selenium.dragAndDrop(LOC_SECOND_PANEL_HEADER, new Offset(+1,0));
             } else {
-                selenium.dragAndDrop(LOC_SECOND_PANEL_HEADER, "0,+1");
+                selenium.dragAndDrop(LOC_SECOND_PANEL_HEADER, new Offset(0,+1));
             }
         }
 
-        int secondX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "left").replace("px", ""));
-        int secondY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "top").replace("px", ""));
+        int secondX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int secondY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         assertEquals(secondX, firstX + 20, "Panel should move 20px right.");
         assertEquals(secondY, firstY + 20, "Panel should move 20px down.");
@@ -179,8 +182,8 @@ public class ModalPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_SECOND_PANEL_CLOSE);
         selenium.click(LOC_SECOND_PANEL_OPEN);
 
-        int thirdX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "left").replace("px", ""));
-        int thirdY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, "top").replace("px", ""));
+        int thirdX = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_LEFT).replace("px", ""));
+        int thirdY = Integer.parseInt(getStyle(LOC_SECOND_PANEL_POSITION, CssProperty.PADDING_TOP).replace("px", ""));
 
         assertEquals(thirdX, secondX, "Panel shouldn't move after closing and opening.");
         assertEquals(thirdY, secondY, "Panel shouldn't move after closing and opening.");

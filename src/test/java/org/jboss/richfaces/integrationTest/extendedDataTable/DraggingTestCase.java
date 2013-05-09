@@ -22,13 +22,17 @@
 package org.jboss.richfaces.integrationTest.extendedDataTable;
 
 import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.jboss.test.selenium.actions.Drag;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.utils.array.ArrayTransform;
+import org.jboss.arquillian.ajocado.actions.Drag;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.utils.array.ArrayTransform;
 import org.testng.annotations.Test;
 
 /**
@@ -37,7 +41,7 @@ import org.testng.annotations.Test;
  */
 public class DraggingTestCase extends AbstractExtendedDataTableTestCase {
 
-	private final String LOC_DIV_DROP_ZONE_STATE = format(getLoc("DIV_DROP_ZONE_LEFT_RELATIVE"), LOC_TH_STATE);
+	private final JQueryLocator LOC_DIV_DROP_ZONE_STATE = jq(format(getLoc("DIV_DROP_ZONE_LEFT_RELATIVE"), LOC_TH_STATE));
 	private final String LOC_DIV_DROP_ZONE_CAPITAL = format(getLoc("DIV_DROP_ZONE_RIGHT_RELATIVE"), LOC_TH_CAPITAL);
 	private final String LOC_IMAGE_SRC_FLAG_PREFORMATTED = getLoc("IMAGE_SRC_FLAG_PREFORMATTED");
 	private final String[] LOC_TH_DRAGGING_TESTS = new String[] { LOC_TH_STATE, LOC_TH_CAPITAL, LOC_TH_FLAG,
@@ -52,13 +56,13 @@ public class DraggingTestCase extends AbstractExtendedDataTableTestCase {
 	 */
 	@Test
 	public void testDragging() {
-		assertEquals(getColumnIndex(LOC_TH_FLAG), 1);
-		assertEquals(getColumnIndex(LOC_TH_STATE), 2);
-		assertEquals(getColumnIndex(LOC_TH_CAPITAL), 3);
-		assertEquals(getColumnIndex(LOC_TH_TIME_ZONE), 4);
+		assertEquals(getColumnIndex(jq(LOC_TH_FLAG)), 1);
+		assertEquals(getColumnIndex(jq(LOC_TH_STATE)), 2);
+		assertEquals(getColumnIndex(jq(LOC_TH_CAPITAL)), 3);
+		assertEquals(getColumnIndex(jq(LOC_TH_TIME_ZONE)), 4);
 
 		// set filter
-		String inputFilterState = getInputFilterState();
+		JQueryLocator inputFilterState = jq(getInputFilterState());
 		selenium.type(inputFilterState, MSG_INPUT_LETTER_FILTER);
 		selenium.fireEvent(inputFilterState, Event.KEYUP);
 		waitForSplash();
@@ -66,34 +70,34 @@ public class DraggingTestCase extends AbstractExtendedDataTableTestCase {
 		int associationHash = getAssociationMap().hashCode();
 		
 		// sort by capital
-		selenium.click(LOC_TH_CAPITAL);
+		selenium.click(jq(LOC_TH_CAPITAL));
 		waitForSplash();
 		
 		assertEquals(associationHash, getAssociationMap().hashCode());
 		
 		// change column order - drag timezone column to state
-		new Drag(selenium, LOC_SPAN_TIME_ZONE, LOC_DIV_DROP_ZONE_STATE).drop();
+		new Drag(LOC_SPAN_TIME_ZONE, LOC_DIV_DROP_ZONE_STATE).drop();
 		waitForSplash();
 		
 		assertEquals(associationHash, getAssociationMap().hashCode());
-		assertEquals(getColumnIndex(LOC_TH_FLAG), 1);
-		assertEquals(getColumnIndex(LOC_TH_TIME_ZONE), 2);
-		assertEquals(getColumnIndex(LOC_TH_STATE), 3);
-		assertEquals(getColumnIndex(LOC_TH_CAPITAL), 4);
+		assertEquals(getColumnIndex(jq(LOC_TH_FLAG)), 1);
+		assertEquals(getColumnIndex(jq(LOC_TH_TIME_ZONE)), 2);
+		assertEquals(getColumnIndex(jq(LOC_TH_STATE)), 3);
+		assertEquals(getColumnIndex(jq(LOC_TH_CAPITAL)), 4);
 		
 		// change column order - drag state column to capital
-		new Drag(selenium, LOC_SPAN_STATE, LOC_DIV_DROP_ZONE_CAPITAL).drop();
+		new Drag(jq(LOC_SPAN_STATE), jq(LOC_DIV_DROP_ZONE_CAPITAL)).drop();
 		waitForSplash();
 
 		assertEquals(associationHash, getAssociationMap().hashCode());
-		assertEquals(getColumnIndex(LOC_TH_FLAG), 1);
-		assertEquals(getColumnIndex(LOC_TH_TIME_ZONE), 2);
-		assertEquals(getColumnIndex(LOC_TH_CAPITAL), 3);
-		assertEquals(getColumnIndex(LOC_TH_STATE), 4);
+		assertEquals(getColumnIndex(jq(LOC_TH_FLAG)), 1);
+		assertEquals(getColumnIndex(jq(LOC_TH_TIME_ZONE)), 2);
+		assertEquals(getColumnIndex(jq(LOC_TH_CAPITAL)), 3);
+		assertEquals(getColumnIndex(jq(LOC_TH_STATE)), 4);
 	}
 
 	private String getInputFilterState() {
-		return preformatFilterInput(LOC_TH_STATE);
+		return preformatFilterInput(jq(LOC_TH_STATE));
 	}
 
 	private HashMap<String, Vector<String>> getAssociationMap() {
@@ -105,10 +109,10 @@ public class DraggingTestCase extends AbstractExtendedDataTableTestCase {
 			}
 		}.transform(LOC_TH_DRAGGING_TESTS);
 
-		int rows = getJQueryCount(format(columnsPreformatted[0], 0));
+		int rows = getJQueryCount(jq(format(columnsPreformatted[0], 0)));
 		
 		for (int row = 1; row <= rows; row++) {
-		    String key = selenium.getText(format(columnsPreformatted[0], row));
+		    String key = selenium.getText(jq(format(columnsPreformatted[0], row)));
 			Vector<String> values = new Vector<String>(columnsPreformatted.length - 1);
 			for (int column = 1; column < columnsPreformatted.length; column++) {
 				String columnsContentDiv = columnsPreformatted[column];
@@ -122,12 +126,12 @@ public class DraggingTestCase extends AbstractExtendedDataTableTestCase {
 	}
 
 	private String getImgSrcOrText(String locator) {
-		String imgSrc = format(LOC_IMAGE_SRC_FLAG_PREFORMATTED, locator);
+		JQueryLocator imgSrc = jq(format(LOC_IMAGE_SRC_FLAG_PREFORMATTED, locator));
 		
 		if (selenium.isElementPresent(imgSrc)) {
-			return selenium.getAttribute(imgSrc);
+			return selenium.getAttribute(imgSrc, Attribute.SRC);
 		} else {
-			return selenium.getText(locator);
+			return selenium.getText(jq(locator));
 		}
 	}
 }

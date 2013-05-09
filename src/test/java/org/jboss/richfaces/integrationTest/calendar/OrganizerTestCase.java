@@ -22,15 +22,17 @@
 
 package org.jboss.richfaces.integrationTest.calendar;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Calendar;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
 import org.testng.annotations.Test;
 
 /**
@@ -72,9 +74,9 @@ public class OrganizerTestCase extends AbstractSeleniumRichfacesTestCase {
 
         for (int i = fromLine; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                text = selenium.getText(format(LOC_CELL_DATE_PREFORMATTED, i, j));
+                text = selenium.getText(jq(format(LOC_CELL_DATE_PREFORMATTED, i, j)));
                 if (today.equals(text)) {
-                    assertTrue(belongsClass("rich-calendar-today", format(LOC_CELL_PREFORMATTED, i, j)),
+                    assertTrue(belongsClass("rich-calendar-today", jq(format(LOC_CELL_PREFORMATTED, i, j))),
                             "Class attribute of the cell with today's date should contain \"rich-calendar-today\".");
                     return;
                 }
@@ -88,7 +90,7 @@ public class OrganizerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testLastDayIsGrey() {
-        assertTrue(belongsClass("rich-calendar-boundary-dates", format(LOC_CELL_PREFORMATTED, 6, 6)),
+        assertTrue(belongsClass("rich-calendar-boundary-dates", jq(format(LOC_CELL_PREFORMATTED, 6, 6))),
                 "Class attribute of the last cell should contain \"rich-calendar-boundary-dates\".");
     }
 
@@ -101,37 +103,45 @@ public class OrganizerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testSaveNote() {
-        String text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 4, 3));
+        String text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 4, 3)));
         assertEquals(text, "Nothing planned", "The description in the cell (week 2, day 3).");
 
-        assertFalse(isDisplayed(LOC_DIALOG), "Dialog should not be visible.");
+        assertFalse(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should not be visible.");
 
-        selenium.click(format(LOC_CELL_PREFORMATTED, 4, 3));
+        selenium.click(jq(format(LOC_CELL_PREFORMATTED, 4, 3)));
 
         // wait for JavaScript to show the dialog
-        Wait.until(new Condition() {
+        /*Wait.until(new Condition() {
             public boolean isTrue() {
                 return isDisplayed(LOC_DIALOG);
             }
         });
+        */
+        Graphene.waitGui.until(Graphene.elementVisible.locator(jq(LOC_DIALOG)));
 
-        assertTrue(isDisplayed(LOC_DIALOG), "Dialog should be visible.");
+        assertTrue(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should be visible.");
 
-        selenium.type(LOC_DIALOG_DESCRIPTION, "some description");
-        selenium.type(LOC_DIALOG_NOTE, "note note note note note");
-        selenium.click(LOC_DIALOG_STORE_BUTTON);
+        selenium.type(jq(LOC_DIALOG_DESCRIPTION), "some description");
+        selenium.type(jq(LOC_DIALOG_NOTE), "note note note note note");
+        selenium.click(jq(LOC_DIALOG_STORE_BUTTON));
 
         // wait for JavaScript to change the organizer
+        /*
         Wait.until(new Condition() {
             public boolean isTrue() {
                 return !"Nothing planned".equals(selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 4, 3)));
             }
+        });*/
+        Graphene.waitModel.until(new SeleniumCondition() {
+            public boolean isTrue() {
+                return !"Nothing planned".equals(selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 4, 3))));
+            }
         });
 
-        text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 4, 3));
+        text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 4, 3)));
         assertEquals(text, "some description", "The description in the cell (week 2, day 3).");
 
-        text = selenium.getText(format(LOC_CELL_NOTE_PREFORMATTED, 4, 3));
+        text = selenium.getText(jq(format(LOC_CELL_NOTE_PREFORMATTED, 4, 3)));
         assertEquals(text, "note note note note note", "The note in the cell (week 2, day 3).");
     }
 
@@ -143,33 +153,35 @@ public class OrganizerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testCancelNoteCancelButton() {
-        String text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 3, 2));
+        String text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 3, 2)));
         assertEquals(text, "Nothing planned", "The description in the cell (week 3, day 3).");
 
-        assertFalse(isDisplayed(LOC_DIALOG), "Dialog should not be visible.");
+        assertFalse(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should not be visible.");
 
-        selenium.click(format(LOC_CELL_PREFORMATTED, 3, 2));
+        selenium.click(jq(format(LOC_CELL_PREFORMATTED, 3, 2)));
 
         // wait for JavaScript to show the dialog
+        /*
         Wait.until(new Condition() {
             public boolean isTrue() {
                 return isDisplayed(LOC_DIALOG);
             }
-        });
+        });*/
+        Graphene.waitGui.until(Graphene.elementVisible.locator(jq(LOC_DIALOG)));
 
-        assertTrue(isDisplayed(LOC_DIALOG), "Dialog should be visible.");
+        assertTrue(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should be visible.");
 
-        selenium.type(LOC_DIALOG_DESCRIPTION, "some description");
-        selenium.type(LOC_DIALOG_NOTE, "note note note note note");
-        selenium.click(LOC_DIALOG_CANCEL_BUTTON);
+        selenium.type(jq(LOC_DIALOG_DESCRIPTION), "some description");
+        selenium.type(jq(LOC_DIALOG_NOTE), "note note note note note");
+        selenium.click(jq(LOC_DIALOG_CANCEL_BUTTON));
 
         // wait for JavaScript to finish - nothing should change
         waitFor(3000);
 
-        text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 3, 2));
+        text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 3, 2)));
         assertEquals(text, "Nothing planned", "The description in the cell (week 3, day 3).");
 
-        text = selenium.getText(format(LOC_CELL_NOTE_PREFORMATTED, 3, 2));
+        text = selenium.getText(jq(format(LOC_CELL_NOTE_PREFORMATTED, 3, 2)));
         assertEquals(text, "", "The note in the cell (week 3, day 3).");
     }
 
@@ -181,33 +193,35 @@ public class OrganizerTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testCancelNoteCrossButton() {
-        String text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 3, 4));
+        String text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 3, 4)));
         assertEquals(text, "Nothing planned", "The description in the cell (week 3, day 5).");
 
-        assertFalse(isDisplayed(LOC_DIALOG), "Dialog should be visible.");
+        assertFalse(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should be visible.");
 
-        selenium.click(format(LOC_CELL_PREFORMATTED, 3, 4));
+        selenium.click(jq(format(LOC_CELL_PREFORMATTED, 3, 4)));
 
         // wait for JavaScript to show the dialog
+        /*
         Wait.until(new Condition() {
             public boolean isTrue() {
                 return isDisplayed(LOC_DIALOG);
             }
-        });
+        });*/
+        Graphene.waitGui.until(Graphene.elementVisible.locator(jq(LOC_DIALOG)));
 
-        assertTrue(isDisplayed(LOC_DIALOG), "Dialog should be visible.");
+        assertTrue(selenium.isVisible(jq(LOC_DIALOG)), "Dialog should be visible.");
 
-        selenium.type(LOC_DIALOG_DESCRIPTION, "some description");
-        selenium.type(LOC_DIALOG_NOTE, "note note note note note");
-        selenium.click(LOC_DIALOG_CROSS_BUTTON);
+        selenium.type(jq(LOC_DIALOG_DESCRIPTION), "some description");
+        selenium.type(jq(LOC_DIALOG_NOTE), "note note note note note");
+        selenium.click(jq(LOC_DIALOG_CROSS_BUTTON));
 
         // wait for JavaScript to finish - nothing should change
         waitFor(3000);
 
-        text = selenium.getText(format(LOC_CELL_DESC_PREFORMATTED, 3, 4));
+        text = selenium.getText(jq(format(LOC_CELL_DESC_PREFORMATTED, 3, 4)));
         assertEquals(text, "Nothing planned", "The description in the cell (week 3, day 5).");
 
-        text = selenium.getText(format(LOC_CELL_NOTE_PREFORMATTED, 3, 4));
+        text = selenium.getText(jq(format(LOC_CELL_NOTE_PREFORMATTED, 3, 4)));
         assertEquals(text, "", "The note in the cell (week 3, day 5).");
     }
 

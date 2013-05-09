@@ -22,12 +22,13 @@
 
 package org.jboss.richfaces.integrationTest.panelBar;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -61,12 +62,12 @@ public class PanelBarTestCase extends AbstractSeleniumRichfacesTestCase {
                 "Create a modern rich user interface look-and-feel with skins-based technology",
                 "Test the components, actions, listeners, and pages as you are creating them" };
 
-        String text = selenium.getText(format(LOC_HEADER_1_N, 0));
+        String text = selenium.getText(jq(format(LOC_HEADER_1_N, 0)));
         assertEquals(text, headers[0], format(MSG_HEADER_N, 1));
         assertTrue(isDisplayed(format(LOC_CONTENT_N, 0)), format(MSG_PANEL_N_SHOULD_BE_VISIBLE, 1));
 
         for (int i = 1; i < 7; i++) {
-            text = selenium.getText(format(LOC_HEADER_2_N, i));
+            text = selenium.getText(jq(format(LOC_HEADER_2_N, i)));
             assertEquals(text, headers[i], format(MSG_HEADER_N, i + 1));
             assertFalse(isDisplayed(format(LOC_CONTENT_N, i)), format(MSG_PANEL_N_SHOULD_NOT_BE_VISIBLE, i + 1));
         }
@@ -79,7 +80,7 @@ public class PanelBarTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testExpanding() {
         for (int i = 6; i >= 0; i--) {
-            selenium.click(format(LOC_HEADER_1_N, i));
+            selenium.click(jq(format(LOC_HEADER_1_N, i)));
 
             // check that clicked panel is visible
             assertTrue(isDisplayed(format(LOC_CONTENT_N, i)), format(MSG_PANEL_N_SHOULD_BE_VISIBLE, i + 1));

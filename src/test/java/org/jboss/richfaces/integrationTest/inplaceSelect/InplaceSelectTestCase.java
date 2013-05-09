@@ -25,9 +25,13 @@ package org.jboss.richfaces.integrationTest.inplaceSelect;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -50,27 +54,27 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String MSG_COUNT_OF_ITEMS = getMsg("COUNT_OF_ITEMS");
 
     // locators
-    private final String LOC_FIRST = getLoc("FIRST");
-    private final String LOC_FIRST_INPUT_1 = getLoc("FIRST_INPUT_1");
-    private final String LOC_FIRST_INPUT_2 = getLoc("FIRST_INPUT_2");
-    private final String LOC_FIRST_SELECT_VIEW = getLoc("FIRST_SELECT_VIEW");
-    private final String LOC_FIRST_LIST_SPAN = getLoc("FIRST_LIST_SPAN");
+    private final JQueryLocator LOC_FIRST = jq(getLoc("FIRST"));
+    private final JQueryLocator LOC_FIRST_INPUT_1 = jq(getLoc("FIRST_INPUT_1"));
+    private final JQueryLocator LOC_FIRST_INPUT_2 = jq(getLoc("FIRST_INPUT_2"));
+    private final JQueryLocator LOC_FIRST_SELECT_VIEW = jq(getLoc("FIRST_SELECT_VIEW"));
+    private final JQueryLocator LOC_FIRST_LIST_SPAN = jq(getLoc("FIRST_LIST_SPAN"));
     private final String LOC_FIRST_LIST_SPAN_N = getLoc("FIRST_LIST_SPAN_N");
-    private final String LOC_SECOND_OK_BUTTON = getLoc("SECOND_OK_BUTTON");
+    private final JQueryLocator LOC_SECOND_OK_BUTTON = jq(getLoc("SECOND_OK_BUTTON"));
 
-    private final String LOC_SECOND = getLoc("SECOND");
-    private final String LOC_SECOND_INPUT_1 = getLoc("SECOND_INPUT_1");
-    private final String LOC_SECOND_INPUT_2 = getLoc("SECOND_INPUT_2");
-    private final String LOC_SECOND_LIST_SPAN = getLoc("SECOND_LIST_SPAN");
+    private final JQueryLocator LOC_SECOND = jq(getLoc("SECOND"));
+    private final JQueryLocator LOC_SECOND_INPUT_1 = jq(getLoc("SECOND_INPUT_1"));
+    private final JQueryLocator LOC_SECOND_INPUT_2 = jq(getLoc("SECOND_INPUT_2"));
+    private final JQueryLocator LOC_SECOND_LIST_SPAN = jq(getLoc("SECOND_LIST_SPAN"));
     private final String LOC_SECOND_LIST_SPAN_N = getLoc("SECOND_LIST_SPAN_N");
 
-    private final String LOC_THIRD = getLoc("THIRD");
-    private final String LOC_THIRD_INPUT_1 = getLoc("THIRD_INPUT_1");
-    private final String LOC_THIRD_INPUT_2 = getLoc("THIRD_INPUT_2");
-    private final String LOC_THIRD_LIST_SPAN = getLoc("THIRD_LIST_SPAN");
+    private final JQueryLocator LOC_THIRD = jq(getLoc("THIRD"));
+    private final JQueryLocator LOC_THIRD_INPUT_1 = jq(getLoc("THIRD_INPUT_1"));
+    private final JQueryLocator LOC_THIRD_INPUT_2 = jq(getLoc("THIRD_INPUT_2"));
+    private final JQueryLocator LOC_THIRD_LIST_SPAN = jq(getLoc("THIRD_LIST_SPAN"));
     private final String LOC_THIRD_LIST_SPAN_N = getLoc("THIRD_LIST_SPAN_N");
-    private final String LOC_THIRD_CAPITAL = getLoc("THIRD_CAPITAL");
-    private final String LOC_THIRD_SAVE_BUTTON = getLoc("THIRD_SAVE_BUTTON");
+    private final JQueryLocator LOC_THIRD_CAPITAL = jq(getLoc("THIRD_CAPITAL"));
+    private final JQueryLocator LOC_THIRD_SAVE_BUTTON = jq(getLoc("THIRD_SAVE_BUTTON"));
 
     /**
      * Tests the first example. It checks the "readonly" and "style" attribute
@@ -86,7 +90,7 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         String text = selenium.getText(LOC_FIRST);
         assertTrue(text.equals("Click here to edit"), MSG_CLICK_HERE_TO_EDIT);
 
-        String attr = selenium.getAttribute(LOC_FIRST_INPUT_1 + "@readonly");
+        String attr = selenium.getAttribute(LOC_FIRST_INPUT_1, new Attribute("readonly"));
         assertTrue(attr.equals("readonly"), MSG_READ_ONLY);
 
         assertFalse(isDisplayed(LOC_FIRST_INPUT_2), MSG_DISPLAY_NONE);
@@ -104,10 +108,10 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         int count = getJQueryCount(LOC_FIRST_LIST_SPAN);
         assertEquals(count, 5, MSG_COUNT_OF_ITEMS);
 
-        selenium.mouseMove(format(LOC_FIRST_LIST_SPAN_N, 3));
+        selenium.mouseMove(jq(format(LOC_FIRST_LIST_SPAN_N, 3)));
 
         // TODO explore whether this isn't too low-level
-        selenium.getEval(format("selenium.browserbot.findElement(\"{0}\").component.save()", LOC_FIRST_SELECT_VIEW));
+        selenium.getEval(new JavaScript(format("selenium.browserbot.findElement(\"{0}\").component.save()", LOC_FIRST_SELECT_VIEW)));
 
         // another way to select it
         // selenium.selectWindow(null); // select the main window
@@ -132,7 +136,7 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         String text = selenium.getText(LOC_SECOND);
         assertTrue(text.equals("Double Click to edit"), MSG_DOUBLE_CLICK_TO_EDIT);
 
-        String attr = selenium.getAttribute(LOC_SECOND_INPUT_1 + "@readonly");
+        String attr = selenium.getAttribute(LOC_SECOND_INPUT_1, new Attribute("readonly"));
         assertTrue(attr.equals("readonly"), MSG_READ_ONLY);
 
         assertFalse(isDisplayed(LOC_SECOND_INPUT_2), MSG_DISPLAY_NONE);
@@ -148,7 +152,7 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         assertTrue(text.equals("Double Click to edit"), MSG_DOUBLE_CLICK_TO_EDIT);
 
         // expand the inplace select and click "Arkansas"
-        selenium.mouseMove(format(LOC_SECOND_LIST_SPAN_N, 3));
+        selenium.mouseMove(jq(format(LOC_SECOND_LIST_SPAN_N, 3)));
         selenium.mouseDown(LOC_SECOND_OK_BUTTON);
 
         text = selenium.getText(LOC_SECOND);
@@ -169,7 +173,7 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         String text = selenium.getText(LOC_THIRD);
         assertTrue(text.equals("Click here to edit"), MSG_CLICK_HERE_TO_EDIT);
 
-        String attr = selenium.getAttribute(LOC_THIRD_INPUT_1 + "@readonly");
+        String attr = selenium.getAttribute(LOC_THIRD_INPUT_1, new Attribute("readonly"));
         assertTrue(attr.equals("readonly"), MSG_READ_ONLY);
 
         assertFalse(isDisplayed(LOC_THIRD_INPUT_2), MSG_DISPLAY_NONE);
@@ -188,7 +192,7 @@ public class InplaceSelectTestCase extends AbstractSeleniumRichfacesTestCase {
         text = selenium.getText(LOC_THIRD_CAPITAL);
 
         // select "Arkansas"
-        selenium.mouseMove(format(LOC_THIRD_LIST_SPAN_N, 3));
+        selenium.mouseMove(jq(format(LOC_THIRD_LIST_SPAN_N, 3)));
         selenium.mouseDown(LOC_THIRD_SAVE_BUTTON);
 
         // wait for remembered value change

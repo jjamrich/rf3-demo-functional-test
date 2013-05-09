@@ -21,9 +21,11 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxValidator;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
+import org.jboss.arquillian.ajocado.dom.Event;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.testng.annotations.BeforeMethod;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
@@ -52,8 +54,8 @@ public class AbstractAjaxValidatorTestCase extends AbstractSeleniumRichfacesTest
 	protected void typeAndBlur(String locator, String value) {
 		scrollIntoView(locator, true);
 		
-		selenium.type(locator, value);
-		selenium.fireEvent(locator, Event.BLUR);
+		selenium.type(jq(locator), value);
+		selenium.fireEvent(jq(locator), Event.BLUR);
 	}
 
 	/**

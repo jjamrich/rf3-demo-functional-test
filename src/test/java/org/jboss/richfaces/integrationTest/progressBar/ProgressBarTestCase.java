@@ -22,13 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.progressBar;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -49,7 +51,7 @@ public class ProgressBarTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String LOC_SECOND_LABEL_INITIAL = getLoc("SECOND_LABEL_INITIAL");
     private final String LOC_SECOND_PROGRESS_BAR_STYLE = getLoc("SECOND_PROGRESS_BAR_STYLE");
 
-    private class ProgressBarCondition implements Condition {
+    private class ProgressBarCondition implements SeleniumCondition {
         private int oldValue;
         private int newValue;
         private String locator;
@@ -64,7 +66,7 @@ public class ProgressBarTestCase extends AbstractSeleniumRichfacesTestCase {
         }
 
         public boolean isTrue() {
-            newValue = (int) Double.parseDouble(getStyle(locator, "width").replaceAll("(px|%)$", ""));
+            newValue = (int) Double.parseDouble(selenium.getStyle(jq(locator), CssProperty.WIDTH).replaceAll("(px|%)$", ""));
             return newValue > oldValue;
         }
     }
@@ -78,21 +80,24 @@ public class ProgressBarTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testFirstExample() {
         scrollIntoView(LOC_EXAMPLE_1_HEADER, true);
 
-        boolean present = selenium.isElementPresent(LOC_FIRST_BUTTON);
+        boolean present = selenium.isElementPresent(jq(LOC_FIRST_BUTTON));
         assertTrue(present, "Button should be present on the page.");
 
-        selenium.click(LOC_FIRST_BUTTON);
+        selenium.click(jq(LOC_FIRST_BUTTON));
 
+        /*
         Wait.failWith("Button \"Restart Process\" should not be present on the page.").until(new Condition() {
             public boolean isTrue() {
                 return !selenium.isElementPresent(LOC_FIRST_BUTTON);
             }
-        });
+        });*/
+        Graphene.waitModel.until(Graphene.elementNotPresent.locator(jq(LOC_FIRST_BUTTON)));
 
         int oldValue = 0;
         for (int i = 0; i < 4; i++) {
             ProgressBarCondition condition = new ProgressBarCondition(oldValue, LOC_FIRST_PROGRESS_BAR_STYLE);
-            Wait.timeout(3000).failWith("Progress bar should move to the right.").until(condition);
+            // Wait.timeout(3000).failWith("Progress bar should move to the right.").until(condition);
+            Graphene.waitModel.failWith("Progress bar should move to the right.").until(condition);
             oldValue = condition.getNewValue();
         }
     }
@@ -102,33 +107,45 @@ public class ProgressBarTestCase extends AbstractSeleniumRichfacesTestCase {
      * clicks on the button and verifies several times that the progress bar is
      * moving right. Then it waits for process to finish and checks that a label
      * was displayed.
+     * @throws InterruptedException 
      */
     @Test
     public void testSecondExample() {
         scrollIntoView(LOC_EXAMPLE_2_HEADER, true);
 
-        assertTrue(isDisplayed(LOC_SECOND_LABEL_INITIAL), "Initial label should be visible.");
-        assertFalse(isDisplayed(LOC_SECOND_LABEL_FINISHED), "Finished label should not be visible.");
+        assertTrue(selenium.isVisible(jq(LOC_SECOND_LABEL_INITIAL)), "Initial label should be visible.");
+        assertFalse(selenium.isVisible(jq(LOC_SECOND_LABEL_FINISHED)), "Finished label should not be visible.");
 
-        selenium.click(LOC_SECOND_BUTTON);
+        selenium.click(jq(LOC_SECOND_BUTTON));
 
         int oldValue = 0;
-        waitFor(3000);
+        // selenium.waitFor(3000);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {            
+            e.printStackTrace();
+        }
 
         for (int i = 0; i < 4; i++) {
             ProgressBarCondition condition = new ProgressBarCondition(oldValue, LOC_SECOND_PROGRESS_BAR_STYLE);
-            Wait.timeout(6000).failWith(format("Progress bar should move to the right {0} times.", i + 1)).until(
-                    condition);
+            /*Wait.timeout(6000).failWith(format("Progress bar should move to the right {0} times.", i + 1)).until(
+                    condition);*/
+            // WaitingProxy.create(Wait.waitSelenium.interval(Graphene.WAIT_MODEL_INTERVAL), TimeoutType.MODEL);
+            Wait.waitSelenium.timeout(6000).failWith("Progress bar should move to the right {0} times.", i + 1).until(condition);
             oldValue = condition.getNewValue();
         }
 
+        /*
         Wait.timeout(120000).interval(6000).failWith("Finished label should be visible.").until(new Condition() {
             public boolean isTrue() {
                 return isDisplayed(LOC_SECOND_LABEL_FINISHED);
             }
         });
+        */
+        Wait.waitSelenium.timeout(120000).interval(6000).failWith("Finished label should be visible.").until(
+            Graphene.elementVisible.locator(jq(LOC_SECOND_LABEL_FINISHED)));
 
-        assertFalse(isDisplayed(LOC_SECOND_LABEL_INITIAL), "Initial label should not be visible.");
+        assertFalse(selenium.isVisible(jq(LOC_SECOND_LABEL_INITIAL)), "Initial label should not be visible.");
     }
 
     /**

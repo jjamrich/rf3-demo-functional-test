@@ -22,6 +22,8 @@
 
 package org.jboss.richfaces.integrationTest.fileUpload;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -37,12 +39,13 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -89,14 +92,14 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String MSG_CLEAR_UPLOADED_DATA_BUTTON_NOT_VISIBLE = getMsg("CLEAR_UPLOADED_DATA_BUTTON_NOT_VISIBLE");
 
     // locators
-    private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_ADD_BUTTON = getLoc("ADD_BUTTON");
-    private final String LOC_ADD_BUTTON_CLASS = getLoc("ADD_BUTTON_CLASS");
-    private final String LOC_UPLOAD_BUTTON = getLoc("UPLOAD_BUTTON");
-    private final String LOC_UPLOAD_BUTTON_STYLE = getLoc("UPLOAD_BUTTON_STYLE");
-    private final String LOC_CLEAR_ALL_BUTTON = getLoc("CLEAR_ALL_BUTTON");
-    private final String LOC_CLEAR_ALL_BUTTON_STYLE = getLoc("CLEAR_ALL_BUTTON_STYLE");
-    private final String LOC_CLEAR_UPLOADED_DATA_BUTTON = getLoc("CLEAR_UPLOADED_DATA_BUTTON");
+    private final JQueryLocator LOC_EXAMPLE_HEADER = jq(getLoc("EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_ADD_BUTTON = jq(getLoc("ADD_BUTTON"));
+    private final JQueryLocator LOC_ADD_BUTTON_CLASS = jq(getLoc("ADD_BUTTON_CLASS"));
+    private final JQueryLocator LOC_UPLOAD_BUTTON = jq(getLoc("UPLOAD_BUTTON"));
+    private final JQueryLocator LOC_UPLOAD_BUTTON_STYLE = jq(getLoc("UPLOAD_BUTTON_STYLE"));
+    private final JQueryLocator LOC_CLEAR_ALL_BUTTON = jq(getLoc("CLEAR_ALL_BUTTON"));
+    private final JQueryLocator LOC_CLEAR_ALL_BUTTON_STYLE = jq(getLoc("CLEAR_ALL_BUTTON_STYLE"));
+    private final JQueryLocator LOC_CLEAR_UPLOADED_DATA_BUTTON = jq(getLoc("CLEAR_UPLOADED_DATA_BUTTON"));
 
     private final String LOC_NOT_UPLOADED_LIST_TR = getLoc("NOT_UPLOADED_LIST_TR");
     private final String LOC_NOT_UPLOADED_LIST_N_NAME = getLoc("NOT_UPLOADED_LIST_N_NAME");
@@ -122,10 +125,10 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testUploadOneFile() {
-        String text = selenium.getText(LOC_UPLOADED_FILES_INFO);
+        String text = selenium.getText(jq(LOC_UPLOADED_FILES_INFO));
         assertEquals(text, "No files currently uploaded", MSG_RIGHT_PANEL_CONTENT);
 
-        int count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        int count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 0, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
         assertTrue(!belongsClass("rich-fileupload-button-dis", LOC_ADD_BUTTON_CLASS), MSG_ADD_BUTTON_ENABLED);
@@ -135,9 +138,9 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
         boolean isPresent = selenium.isElementPresent(LOC_CLEAR_UPLOADED_DATA_BUTTON);
         assertFalse(isPresent, MSG_CLEAR_UPLOADED_DATA_BUTTON_NOT_VISIBLE);
 
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
+        selenium.typeKeys(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
 
-        count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 1, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
         assertTrue(!belongsClass("rich-fileupload-button-dis", LOC_ADD_BUTTON_CLASS), MSG_ADD_BUTTON_ENABLED);
@@ -167,49 +170,49 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     void testFilesToBeUploadedInfo() {
-        int count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        int count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 0, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_BLUE);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_BLUE); // attachFile
 
-        count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 2, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
-        String text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0));
+        String text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0)));
         assertEquals(text, "selenium-test" + Color.YELLOW.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1)));
         assertEquals(text, "selenium-test" + Color.BLUE.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 2));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0)));
         assertEquals(text, "Cancel", format(MSG_LEFT_PANEL_CANCEL_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1)));
         assertEquals(text, "Cancel", format(MSG_LEFT_PANEL_CANCEL_N, 2));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0)));
         assertEquals(text, "", format(MSG_LEFT_PANEL_DONE_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1)));
         assertEquals(text, "", format(MSG_LEFT_PANEL_DONE_N, 1));
 
         selenium.click(LOC_UPLOAD_BUTTON);
         waitFor(2000);
 
-        count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 2, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0)));
         assertEquals(text, "selenium-test" + Color.YELLOW.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1)));
         assertEquals(text, "selenium-test" + Color.BLUE.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 2));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0)));
         assertEquals(text, "Clear", format(MSG_LEFT_PANEL_CANCEL_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1)));
         assertEquals(text, "Clear", format(MSG_LEFT_PANEL_CANCEL_N, 1));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0)));
         assertEquals(text, "Done", format(MSG_LEFT_PANEL_DONE_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1)));
         assertEquals(text, "Done", format(MSG_LEFT_PANEL_DONE_N, 1));
     }
 
@@ -223,26 +226,26 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
         int count = getJQueryCount(LOC_UPLOADED_LIST_TR);
         assertEquals(count, 0, MSG_RIGHT_PANEL_NUMBER_OF_ITEMS);
 
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_CYAN);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_ORANGE);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_CYAN); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_ORANGE); // attachFile
 
         selenium.click(LOC_UPLOAD_BUTTON);
 
         count = getJQueryCount(LOC_UPLOADED_LIST_TR);
         assertEquals(count, 0, MSG_RIGHT_PANEL_NUMBER_OF_ITEMS);
 
-        waitForElement(format(LOC_UPLOADED_LIST_N_NAME, 1));
+        Graphene.waitModel.until(Graphene.elementPresent.locator(jq(format(LOC_UPLOADED_LIST_N_NAME, 1))));
 
-        String text = selenium.getText(format(LOC_UPLOADED_LIST_N_NAME, 0));
+        String text = selenium.getText(jq(format(LOC_UPLOADED_LIST_N_NAME, 0)));
         assertEquals(text, "selenium-test" + Color.CYAN.getRGB() + ".jpg", format(MSG_RIGHT_PANEL_NAME_N, 1));
-        text = selenium.getText(format(LOC_UPLOADED_LIST_N_NAME, 1));
+        text = selenium.getText(jq(format(LOC_UPLOADED_LIST_N_NAME, 1)));
         assertEquals(text, "selenium-test" + Color.ORANGE.getRGB() + ".jpg", format(MSG_RIGHT_PANEL_NAME_N, 2));
 
-        long size1 = Long.parseLong(selenium.getText(format(LOC_UPLOADED_LIST_N_SIZE, 0)));
+        long size1 = Long.parseLong(selenium.getText(jq(format(LOC_UPLOADED_LIST_N_SIZE, 0))));
         long size2 = new File(FILE_CYAN).length();
         assertEquals(size1, size2, format(MSG_RIGHT_PANEL_SIZE_N, 1));
 
-        size1 = Long.parseLong(selenium.getText(format(LOC_UPLOADED_LIST_N_SIZE, 1)));
+        size1 = Long.parseLong(selenium.getText(jq(format(LOC_UPLOADED_LIST_N_SIZE, 1))));
         size2 = new File(FILE_ORANGE).length();
         assertEquals(size1, size2, format(MSG_RIGHT_PANEL_SIZE_N, 1));
 
@@ -264,15 +267,15 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testAutomaticUpload() {
-        selenium.click(LOC_AUTOMATIC_UPLOAD);
+        selenium.click(jq(LOC_AUTOMATIC_UPLOAD));
 
         int count = getJQueryCount(LOC_UPLOADED_LIST_TR);
         assertEquals(count, 0, MSG_RIGHT_PANEL_NUMBER_OF_ITEMS);
         
         waitFor(3000);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_CYAN);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_CYAN); // attachFile
         
-        Wait.failWith("Files were not uploaded.").until(new Condition() {
+        Wait.waitSelenium.failWith("Files were not uploaded.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_UPLOADED_LIST_TR) == 1;
             }
@@ -289,11 +292,11 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testUploadFiveFiles() {
         assertTrue(!belongsClass("rich-fileupload-button-dis", LOC_ADD_BUTTON_CLASS), MSG_ADD_BUTTON_ENABLED);
 
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_BLUE);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_CYAN);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_ORANGE);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_RED);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_BLUE); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_CYAN); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_ORANGE); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_RED); // attachFile
 
         assertFalse(!belongsClass("rich-fileupload-button-dis", LOC_ADD_BUTTON_CLASS), MSG_ADD_BUTTON_NOT_ENABLED);
     }
@@ -305,30 +308,30 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testUploadBigFile() {
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_BIG);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_BIG); // attachFile
 
         selenium.click(LOC_UPLOAD_BUTTON);
         
-        Wait.failWith(MSG_RIGHT_PANEL_NUMBER_OF_ITEMS).until(new Condition() {
+        Wait.waitSelenium.failWith(MSG_RIGHT_PANEL_NUMBER_OF_ITEMS).until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_UPLOADED_LIST_TR) == 1;
             }
         });
 
-        String text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0));
+        String text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 0)));
         assertEquals(text, "selenium-test" + Color.YELLOW.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_NAME, 1)));
         assertEquals(text, "selenium-test" + Color.GREEN.getRGB() + ".jpg", format(MSG_LEFT_PANEL_NAME_N, 2));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 0)));
         assertEquals(text, "Clear", format(MSG_LEFT_PANEL_CANCEL_N, 1));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_CANCEL, 1)));
         assertEquals(text, "Cancel", format(MSG_LEFT_PANEL_CANCEL_N, 2));
 
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 0)));
         assertEquals(text, "Done", format(MSG_LEFT_PANEL_DONE_N, 2));
-        text = selenium.getText(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1));
+        text = selenium.getText(jq(format(LOC_NOT_UPLOADED_LIST_N_DONE, 1)));
         assertEquals(text, "File size restricted", format(MSG_LEFT_PANEL_DONE_N, 2));
     }
 
@@ -339,13 +342,13 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testClearAllButton() {
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_CYAN);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_CYAN); // attachFile
 
         assertFalse(isDisplayed(LOC_CLEAR_ALL_BUTTON_STYLE), MSG_CLEAR_ALL_BUTTON_NOT_VISIBLE);
 
         selenium.click(LOC_UPLOAD_BUTTON);
-        Wait.failWith("Files were not uploaded.").until(new Condition() {
+        Wait.waitSelenium.failWith("Files were not uploaded.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_UPLOADED_LIST_TR) == 2;
             }
@@ -357,7 +360,7 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
 
         assertFalse(isDisplayed(LOC_CLEAR_ALL_BUTTON_STYLE), MSG_CLEAR_ALL_BUTTON_NOT_VISIBLE);
 
-        int count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        int count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 0, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
     }
 
@@ -370,20 +373,20 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testClearUploadedDataButton() {
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_YELLOW);
-        selenium.attachFile(LOC_ADD_BUTTON, "file://" + FILE_CYAN);
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_YELLOW); // attachFile
+        selenium.type(LOC_ADD_BUTTON, "file://" + FILE_CYAN); // attachFile
 
         assertFalse(selenium.isElementPresent(LOC_CLEAR_UPLOADED_DATA_BUTTON),
                 MSG_CLEAR_UPLOADED_DATA_BUTTON_NOT_VISIBLE);
 
-        Wait.failWith("There should be 2 files in the list.").until(new Condition() {
+        Wait.waitSelenium.failWith("There should be 2 files in the list.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return getJQueryCount(LOC_NOT_UPLOADED_LIST_TR) == 2;
+                return getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR)) == 2;
             }
         });
 
         selenium.click(LOC_UPLOAD_BUTTON);
-        Wait.failWith("Files were not uploaded").until(new Condition() {
+        Wait.waitSelenium.failWith("Files were not uploaded").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_UPLOADED_LIST_TR) == 2;
             }
@@ -394,16 +397,16 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_CLEAR_UPLOADED_DATA_BUTTON);
 
         // wait for JavaScript to finish its work
-        Wait.until(new Condition() {
+        Wait.waitSelenium.until(new SeleniumCondition() {
             public boolean isTrue() {
-                return !selenium.isElementPresent(LOC_UPLOADED_LIST_TR);
+                return !selenium.isElementPresent(jq(LOC_UPLOADED_LIST_TR));
             }
         });
 
         assertFalse(selenium.isElementPresent(LOC_CLEAR_UPLOADED_DATA_BUTTON),
                 MSG_CLEAR_UPLOADED_DATA_BUTTON_NOT_VISIBLE);
 
-        int count = getJQueryCount(LOC_NOT_UPLOADED_LIST_TR);
+        int count = getJQueryCount(jq(LOC_NOT_UPLOADED_LIST_TR));
         assertEquals(count, 0, MSG_LEFT_PANEL_NUMBER_OF_ITEMS);
 
         count = getJQueryCount(LOC_UPLOADED_LIST_TR);
@@ -503,8 +506,10 @@ public class FileUploadTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     private Color getPixelColor(String url, int x, int y) {
         // the index of first '/' not counting http://
-        int index = selenium.getLocation().indexOf('/', 7);
-        url = selenium.getLocation().substring(0, index) + url;
+        int index = selenium.getLocation().getPath().indexOf('/', 7);
+        // url = selenium.getLocation().substring(0, index) + url;
+        url = selenium.getLocation().getProtocol() + "://" + selenium.getLocation().getHost() + ":" + selenium.getLocation().getPort()
+            + "/" + selenium.getLocation().getPath();
 
         BufferedImage image = null;
         try {

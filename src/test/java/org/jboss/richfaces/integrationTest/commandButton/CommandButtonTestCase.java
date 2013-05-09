@@ -21,10 +21,13 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.commandButton;
 
-import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 
-import org.testng.annotations.BeforeMethod;
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
 import org.testng.annotations.Test;
 
 /**
@@ -32,9 +35,9 @@ import org.testng.annotations.Test;
  * @version $Revision$
  */
 public class CommandButtonTestCase extends AbstractSeleniumRichfacesTestCase {
-	private final String LOC_INPUT_TEXT = getLoc("INPUT_TEXT");
-	private final String LOC_OUTPUT_TEXT = getLoc("OUTPUT_TEXT");
-	private final String LOC_BUTTON_SAY_HELLO = getLoc("BUTTON_SAY_HELLO");
+	private final JQueryLocator LOC_INPUT_TEXT = jq(getLoc("INPUT_TEXT"));
+	private final JQueryLocator LOC_OUTPUT_TEXT = jq(getLoc("OUTPUT_TEXT"));
+	private final JQueryLocator LOC_BUTTON_SAY_HELLO = jq(getLoc("BUTTON_SAY_HELLO"));
 
 	private final String MSG_INPUT_NON_EMPTY = getMsg("INPUT_NON_EMPTY");
 	private final String MSG_OUTPUT_TEXT_PREFORMATTED = getMsg("OUTPUT_TEXT_PREFORMATTED");
@@ -74,7 +77,7 @@ public class CommandButtonTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.click(LOC_BUTTON_SAY_HELLO);
 
 		waitFor(Wait.DEFAULT_INTERVAL);
-		waitForTextEquals(LOC_OUTPUT_TEXT, expectedOutputText);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(LOC_OUTPUT_TEXT).text(expectedOutputText));
 	}
 
 	private void empty() {
@@ -84,7 +87,7 @@ public class CommandButtonTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.click(LOC_BUTTON_SAY_HELLO);
 
 		waitFor(Wait.DEFAULT_INTERVAL);
-		waitForTextEquals(LOC_OUTPUT_TEXT, expectedOutputText);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(LOC_OUTPUT_TEXT).text(expectedOutputText));
 	}
 
 	protected void loadPage() {

@@ -21,29 +21,33 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataTable;
 
-import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
 
-import static org.testng.Assert.*;
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
+import org.testng.annotations.Test;
 
 public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCase {
 
 	private final int MSG_ROW = 2;
 
-	private final String LOC_LINK_EDIT = formatLoc("LINK_EDIT", MSG_ROW);
-	private final String LOC_LINK_DELETE = formatLoc("LINK_DELETE", MSG_ROW);
-	private final String LOC_INPUT_PRICE = getLoc("INPUT_PRICE");
+	private final JQueryLocator LOC_LINK_EDIT = jq(formatLoc("LINK_EDIT", MSG_ROW));
+	private final JQueryLocator LOC_LINK_DELETE = jq(formatLoc("LINK_DELETE", MSG_ROW));
+	private final JQueryLocator LOC_INPUT_PRICE = jq(getLoc("INPUT_PRICE"));
 	private final String LOC_OUTPUT_PRICE_PREFORMATTED = getLoc("OUTPUT_PRICE_PREFORMATTED");
-	private final String LOC_OUTPUT_PRICE = format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW);
-	private final String LOC_OUTPUT_PRICE_ABOVE = format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW - 1);
-	private final String LOC_OUTPUT_PRICE_BELLOW = format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW + 1);
-	private final String LOC_PANEL_EDIT = getLoc("PANEL_EDIT");
-	private final String LOC_PANEL_DELETE = getLoc("PANEL_DELETE");
-	private final String LOC_BUTTON_EDIT_STORE = getLoc("BUTTON_EDIT_STORE");
-	private final String LOC_BUTTON_DELETE_YES = getLoc("BUTTON_DELETE_YES");
-	private final String LOC_BUTTON_DELETE_CANCEL = getLoc("BUTTON_DELETE_CANCEL");
+	private final JQueryLocator LOC_OUTPUT_PRICE = jq(format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW));
+	private final JQueryLocator LOC_OUTPUT_PRICE_ABOVE = jq(format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW - 1));
+	private final JQueryLocator LOC_OUTPUT_PRICE_BELLOW = jq(format(LOC_OUTPUT_PRICE_PREFORMATTED, MSG_ROW + 1));
+	private final JQueryLocator LOC_PANEL_EDIT = jq(getLoc("PANEL_EDIT"));
+	private final JQueryLocator LOC_PANEL_DELETE = jq(getLoc("PANEL_DELETE"));
+	private final JQueryLocator LOC_BUTTON_EDIT_STORE = jq(getLoc("BUTTON_EDIT_STORE"));
+	private final JQueryLocator LOC_BUTTON_DELETE_YES = jq(getLoc("BUTTON_DELETE_YES"));
+	private final JQueryLocator LOC_BUTTON_DELETE_CANCEL = jq(getLoc("BUTTON_DELETE_CANCEL"));
 
 	private final String MSG_TAB_TO_OPEN = getMsg("TAB_TO_OPEN");
 
@@ -60,9 +64,9 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 		// open and wait for editable modal panel
 		selenium.click(LOC_LINK_EDIT);
 
-		Wait.failWith("Editable modal panel was never displayed").until(new Condition() {
+		Wait.waitSelenium.failWith("Editable modal panel was never displayed").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return !"none".equals(getStyle(LOC_PANEL_EDIT, "display"));
+				return !"none".equals(getStyle(LOC_PANEL_EDIT, CssProperty.DISPLAY));
 			}
 		});
 
@@ -77,9 +81,9 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 		// store new price and wait for modal panel disappears
 		selenium.click(LOC_BUTTON_EDIT_STORE);
 
-		Wait.failWith("Modal panel never disappeared").until(new Condition() {
+		Wait.waitSelenium.failWith("Modal panel never disappeared").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return "none".equals(getStyle(LOC_PANEL_EDIT, "display"));
+				return "none".equals(getStyle(LOC_PANEL_EDIT, CssProperty.DISPLAY));
 			}
 		});
 
@@ -110,19 +114,20 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 		// open delete modal panel
 		selenium.click(LOC_LINK_DELETE);
 
-		Wait.failWith("Delete modal panel never displayed").until(new Condition() {
+		Wait.waitSelenium.failWith("Delete modal panel never displayed").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return !"none".equals(getStyle(LOC_PANEL_DELETE, "display"));
+				return !"none".equals(getStyle(LOC_PANEL_DELETE, CssProperty.DISPLAY));
 			}
 		});
 
 		// try to cancel delete action
 		selenium.click(LOC_BUTTON_DELETE_CANCEL);
 
-		Wait.failWith("Modal panel didn't disappeared when cancelling delete action").until(new Condition() {
-			public boolean isTrue() {
-				return "none".equals(getStyle(LOC_PANEL_DELETE, "display"));
-			}
+		Wait.waitSelenium.failWith("Modal panel didn't disappeared when cancelling delete action")
+		  .until(new SeleniumCondition() {
+            public boolean isTrue() {
+            	return "none".equals(getStyle(LOC_PANEL_DELETE, CssProperty.DISPLAY));
+            }
 		});
 
 		// check that nothing happened with data model
@@ -135,18 +140,18 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 		// try to open delete modal panel again
 		selenium.click(LOC_LINK_DELETE);
 
-		Wait.failWith("Delete modal panel never get displayed").until(new Condition() {
+		Wait.waitSelenium.failWith("Delete modal panel never get displayed").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return !"none".equals(getStyle(LOC_PANEL_DELETE, "display"));
+				return !"none".equals(getStyle(LOC_PANEL_DELETE, CssProperty.DISPLAY));
 			}
 		});
 
 		// try to confirm delete action
 		selenium.click(LOC_BUTTON_DELETE_YES);
 
-		Wait.failWith("Delete modal panel never disappeared when confirmed delete action").until(new Condition() {
+		Wait.waitSelenium.failWith("Delete modal panel never disappeared when confirmed delete action").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return "none".equals(getStyle(LOC_PANEL_DELETE, "display"));
+				return "none".equals(getStyle(LOC_PANEL_DELETE, CssProperty.DISPLAY));
 			}
 		});
 
@@ -173,7 +178,7 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 
 		// go to next page
 		selenium.click(LOC_BUTTON_NEXT_PAGE);
-		Wait.failWith("The table never moved to second page").until(new Condition() {
+		Wait.waitSelenium.failWith("The table never moved to second page").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return getActivePage() == 2;
 			}
@@ -181,7 +186,7 @@ public class EditTableWithModalPanelTestCase extends AbstractDataIterationTestCa
 
 		// go back to previous page
 		selenium.click(LOC_BUTTON_PREVIOUS_PAGE);
-		Wait.failWith("The table never moved to first page again").until(new Condition() {
+		Wait.waitSelenium.failWith("The table never moved to first page again").until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return getActivePage() == 1;
 			}

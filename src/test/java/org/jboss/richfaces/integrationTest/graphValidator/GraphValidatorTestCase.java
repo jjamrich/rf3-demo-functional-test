@@ -21,8 +21,12 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.graphValidator;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -65,7 +69,8 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	public void testNameValueRequired() {
 		final String validationMessage = format(MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY, LOC_INPUT_NAME);
 		typeAndSubmit(LOC_INPUT_NAME, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), validationMessage);
+		Graphene.waitModel.failWith(validationMessage).until(
+		    Graphene.textEquals.locator(jq(LOC_INPUT_NAME)).text(getMessageFor(LOC_INPUT_NAME)));
 	}
 
 	/**
@@ -75,7 +80,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testNameMinimumLength() {
 		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_NAME))
+		    .text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
 	}
 
 	/**
@@ -85,7 +92,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testNameMaximumLength() {
 		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_NAME))
+		    .text(MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_LENGTH_MUST_BE_BETWEEN);
 	}
 
 	/**
@@ -95,7 +104,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testNameOnlySpacesPattern() {
 		typeAndSubmit(LOC_INPUT_NAME, "  ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_NAME))
+		    .text(MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_NAME), MSG_OUTPUT_STRING_CONTAIN_ONLY_SPACES);
 	}
 
 	/**
@@ -108,7 +119,8 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		testNameValueRequired();
 		// then try valid input
 		typeAndSubmit(LOC_INPUT_NAME, MSG_INPUT_VALID_NAME);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), "");
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_NAME)).text(""));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_NAME), "");
 	}
 
 	/**
@@ -118,7 +130,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testAgeValueRequired() {
 		typeAndSubmit(LOC_INPUT_AGE, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MAY_NOT_BE_NULL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_AGE))
+            .text(MSG_OUTPUT_MAY_NOT_BE_NULL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MAY_NOT_BE_NULL);
 	}
 
 	/**
@@ -128,7 +142,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testAgeMinimumValue() {
 		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_MUST_BE_LESS_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_AGE))
+            .text(MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_LESS_THAN_OR_EQUAL);
 	}
 
 	/**
@@ -138,7 +154,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testAgeMaximumValue() {
 		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_AGE))
+            .text(MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_AGE), MSG_OUTPUT_MUST_BE_GREATER_THAN_OR_EQUAL);
 	}
 
 	/**
@@ -149,7 +167,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	public void testAgeIntegerOnly() {
 		final String validationMessage = format(MSG_OUTPUT_MUST_BE_A_NUMBER, LOC_INPUT_AGE);
 		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_IS_NOT_NUMBER);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_AGE))
+            .text(validationMessage));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
 	}
 
 	/**
@@ -162,7 +182,8 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		testAgeValueRequired();
 		// then try valid input
 		typeAndSubmit(LOC_INPUT_AGE, MSG_INPUT_VALID_AGE);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), "");
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_AGE)).text(""));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_AGE), "");
 	}
 
 	/**
@@ -172,7 +193,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testEmailMayNotBeNullOrEmpty() {
 		typeAndSubmit(LOC_INPUT_EMAIL, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_EMAIL))
+            .text(MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_MAY_NOT_BE_NULL_OR_EMPTY);
 	}
 
 	/**
@@ -182,7 +205,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testEmailOnlySpaces() {
 		typeAndSubmit(LOC_INPUT_EMAIL, " ");
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_EMAIL))
+            .text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
 	}
 
 	/**
@@ -192,7 +217,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testEmailBad1() {
 		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_1);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_EMAIL))
+            .text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
 	}
 
 	/**
@@ -202,7 +229,9 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 	@Test
 	public void testEmailBad2() {
 		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_NOT_WELL_FORMED_EMAIL_2);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_EMAIL))
+            .text(MSG_OUTPUT_NOT_WELL_FORMED_EMAIL));
+		// waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), MSG_OUTPUT_NOT_WELL_FORMED_EMAIL);
 	}
 
 	/**
@@ -215,17 +244,22 @@ public class GraphValidatorTestCase extends AbstractSeleniumRichfacesTestCase {
 		testEmailMayNotBeNullOrEmpty();
 		// then try valid input
 		typeAndSubmit(LOC_INPUT_EMAIL, MSG_INPUT_WELL_FORMED_EMAIL);
-		waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), "");
+		// waitForTextEquals(getMessageFor(LOC_INPUT_EMAIL), "");
+		Graphene.waitModel.until(Graphene.textEquals.locator(getMessageLocatorFor(LOC_INPUT_EMAIL)).text(""));
 	}
 
 	private void typeAndSubmit(String locator, String value) {
-		selenium.type(locator, value);
-		selenium.click(LOC_BUTTON_SUBMIT_USER_INFO);
+		selenium.type(jq(locator), value);
+		selenium.click(jq(LOC_BUTTON_SUBMIT_USER_INFO));
 	}
 
 	private String getMessageFor(String locator) {
 		return format(LOC_VALIDATION_MESSAGE_RELATIVE, locator);
 	}
+
+	private JQueryLocator getMessageLocatorFor(String locator) {
+        return jq(format(LOC_VALIDATION_MESSAGE_RELATIVE, locator));
+    }
 
 	protected void loadPage() {
 		openComponent("Graph Validator");

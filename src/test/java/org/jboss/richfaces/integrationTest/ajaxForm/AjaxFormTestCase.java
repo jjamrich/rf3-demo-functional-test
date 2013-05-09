@@ -21,9 +21,11 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxForm;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
+
+import org.jboss.arquillian.ajocado.Graphene;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import static org.testng.Assert.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.thoughtworks.selenium.Wait;
@@ -72,28 +74,28 @@ public class AjaxFormTestCase extends AbstractSeleniumRichfacesTestCase {
 	}
 
 	public void nonAjaxSubmit() {
-		selenium.click(LOC_BUTTON_NON_AJAX);
-		selenium.waitForPageToLoad(String.valueOf(Wait.DEFAULT_TIMEOUT));
+		selenium.click(jq(LOC_BUTTON_NON_AJAX));
+		selenium.waitForPageToLoad(Wait.DEFAULT_TIMEOUT);
 
 		scrollIntoView(LOC_LEGEND_HEADER, true);
 
 		// both of outputs should be same
-		String actual = selenium.getText(LOC_OUTPUT_AJAX);
+		String actual = selenium.getText(jq(LOC_OUTPUT_AJAX));
 		assertEquals(actual, MSG_OUTPUT_NON_AJAX);
 
-		actual = selenium.getText(LOC_OUTPUT_NON_AJAX);
+		actual = selenium.getText(jq(LOC_OUTPUT_NON_AJAX));
 		assertEquals(actual, MSG_OUTPUT_NON_AJAX);
 	}
 
 	public void ajaxSubmit() {
-		String startingNonAjaxText = selenium.getText(LOC_OUTPUT_NON_AJAX);
+		String startingNonAjaxText = selenium.getText(jq(LOC_OUTPUT_NON_AJAX));
 
 		// ajax-rendered output should be set right
-		selenium.click(LOC_BUTTON_AJAX);
-		waitForTextEquals(LOC_OUTPUT_AJAX, MSG_OUTPUT_AJAX);
+		selenium.click(jq(LOC_BUTTON_AJAX));
+		Graphene.waitGui.until(Graphene.textEquals.locator(jq(LOC_OUTPUT_AJAX)).text(MSG_OUTPUT_AJAX));
 
 		// non-ajax output should stay same like before the request
-		String actual = selenium.getText(LOC_OUTPUT_NON_AJAX);
+		String actual = selenium.getText(jq(LOC_OUTPUT_NON_AJAX));
 		assertEquals(actual, startingNonAjaxText);
 	}
 

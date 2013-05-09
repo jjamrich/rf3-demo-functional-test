@@ -22,13 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.tree;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -39,10 +41,10 @@ import org.testng.annotations.Test;
  */
 public class TreeNodesAdaptorTestCase extends AbstractSeleniumRichfacesTestCase {
 
-    private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_TABLE_SUBNODES = getLoc("TABLE_SUBNODES");
-    private final String LOC_DEMO_NODE = getLoc("DEMO_NODE");
-    private final String LOC_DIV_SUBNODES = getLoc("DIV_SUBNODES");
+    private final JQueryLocator LOC_EXAMPLE_HEADER = jq(getLoc("EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_TABLE_SUBNODES = jq(getLoc("TABLE_SUBNODES"));
+    private final JQueryLocator LOC_DEMO_NODE = jq(getLoc("DEMO_NODE"));
+    private final JQueryLocator LOC_DIV_SUBNODES = jq(getLoc("DIV_SUBNODES"));
     private final String LOC_DIV_SUBNODES_PREFORMATTED = getLoc("DIV_SUBNODES_PREFORMATTED");
 
     private final int MSG_CHILDREN_COUNT = Integer.parseInt(getMsg("CHILDREN_COUNT"));
@@ -64,7 +66,7 @@ public class TreeNodesAdaptorTestCase extends AbstractSeleniumRichfacesTestCase 
         selenium.click(LOC_DEMO_NODE);
 
         // wait until the node is expanded
-        Wait.failWith("The node org/richfaces/demo should be expanded.").until(new Condition() {
+        Wait.waitSelenium.failWith("The node org/richfaces/demo should be expanded.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return isDisplayed(format(LOC_DIV_SUBNODES_PREFORMATTED, 0));
             }
@@ -81,7 +83,7 @@ public class TreeNodesAdaptorTestCase extends AbstractSeleniumRichfacesTestCase 
         waitFor(6000);
         
         // wait until the node is collapsed
-        Wait.failWith("The node org/richfaces/demo should be collapsed.").until(new Condition() {
+        Wait.waitSelenium.failWith("The node org/richfaces/demo should be collapsed.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return !isDisplayed(format(LOC_DIV_SUBNODES_PREFORMATTED, 0));
             }

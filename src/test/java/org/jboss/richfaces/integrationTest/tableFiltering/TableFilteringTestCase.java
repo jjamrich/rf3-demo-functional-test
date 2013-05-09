@@ -21,14 +21,18 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.tableFiltering;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.locator.option.OptionValueLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumRetriever;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.Retrieve;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -37,12 +41,12 @@ import org.testng.annotations.Test;
  */
 public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 
-	private final String LOC_INPUT_STATE = getLoc("INPUT_STATE");
-	private final String LOC_INPUT_CAPITAL = getLoc("INPUT_CAPITAL");
+	private final JQueryLocator LOC_INPUT_STATE = jq(getLoc("INPUT_STATE"));
+	private final JQueryLocator LOC_INPUT_CAPITAL = jq(getLoc("INPUT_CAPITAL"));
 	private final String LOC_TD_STATE_PREFORMATTED = getLoc("TD_STATE_PREFORMATTED");
 	private final String LOC_TD_CAPITAL_PREFORMATTED = getLoc("TD_CAPITAL_PREFORMATTED");
-	private final String LOC_SELECT_TIMEZONE = getLoc("SELECT_TIMEZONE");
-	private final String LOC_OPTION_SELECTED_TIMEZONE = getLoc("OPTION_SELECTED_TIMEZONE");
+	private final JQueryLocator LOC_SELECT_TIMEZONE = jq(getLoc("SELECT_TIMEZONE"));
+	private final JQueryLocator LOC_OPTION_SELECTED_TIMEZONE = jq(getLoc("OPTION_SELECTED_TIMEZONE"));
 	private final String LOC_TD_TIMEZONE_PREFORMATTED = LOC_TD_CAPITAL_PREFORMATTED;
 
 	private final String[] MSG_LIST_OF_STATE_PREFIXES = StringUtils.splitPreserveAllTokens(
@@ -78,7 +82,7 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 			selenium.type(LOC_INPUT_STATE, statePrefix);
 			selenium.fireEvent(LOC_INPUT_STATE, Event.KEYUP);
 
-			waitForTextChanges(LOC_TABLE_COMMON, tableText);
+			waitForTextChangesAndReturn(LOC_TABLE_COMMON, tableText);
 
 			checkFiltering();
 
@@ -88,7 +92,7 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 			selenium.type(LOC_INPUT_CAPITAL, capitalPrefix);
 			selenium.fireEvent(LOC_INPUT_CAPITAL, Event.KEYUP);
 
-			waitForTextChanges(LOC_TABLE_COMMON, tableText);
+			waitForTextChangesAndReturn(LOC_TABLE_COMMON, tableText);
 
 			checkFiltering();
 		}
@@ -115,26 +119,39 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 			selenium.type(LOC_INPUT_STATE, pair[0]);
 			selenium.fireEvent(LOC_INPUT_STATE, Event.KEYUP);
 
-			Wait.dontFail().timeout(5000).waitForChange(tableText, retrieveTableText);
+			Wait.waitSelenium.dontFail().timeout(5000).waitForChange(tableText, retrieveTableText);
 
 			checkExternalFiltering();
 
 			// change time zone
 			tableText = selenium.getText(LOC_TABLE_COMMON);
 
-			selenium.select(LOC_SELECT_TIMEZONE, pair[1]);
+			selenium.select(LOC_SELECT_TIMEZONE, new OptionValueLocator(pair[1]));
 			selenium.fireEvent(LOC_SELECT_TIMEZONE, Event.CHANGE);
 
-			Wait.dontFail().timeout(5000).waitForChange(tableText, retrieveTableText);
+			Wait.waitSelenium.dontFail().timeout(5000).waitForChange(tableText, retrieveTableText);
 
 			checkExternalFiltering();
 		}
 	}
 
-	private Retrieve<String> retrieveTableText = new Retrieve<String>() {
+	private SeleniumRetriever<String> retrieveTableText = new SeleniumRetriever<String>() {
+	    String val;
 		public String retrieve() {
 			return selenium.getText(LOC_TABLE_COMMON);
 		}
+
+        public void initializeValue() {
+            val = retrieve();
+        }
+
+        public void setValue(String value) {
+            val = value;
+        }
+
+        public String getValue() {
+            return val;
+        }
 	};
 
 	private void checkFiltering() {
@@ -145,11 +162,11 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 
 		for (int row = 1; row <= rows; row++) {
 			if (statePrefix.length() > 0) {
-				String state = selenium.getText(format(LOC_TD_STATE_PREFORMATTED, row));
+				String state = selenium.getText(jq(format(LOC_TD_STATE_PREFORMATTED, row)));
 				assertTrue(state.startsWith(statePrefix));
 			}
 			if (capitalPrefix.length() > 0) {
-				String capital = selenium.getText(format(LOC_TD_CAPITAL_PREFORMATTED, row));
+				String capital = selenium.getText(jq(format(LOC_TD_CAPITAL_PREFORMATTED, row)));
 				assertTrue(capital.startsWith(capitalPrefix));
 			}
 		}
@@ -163,10 +180,10 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 
 		for (int row = 1; row <= rows; row++) {
 			if (statePrefix.length() > 0) {
-				String state = selenium.getText(format(LOC_TD_STATE_PREFORMATTED, row));
+				String state = selenium.getText(jq(format(LOC_TD_STATE_PREFORMATTED, row)));
 				assertTrue(state.startsWith(statePrefix));
 			}
-			String actualTimezone = selenium.getText(format(LOC_TD_TIMEZONE_PREFORMATTED, row));
+			String actualTimezone = selenium.getText(jq(format(LOC_TD_TIMEZONE_PREFORMATTED, row)));
 			if (StringUtils.isNotBlank(selectedTimezone)) {
 				String expected = format(MSG_INPUT_TIMEZONE_PREFORMATTED, selectedTimezone);
 				assertEquals(expected, actualTimezone);
@@ -180,6 +197,6 @@ public class TableFilteringTestCase extends AbstractDataIterationTestCase {
 	protected void loadPage() {
 		openComponent("Table Filtering");
 		
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

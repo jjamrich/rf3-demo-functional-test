@@ -21,11 +21,14 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.script;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
 
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -34,15 +37,15 @@ import org.testng.annotations.Test;
  */
 public class ScriptTestCase extends AbstractSeleniumRichfacesTestCase {
 
-	private String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private String LOC_BUTTON_HIDE = getLoc("BUTTON_HIDE");
-	private String LOC_BUTTON_SHOW = getLoc("BUTTON_SHOW");
-	private String LOC_INPUT_NAME = getLoc("INPUT_NAME");
-	private String LOC_INPUT_JOB = getLoc("INPUT_JOB");
-	private String LOC_BUTTON_SUBMIT = getLoc("BUTTON_SUBMIT");
-	private String LOC_OUTPUT_NAME = getLoc("OUTPUT_NAME");
-	private String LOC_OUTPUT_JOB = getLoc("OUTPUT_JOB");
-	private String LOC_PANEL_HIDABLE = getLoc("PANEL_HIDABLE");
+	private JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+	private JQueryLocator LOC_BUTTON_HIDE = jq(getLoc("BUTTON_HIDE"));
+	private JQueryLocator LOC_BUTTON_SHOW = jq(getLoc("BUTTON_SHOW"));
+	private JQueryLocator LOC_INPUT_NAME = jq(getLoc("INPUT_NAME"));
+	private JQueryLocator LOC_INPUT_JOB = jq(getLoc("INPUT_JOB"));
+	private JQueryLocator LOC_BUTTON_SUBMIT = jq(getLoc("BUTTON_SUBMIT"));
+	private JQueryLocator LOC_OUTPUT_NAME = jq(getLoc("OUTPUT_NAME"));
+	private JQueryLocator LOC_OUTPUT_JOB = jq(getLoc("OUTPUT_JOB"));
+	private JQueryLocator LOC_PANEL_HIDABLE = jq(getLoc("PANEL_HIDABLE"));
 
 	private String MSG_INPUT_NAME = getMsg("INPUT_NAME");
 	private String MSG_INPUT_JOB = getMsg("INPUT_JOB");
@@ -107,7 +110,7 @@ public class ScriptTestCase extends AbstractSeleniumRichfacesTestCase {
 		selenium.click(LOC_BUTTON_SUBMIT);
 
 		// wait until output changes or 5 sec
-		Wait.dontFail().timeout(5000).until(new Condition() {
+		Wait.waitSelenium.dontFail().timeout(5000).until(new SeleniumCondition() {
 			public boolean isTrue() {
 				// name or job changes
 				return !name.equals(getName()) || !job.equals(getJob());
@@ -131,9 +134,9 @@ public class ScriptTestCase extends AbstractSeleniumRichfacesTestCase {
 	private void hide() {
 		selenium.click(LOC_BUTTON_HIDE);
 
-		Wait.failWith("Hidable panel never hides").until(new Condition() {
+		Wait.waitSelenium.failWith("Hidable panel never hides").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return "none".equals(getStyle(LOC_PANEL_HIDABLE, "display"));
+				return "none".equals(getStyle(LOC_PANEL_HIDABLE, CssProperty.DISPLAY));
 			}
 		});
 	}
@@ -141,9 +144,9 @@ public class ScriptTestCase extends AbstractSeleniumRichfacesTestCase {
 	private void show() {
 		selenium.click(LOC_BUTTON_SHOW);
 
-		Wait.failWith("Hidable panel never shows again").until(new Condition() {
+		Wait.waitSelenium.failWith("Hidable panel never shows again").until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return "block".equals(getStyle(LOC_PANEL_HIDABLE, "display"));
+				return "block".equals(getStyle(LOC_PANEL_HIDABLE, CssProperty.DISPLAY));
 			}
 		});
 	}

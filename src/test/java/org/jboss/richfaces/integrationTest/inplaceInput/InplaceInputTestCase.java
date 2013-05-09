@@ -22,12 +22,13 @@
 
 package org.jboss.richfaces.integrationTest.inplaceInput;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -51,22 +52,22 @@ public class InplaceInputTestCase extends AbstractSeleniumRichfacesTestCase {
 	private final String MSG_NOT_RICH_INPLACE_EDIT = getMsg("NOT_RICH_INPLACE_EDIT");
 
 	// locators
-	private final String LOC_FIRST_NAME = getLoc("FIRST_NAME");
-	private final String LOC_FIRST_NAME_INPUT = getLoc("FIRST_NAME_INPUT");
-	private final String LOC_FIRST_EMAIL = getLoc("FIRST_EMAIL");
-	private final String LOC_FIRST_EMAIL_INPUT = getLoc("FIRST_EMAIL_INPUT");
-	private final String LOC_SECOND_NAME = getLoc("SECOND_NAME");
-	private final String LOC_SECOND_NAME_INPUT = getLoc("SECOND_NAME_INPUT");
-	private final String LOC_SECOND_NAME_OK = getLoc("SECOND_NAME_OK");
-	private final String LOC_SECOND_NAME_CANCEL = getLoc("SECOND_NAME_CANCEL");
-	private final String LOC_SECOND_EMAIL = getLoc("SECOND_EMAIL");
-	private final String LOC_SECOND_EMAIL_INPUT = getLoc("SECOND_EMAIL_INPUT");
-	private final String LOC_SECOND_EMAIL_OK = getLoc("SECOND_EMAIL_OK");
-	private final String LOC_SECOND_EMAIL_CANCEL = getLoc("SECOND_EMAIL_CANCEL");
-	private final String LOC_THIRD = getLoc("THIRD");
-	private final String LOC_THIRD_INPUT = getLoc("THIRD_INPUT");
-	private final String LOC_THIRD_SAVE = getLoc("THIRD_SAVE");
-	private final String LOC_THIRD_CANCEL = getLoc("THIRD_CANCEL");
+	private final JQueryLocator LOC_FIRST_NAME = jq(getLoc("FIRST_NAME"));
+	private final JQueryLocator LOC_FIRST_NAME_INPUT = jq(getLoc("FIRST_NAME_INPUT"));
+	private final JQueryLocator LOC_FIRST_EMAIL = jq(getLoc("FIRST_EMAIL"));
+	private final JQueryLocator LOC_FIRST_EMAIL_INPUT = jq(getLoc("FIRST_EMAIL_INPUT"));
+	private final JQueryLocator LOC_SECOND_NAME = jq(getLoc("SECOND_NAME"));
+	private final JQueryLocator LOC_SECOND_NAME_INPUT = jq(getLoc("SECOND_NAME_INPUT"));
+	private final JQueryLocator LOC_SECOND_NAME_OK = jq(getLoc("SECOND_NAME_OK"));
+	private final JQueryLocator LOC_SECOND_NAME_CANCEL = jq(getLoc("SECOND_NAME_CANCEL"));
+	private final JQueryLocator LOC_SECOND_EMAIL = jq(getLoc("SECOND_EMAIL"));
+	private final JQueryLocator LOC_SECOND_EMAIL_INPUT = jq(getLoc("SECOND_EMAIL_INPUT"));
+	private final JQueryLocator LOC_SECOND_EMAIL_OK = jq(getLoc("SECOND_EMAIL_OK"));
+	private final JQueryLocator LOC_SECOND_EMAIL_CANCEL = jq(getLoc("SECOND_EMAIL_CANCEL"));
+	private final JQueryLocator LOC_THIRD = jq(getLoc("THIRD"));
+	private final JQueryLocator LOC_THIRD_INPUT = jq(getLoc("THIRD_INPUT"));
+	private final JQueryLocator LOC_THIRD_SAVE = jq(getLoc("THIRD_SAVE"));
+	private final JQueryLocator LOC_THIRD_CANCEL = jq(getLoc("THIRD_CANCEL"));
 
 	/**
 	 * Tests the input for name in the first example. First it checks the attribute  
@@ -90,7 +91,7 @@ public class InplaceInputTestCase extends AbstractSeleniumRichfacesTestCase {
 		assertTrue(belongsClass("rich-inplace-edit", LOC_FIRST_NAME), MSG_RICH_INPLACE_EDIT);
 
 		selenium.type(LOC_FIRST_NAME_INPUT, "John Smith");
-		selenium.fireEvent(LOC_FIRST_NAME_INPUT, "blur");
+		selenium.fireEvent(LOC_FIRST_NAME_INPUT, Event.BLUR);
 
 		assertTrue(belongsClass("rich-inplace-changed", LOC_FIRST_NAME), MSG_RICH_INPLACE_CHANGED);
 		assertFalse(belongsClass("rich-inplace-edit", LOC_FIRST_NAME), MSG_NOT_RICH_INPLACE_EDIT);
@@ -121,7 +122,7 @@ public class InplaceInputTestCase extends AbstractSeleniumRichfacesTestCase {
 		assertTrue(belongsClass("rich-inplace-edit", LOC_FIRST_EMAIL), MSG_RICH_INPLACE_EDIT);
 
 		selenium.type(LOC_FIRST_EMAIL_INPUT, "john@smith.name");
-		selenium.fireEvent(LOC_FIRST_EMAIL_INPUT, "blur");
+		selenium.fireEvent(LOC_FIRST_EMAIL_INPUT, Event.BLUR);
 
 		assertTrue(belongsClass("rich-inplace-changed", LOC_FIRST_EMAIL), MSG_RICH_INPLACE_CHANGED);
 		assertFalse(belongsClass("rich-inplace-edit", LOC_FIRST_EMAIL), MSG_NOT_RICH_INPLACE_EDIT);

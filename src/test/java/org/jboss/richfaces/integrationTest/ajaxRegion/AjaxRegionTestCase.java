@@ -21,13 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxRegion;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -101,20 +105,20 @@ public class AjaxRegionTestCase extends AbstractSeleniumRichfacesTestCase {
 	public void testTextWillDisappear() {
 		scrollIntoView(LOC_INPUT_TEST2_NAME1, true);
 		
-		assertTrue(StringUtils.isNotBlank(selenium.getText(LOC_OUTPUT_TEXT_DISAPPEAR)),
+		assertTrue(StringUtils.isNotBlank(selenium.getText(jq(LOC_OUTPUT_TEXT_DISAPPEAR))),
 				"Text under first input should not be blank");
 
-		selenium.type(LOC_INPUT_TEST2_NAME1, MSG_INPUT_SAMPLE);
-		selenium.fireEvent(LOC_INPUT_TEST2_NAME1, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEST2_NAME1), MSG_INPUT_SAMPLE);
+		selenium.fireEvent(jq(LOC_INPUT_TEST2_NAME1), Event.KEYUP);
 
-		Wait.failWith("Typed name never changes after firing event on input").until(new Condition() {
+		Graphene.waitModel.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String expectedText = format(MSG_OUTPUT_TYPED_NAME_PREFORMATTED, input(MSG_INPUT_SAMPLE));
-				return expectedText.equals(selenium.getText(LOC_OUTPUT_TEST2_TYPED_NAME));
+				return expectedText.equals(selenium.getText(jq(LOC_OUTPUT_TEST2_TYPED_NAME)));
 			}
 		});
 
-		assertTrue(StringUtils.isBlank(selenium.getText(LOC_OUTPUT_TEXT_DISAPPEAR)),
+		assertTrue(StringUtils.isBlank(selenium.getText(jq(LOC_OUTPUT_TEXT_DISAPPEAR))),
 				"Text didn't disappear as expected when input changed");
 	}
 
@@ -126,20 +130,20 @@ public class AjaxRegionTestCase extends AbstractSeleniumRichfacesTestCase {
 	public void testTextWillNotDisappear() {
 		scrollIntoView(LOC_INPUT_TEST2_NAME2, true);
 
-		assertTrue(StringUtils.isNotBlank(selenium.getText(LOC_OUTPUT_TEXT_NOT_DISAPPER)),
+		assertTrue(StringUtils.isNotBlank(selenium.getText(jq(LOC_OUTPUT_TEXT_NOT_DISAPPER))),
 				"Text under second input should not be blank");
 		
-		selenium.type(LOC_INPUT_TEST2_NAME2, MSG_INPUT_SAMPLE);
-		selenium.fireEvent(LOC_INPUT_TEST2_NAME2, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEST2_NAME2), MSG_INPUT_SAMPLE);
+		selenium.fireEvent(jq(LOC_INPUT_TEST2_NAME2), Event.KEYUP);
 
-		Wait.failWith("Typed name never changes after firing event on input").until(new Condition() {
+		Graphene.waitModel.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String expectedText = format(MSG_OUTPUT_TYPED_NAME_PREFORMATTED, input(MSG_INPUT_SAMPLE));
-				return expectedText.equals(selenium.getText(LOC_OUTPUT_TEST2_TYPED_NAME));
+				return expectedText.equals(selenium.getText(jq(LOC_OUTPUT_TEST2_TYPED_NAME)));
 			}
 		});
 
-		assertTrue(StringUtils.isNotBlank(selenium.getText(LOC_OUTPUT_TEXT_NOT_DISAPPER)),
+		assertTrue(StringUtils.isNotBlank(selenium.getText(jq(LOC_OUTPUT_TEXT_NOT_DISAPPER))),
 				"Text disappeared even it wasn't expected when input changed");
 	}
 
@@ -148,45 +152,44 @@ public class AjaxRegionTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		scrollIntoView(LOC_INPUT_TEST1_NAME1, true);
 		
-		selenium.type(LOC_INPUT_TEST1_NAME1, MSG_INPUT_SAMPLE);
-		selenium.fireEvent(LOC_INPUT_TEST1_NAME1, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEST1_NAME1), MSG_INPUT_SAMPLE);
+		selenium.fireEvent(jq(LOC_INPUT_TEST1_NAME1), Event.KEYUP);
 
-		Wait.failWith(format("Validation message never appears or doesn't contain '{0}'", MSG_MESSAGE_VALUE_REQUIRED))
-				.until(new Condition() {
+		Graphene.waitModel.until(new SeleniumCondition() {
 					public boolean isTrue() {
-						if (!selenium.isElementPresent(LOC_OUTPUT_VALIDATION_MESSAGE))
+						if (!selenium.isElementPresent(jq(LOC_OUTPUT_VALIDATION_MESSAGE)))
 							return false;
-						return selenium.getText(LOC_OUTPUT_VALIDATION_MESSAGE).contains(MSG_MESSAGE_VALUE_REQUIRED);
+						return selenium.getText(jq(LOC_OUTPUT_VALIDATION_MESSAGE)).contains(MSG_MESSAGE_VALUE_REQUIRED);
 					}
 				});
 
-		assertEquals(selenium.getText(LOC_OUTPUT_TEST1_TYPED_NAME), expectedTypedName,
+		assertEquals(selenium.getText(jq(LOC_OUTPUT_TEST1_TYPED_NAME)), expectedTypedName,
 				"Typed name should isn't blank as expected");
 	}
 
 	private void job1ChangeInfluenceName1Validation() {
 		final String expectedTypedName = format(MSG_OUTPUT_TYPED_NAME_PREFORMATTED, input(MSG_INPUT_SAMPLE));
 
-		assertTrue(selenium.getText(LOC_OUTPUT_VALIDATION_MESSAGE).contains(MSG_MESSAGE_VALUE_REQUIRED), format(
+		assertTrue(selenium.getText(jq(LOC_OUTPUT_VALIDATION_MESSAGE)).contains(MSG_MESSAGE_VALUE_REQUIRED), format(
 				"Validation message doesn't contain '{0}'", MSG_MESSAGE_VALUE_REQUIRED));
 
-		selenium.type(LOC_INPUT_TEST1_JOB1, MSG_INPUT_SAMPLE);
-		selenium.fireEvent(LOC_INPUT_TEST1_NAME1, Event.KEYUP);
+		selenium.type(jq(LOC_INPUT_TEST1_JOB1), MSG_INPUT_SAMPLE);
+		selenium.fireEvent(jq(LOC_INPUT_TEST1_NAME1), Event.KEYUP);
 
-		Wait.failWith("Validation message did not disappear").until(new Condition() {
+		Graphene.waitModel.until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return !selenium.isElementPresent(LOC_OUTPUT_VALIDATION_MESSAGE);
+				return !selenium.isElementPresent(jq(LOC_OUTPUT_VALIDATION_MESSAGE));
 			}
 		});
 
-		assertEquals(selenium.getText(LOC_OUTPUT_TEST1_TYPED_NAME), expectedTypedName, format(
+		assertEquals(selenium.getText(jq(LOC_OUTPUT_TEST1_TYPED_NAME)), expectedTypedName, format(
 				"Typed name does not contain value '{0}'", expectedTypedName));
 	}
 
 	private void name1CanBeChangedAnywayIfJob1IsNotBlank() {
-		assertFalse(selenium.isElementPresent(LOC_OUTPUT_VALIDATION_MESSAGE),
+		assertFalse(selenium.isElementPresent(jq(LOC_OUTPUT_VALIDATION_MESSAGE)),
 				"Validation message should not be present");
-		assertTrue(StringUtils.isNotBlank(selenium.getValue(LOC_INPUT_TEST1_JOB1)),
+		assertTrue(StringUtils.isNotBlank(selenium.getValue(jq(LOC_INPUT_TEST1_JOB1))),
 				"First Job input should not be blank");
 
 		tryTypingToInput(LOC_INPUT_TEST1_NAME1);
@@ -198,16 +201,16 @@ public class AjaxRegionTestCase extends AbstractSeleniumRichfacesTestCase {
 		for (final String enterValue : new String[] { "", MSG_INPUT_SAMPLE, "" }) {
 			final String expectedTypedName = format(MSG_OUTPUT_TYPED_NAME_PREFORMATTED, input(enterValue));
 
-			selenium.type(locator, enterValue);
-			selenium.fireEvent(locator, Event.KEYUP);
+			selenium.type(jq(locator), enterValue);
+			selenium.fireEvent(jq(locator), Event.KEYUP);
 
-			Wait.failWith(format("Typed name did not changed to '{0}'", expectedTypedName)).until(new Condition() {
+			Graphene.waitModel.until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return expectedTypedName.equals(selenium.getText(LOC_OUTPUT_TEST1_TYPED_NAME));
+					return expectedTypedName.equals(selenium.getText(jq(LOC_OUTPUT_TEST1_TYPED_NAME)));
 				}
 			});
 
-			assertFalse(selenium.isElementPresent(LOC_OUTPUT_VALIDATION_MESSAGE),
+			assertFalse(selenium.isElementPresent(jq(LOC_OUTPUT_VALIDATION_MESSAGE)),
 					"Validation message should not appear");
 		}
 	}

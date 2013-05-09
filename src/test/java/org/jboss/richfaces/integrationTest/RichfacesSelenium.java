@@ -1,15 +1,12 @@
 package org.jboss.richfaces.integrationTest;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.jboss.test.selenium.waiting.Retrieve;
-import org.jboss.test.selenium.waiting.Wait;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
-import com.thoughtworks.selenium.SeleniumException;
+// import org.jboss.test.selenium.waiting.Retrieve;
+// import org.jboss.arquillian.ajocado.waiting.Wait;
 
 public class RichfacesSelenium extends DefaultSelenium {
 
@@ -44,7 +41,9 @@ public class RichfacesSelenium extends DefaultSelenium {
 			final AssertionError fail = new AssertionError("Fails with Permission denied when trying to execute jQuery");
 
 			final T start = null;
-			return Wait.noDelay().timeout(Wait.DEFAULT_TIMEOUT).interval(1000).failWith(fail).waitForChangeAndReturn(start,
+			
+			/*
+			return Wait.noDelay().timeout(Wait.DEFAULT_TIMEOUT).interval(1000).failWith(fail).waitForChangeAndReturn(start,			
 					new Retrieve<T>() {
 						boolean exceptionLogged = false;
 
@@ -68,6 +67,8 @@ public class RichfacesSelenium extends DefaultSelenium {
 							}
 						}
 					});
+		  */
+		  return ajaxCommand.command();
 		}
 
 		@Override

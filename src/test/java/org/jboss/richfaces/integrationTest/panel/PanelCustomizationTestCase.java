@@ -22,11 +22,12 @@
 
 package org.jboss.richfaces.integrationTest.panel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -48,14 +49,14 @@ public class PanelCustomizationTestCase extends AbstractSeleniumRichfacesTestCas
     private final String MSG_CUST_FOURTH_CLASS = getMsg("CUST_FOURTH_CLASS");
     
     // locators
-    private final String LOC_CUST_FIRST_PANEL_HEADER = getLoc("CUST_FIRST_PANEL_HEADER");
-    private final String LOC_CUST_SECOND_PANEL_HEADER = getLoc("CUST_SECOND_PANEL_HEADER");
-    private final String LOC_CUST_THIRD_PANEL_HEADER = getLoc("CUST_THIRD_PANEL_HEADER");
-    private final String LOC_CUST_THIRD_PANEL_BODY = getLoc("CUST_THIRD_PANEL_BODY");
-    private final String LOC_CUST_FOURTH_PANEL_BODY = getLoc("CUST_FOURTH_PANEL_BODY");
-    private final String LOC_CUST_FOURTH_PANEL_HEADER = getLoc("CUST_FOURTH_PANEL_HEADER");
-    private final String LOC_CUST_FIFTH_PANEL_BODY = getLoc("CUST_FIFTH_PANEL_BODY");
-    private final String LOC_CUST_FIFTH_PANEL_HEADER = getLoc("CUST_FIFTH_PANEL_HEADER");
+    private final JQueryLocator LOC_CUST_FIRST_PANEL_HEADER = jq(getLoc("CUST_FIRST_PANEL_HEADER"));
+    private final JQueryLocator LOC_CUST_SECOND_PANEL_HEADER = jq(getLoc("CUST_SECOND_PANEL_HEADER"));
+    private final JQueryLocator LOC_CUST_THIRD_PANEL_HEADER = jq(getLoc("CUST_THIRD_PANEL_HEADER"));
+    private final JQueryLocator LOC_CUST_THIRD_PANEL_BODY = jq(getLoc("CUST_THIRD_PANEL_BODY"));
+    private final JQueryLocator LOC_CUST_FOURTH_PANEL_BODY = jq(getLoc("CUST_FOURTH_PANEL_BODY"));
+    private final JQueryLocator LOC_CUST_FOURTH_PANEL_HEADER = jq(getLoc("CUST_FOURTH_PANEL_HEADER"));
+    private final JQueryLocator LOC_CUST_FIFTH_PANEL_BODY = jq(getLoc("CUST_FIFTH_PANEL_BODY"));
+    private final JQueryLocator LOC_CUST_FIFTH_PANEL_HEADER = jq(getLoc("CUST_FIFTH_PANEL_HEADER"));
 
     /**
      * Tests first panel. It checks panel header's text and class attribute.

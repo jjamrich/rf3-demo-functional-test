@@ -22,11 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.editor;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.javascript.KeyCode;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.locator.frame.FrameDomLocator;
+import org.jboss.arquillian.ajocado.locator.frame.FrameRelativeLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -52,27 +56,27 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
 
     // editor
     private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_TEXT_AREA = getLoc("TEXT_AREA");
+    private final JQueryLocator LOC_TEXT_AREA = jq(getLoc("TEXT_AREA"));
     private final String LOC_IFRAME = getLoc("IFRAME");
-    private final String LOC_TEXT_AREA_P = getLoc("TEXT_AREA_P");
-    private final String LOC_TEXT_AREA_P2_B = getLoc("TEXT_AREA_P2_B");
-    private final String LOC_TEXT_AREA_P2_I = getLoc("TEXT_AREA_P2_I");
-    private final String LOC_TEXT_AREA_P2_U = getLoc("TEXT_AREA_P2_U");
-    private final String LOC_TEXT_AREA_P2_STRIKE = getLoc("TEXT_AREA_P2_STRIKE");
-    private final String LOC_TEXT_AREA_OL = getLoc("TEXT_AREA_OL");
-    private final String LOC_TEXT_AREA_OL_LI = getLoc("TEXT_AREA_OL_LI");
-    private final String LOC_TEXT_AREA_UL = getLoc("TEXT_AREA_UL");
-    private final String LOC_TEXT_AREA_UL_LI = getLoc("TEXT_AREA_UL_LI");
+    private final JQueryLocator LOC_TEXT_AREA_P = jq(getLoc("TEXT_AREA_P"));
+    private final JQueryLocator LOC_TEXT_AREA_P2_B = jq(getLoc("TEXT_AREA_P2_B"));
+    private final JQueryLocator LOC_TEXT_AREA_P2_I = jq(getLoc("TEXT_AREA_P2_I"));
+    private final JQueryLocator LOC_TEXT_AREA_P2_U = jq(getLoc("TEXT_AREA_P2_U"));
+    private final JQueryLocator LOC_TEXT_AREA_P2_STRIKE = jq(getLoc("TEXT_AREA_P2_STRIKE"));
+    private final JQueryLocator LOC_TEXT_AREA_OL = jq(getLoc("TEXT_AREA_OL"));
+    private final JQueryLocator LOC_TEXT_AREA_OL_LI = jq(getLoc("TEXT_AREA_OL_LI"));
+    private final JQueryLocator LOC_TEXT_AREA_UL = jq(getLoc("TEXT_AREA_UL"));
+    private final JQueryLocator LOC_TEXT_AREA_UL_LI = jq(getLoc("TEXT_AREA_UL_LI"));
 
     // buttons in simple mode
-    private final String LOC_BOLD_BUTTON = getLoc("BOLD_BUTTON");
-    private final String LOC_ITALIC_BUTTON = getLoc("ITALIC_BUTTON");
-    private final String LOC_UNDERLINE_BUTTON = getLoc("UNDERLINE_BUTTON");
-    private final String LOC_STRIKETHROUGH_BUTTON = getLoc("STRIKETHROUGH_BUTTON");
-    private final String LOC_UNDO_BUTTON = getLoc("UNDO_BUTTON");
-    private final String LOC_REDO_BUTTON = getLoc("REDO_BUTTON");
-    private final String LOC_UNORDERED_LIST_BUTTON = getLoc("UNORDERED_LIST_BUTTON");
-    private final String LOC_ORDERED_LIST_BUTTON = getLoc("ORDERED_LIST_BUTTON");
+    private final JQueryLocator LOC_BOLD_BUTTON = jq(getLoc("BOLD_BUTTON"));
+    private final JQueryLocator LOC_ITALIC_BUTTON = jq(getLoc("ITALIC_BUTTON"));
+    private final JQueryLocator LOC_UNDERLINE_BUTTON = jq(getLoc("UNDERLINE_BUTTON"));
+    private final JQueryLocator LOC_STRIKETHROUGH_BUTTON = jq(getLoc("STRIKETHROUGH_BUTTON"));
+    private final JQueryLocator LOC_UNDO_BUTTON = jq(getLoc("UNDO_BUTTON"));
+    private final JQueryLocator LOC_REDO_BUTTON = jq(getLoc("REDO_BUTTON"));
+    private final JQueryLocator LOC_UNORDERED_LIST_BUTTON = jq(getLoc("UNORDERED_LIST_BUTTON"));
+    private final JQueryLocator LOC_ORDERED_LIST_BUTTON = jq(getLoc("ORDERED_LIST_BUTTON"));
 
     /**
      * Tests the bold button. It types "aaaa", presses enter followed by the
@@ -84,7 +88,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testBoldButton() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa"); // normal text
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_BOLD_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb "); // bold text
@@ -97,7 +101,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(text, "aaaa\nbbbb cccc dddd", MSG_CONTENT_OF_THE_EDITOR);
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         int count = getJQueryCount(LOC_TEXT_AREA_P);
         assertEquals(count, 2, MSG_TWO_LINES_IN_THE_EDITOR);
@@ -105,7 +109,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_P2_B);
         assertEquals(count, 2, MSG_STRINGS_SHOULD_BE_BOLD);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**
@@ -119,7 +123,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testItalicButton() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa"); // normal text
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_ITALIC_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb "); // italic text
@@ -132,7 +136,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(text, "aaaa\nbbbb cccc dddd", MSG_CONTENT_OF_THE_EDITOR);
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         int count = getJQueryCount(LOC_TEXT_AREA_P);
         assertEquals(count, 2, MSG_TWO_LINES_IN_THE_EDITOR);
@@ -140,7 +144,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_P2_I);
         assertEquals(count, 2, MSG_STRINGS_SHOULD_BE_ITALIC);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**
@@ -154,7 +158,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testUnderlineButton() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa"); // normal text
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_UNDERLINE_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb "); // underlined text
@@ -167,7 +171,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(text, "aaaa\nbbbb cccc dddd", MSG_CONTENT_OF_THE_EDITOR);
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         int count = getJQueryCount(LOC_TEXT_AREA_P);
         assertEquals(count, 2, MSG_TWO_LINES_IN_THE_EDITOR);
@@ -175,7 +179,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_P2_U);
         assertEquals(count, 2, MSG_STRINGS_SHOULD_BE_UNDERLINED);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**
@@ -189,7 +193,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testStrikethroughButton() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa"); // normal text
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_STRIKETHROUGH_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb "); // text with line through
@@ -202,7 +206,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(text, "aaaa\nbbbb cccc dddd", MSG_CONTENT_OF_THE_EDITOR);
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         int count = getJQueryCount(LOC_TEXT_AREA_P);
         assertEquals(count, 2, MSG_TWO_LINES_IN_THE_EDITOR);
@@ -210,7 +214,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_P2_STRIKE);
         assertEquals(count, 2, MSG_STRINGS_SHOULD_HAVE_A_LINE_THROUGH);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**
@@ -245,21 +249,21 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testUnorderedList() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_UNORDERED_LIST_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.typeKeys(LOC_TEXT_AREA, "cccc");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.typeKeys(LOC_TEXT_AREA, "dddd");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.click(LOC_UNORDERED_LIST_BUTTON);
 
         selenium.typeKeys(LOC_TEXT_AREA, "eeee");
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         String text = selenium.getText(LOC_TEXT_AREA);
         assertEquals(text, "aaaa\nbbbbccccddddeeee", MSG_CONTENT_OF_THE_EDITOR);
@@ -273,7 +277,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_UL_LI);
         assertEquals(count, 3, MSG_LIST_SHOULD_CONTAIN_THREE_ITEMS);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**
@@ -286,21 +290,21 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
     @Test
     public void testOrderedList() {
         selenium.typeKeys(LOC_TEXT_AREA, "aaaa");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
 
         selenium.click(LOC_ORDERED_LIST_BUTTON);
         selenium.typeKeys(LOC_TEXT_AREA, "bbbb");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.typeKeys(LOC_TEXT_AREA, "cccc");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.typeKeys(LOC_TEXT_AREA, "dddd");
-        selenium.keyPress(LOC_TEXT_AREA, "13"); // press <Enter>
+        selenium.keyPress(LOC_TEXT_AREA, KeyCode.ENTER); // press <Enter>
         selenium.click(LOC_ORDERED_LIST_BUTTON);
 
         selenium.typeKeys(LOC_TEXT_AREA, "eeee");
 
         // select the iframe for Selenium to be able to get iframe's content
-        selenium.selectFrame(LOC_IFRAME);
+        selenium.selectFrame(new FrameDomLocator(LOC_IFRAME));
 
         String text = selenium.getText(LOC_TEXT_AREA);
         assertEquals(text, "aaaa\nbbbbccccddddeeee", MSG_CONTENT_OF_THE_EDITOR);
@@ -314,7 +318,7 @@ public class SimpleEditorTestCase extends AbstractSeleniumRichfacesTestCase {
         count = getJQueryCount(LOC_TEXT_AREA_OL_LI);
         assertEquals(count, 3, MSG_LIST_SHOULD_CONTAIN_THREE_ITEMS);
 
-        selenium.selectFrame("relative=top");
+        selenium.selectFrame(FrameRelativeLocator.TOP);
     }
 
     /**

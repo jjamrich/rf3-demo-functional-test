@@ -22,13 +22,14 @@
 
 package org.jboss.richfaces.integrationTest.pickList;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -44,29 +45,29 @@ import org.testng.annotations.Test;
 public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
 
     // locators
-    private final String LOC_FIRST_EXAMPLE_HEADER = getLoc("FIRST_EXAMPLE_HEADER");
-    private final String LOC_FIRST_LEFT_ITEMS = getLoc("FIRST_LEFT_ITEMS");
-    private final String LOC_FIRST_LEFT_FIRST_ITEM = getLoc("FIRST_LEFT_FIRST_ITEM");
-    private final String LOC_FIRST_RIGHT_ITEMS = getLoc("FIRST_RIGHT_ITEMS");
-    private final String LOC_FIRST_RIGHT_FIRST_ITEM = getLoc("FIRST_RIGHT_FIRST_ITEM");
-    private final String LOC_FIRST_BUTTON_COPY_ALL = getLoc("FIRST_BUTTON_COPY_ALL");
-    private final String LOC_FIRST_BUTTON_COPY = getLoc("FIRST_BUTTON_COPY");
-    private final String LOC_FIRST_BUTTON_REMOVE = getLoc("FIRST_BUTTON_REMOVE");
-    private final String LOC_FIRST_BUTTON_REMOVE_ALL = getLoc("FIRST_BUTTON_REMOVE_ALL");
+    private final JQueryLocator LOC_FIRST_EXAMPLE_HEADER = jq(getLoc("FIRST_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_FIRST_LEFT_ITEMS = jq(getLoc("FIRST_LEFT_ITEMS"));
+    private final JQueryLocator LOC_FIRST_LEFT_FIRST_ITEM = jq(getLoc("FIRST_LEFT_FIRST_ITEM"));
+    private final JQueryLocator LOC_FIRST_RIGHT_ITEMS = jq(getLoc("FIRST_RIGHT_ITEMS"));
+    private final JQueryLocator LOC_FIRST_RIGHT_FIRST_ITEM = jq(getLoc("FIRST_RIGHT_FIRST_ITEM"));
+    private final JQueryLocator LOC_FIRST_BUTTON_COPY_ALL = jq(getLoc("FIRST_BUTTON_COPY_ALL"));
+    private final JQueryLocator LOC_FIRST_BUTTON_COPY = jq(getLoc("FIRST_BUTTON_COPY"));
+    private final JQueryLocator LOC_FIRST_BUTTON_REMOVE = jq(getLoc("FIRST_BUTTON_REMOVE"));
+    private final JQueryLocator LOC_FIRST_BUTTON_REMOVE_ALL = jq(getLoc("FIRST_BUTTON_REMOVE_ALL"));
     
-    private final String LOC_SECOND_EXAMPLE_HEADER = getLoc("SECOND_EXAMPLE_HEADER");
-    private final String LOC_SECOND_LEFT_ITEMS = getLoc("SECOND_LEFT_ITEMS");
-    private final String LOC_SECOND_LEFT_FIRST_ITEM = getLoc("SECOND_LEFT_FIRST_ITEM");
-    private final String LOC_SECOND_RIGHT_ITEMS = getLoc("SECOND_RIGHT_ITEMS");
-    private final String LOC_SECOND_RIGHT_FIRST_ITEM = getLoc("SECOND_RIGHT_FIRST_ITEM");
-    private final String LOC_SECOND_BUTTON_COPY_ALL = getLoc("SECOND_BUTTON_COPY_ALL");
-    private final String LOC_SECOND_BUTTON_COPY = getLoc("SECOND_BUTTON_COPY");
-    private final String LOC_SECOND_BUTTON_REMOVE = getLoc("SECOND_BUTTON_REMOVE");
-    private final String LOC_SECOND_BUTTON_REMOVE_ALL = getLoc("SECOND_BUTTON_REMOVE_ALL");
+    private final JQueryLocator LOC_SECOND_EXAMPLE_HEADER = jq(getLoc("SECOND_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_SECOND_LEFT_ITEMS = jq(getLoc("SECOND_LEFT_ITEMS"));
+    private final JQueryLocator LOC_SECOND_LEFT_FIRST_ITEM = jq(getLoc("SECOND_LEFT_FIRST_ITEM"));
+    private final JQueryLocator LOC_SECOND_RIGHT_ITEMS = jq(getLoc("SECOND_RIGHT_ITEMS"));
+    private final JQueryLocator LOC_SECOND_RIGHT_FIRST_ITEM = jq(getLoc("SECOND_RIGHT_FIRST_ITEM"));
+    private final JQueryLocator LOC_SECOND_BUTTON_COPY_ALL = jq(getLoc("SECOND_BUTTON_COPY_ALL"));
+    private final JQueryLocator LOC_SECOND_BUTTON_COPY = jq(getLoc("SECOND_BUTTON_COPY"));
+    private final JQueryLocator LOC_SECOND_BUTTON_REMOVE = jq(getLoc("SECOND_BUTTON_REMOVE"));
+    private final JQueryLocator LOC_SECOND_BUTTON_REMOVE_ALL = jq(getLoc("SECOND_BUTTON_REMOVE_ALL"));
     
-    private final String LOC_SECOND_CHOSEN_OPTIONS_UL = getLoc("SECOND_CHOSEN_OPTIONS_UL");
-    private final String LOC_SECOND_CHOSEN_OPTIONS_LI = getLoc("SECOND_CHOSEN_OPTIONS_LI");
-    private final String LOC_SECOND_CHOSEN_OPTIONS_LI1 = getLoc("SECOND_CHOSEN_OPTIONS_LI1");
+    private final JQueryLocator LOC_SECOND_CHOSEN_OPTIONS_UL = jq(getLoc("SECOND_CHOSEN_OPTIONS_UL"));
+    private final JQueryLocator LOC_SECOND_CHOSEN_OPTIONS_LI = jq(getLoc("SECOND_CHOSEN_OPTIONS_LI"));
+    private final JQueryLocator LOC_SECOND_CHOSEN_OPTIONS_LI1 = jq(getLoc("SECOND_CHOSEN_OPTIONS_LI1"));
     
     /**
      * Test first pick list. It checks that there are some items on the left and no items on the right.
@@ -94,7 +95,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_FIRST_LEFT_FIRST_ITEM);
         selenium.click(LOC_FIRST_BUTTON_COPY);
 
-        Wait.failWith("There should be less lines in the left table.").until(new Condition() {
+        Wait.waitSelenium.failWith("There should be less lines in the left table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_FIRST_LEFT_ITEMS) == count -1;
             }
@@ -105,7 +106,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
     // public void testFirstCopyMultipleItemsShift() {
     // fail("TODO");
     // }
-    //	
+    //  
     // @Test
     // public void testFirstCopyMultipleItemsCtrl() {
     // fail("TODO");
@@ -122,7 +123,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
 
         selenium.click(LOC_FIRST_BUTTON_COPY_ALL);
 
-        Wait.failWith("All items from left table should be now in the right table.").until(new Condition() {
+        Wait.waitSelenium.failWith("All items from left table should be now in the right table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_FIRST_RIGHT_ITEMS) == count;
             }
@@ -146,7 +147,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_FIRST_RIGHT_FIRST_ITEM);
         selenium.click(LOC_FIRST_BUTTON_REMOVE);
 
-        Wait.failWith("There should be less lines in the right table.").until(new Condition() {
+        Wait.waitSelenium.failWith("There should be less lines in the right table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_FIRST_RIGHT_ITEMS) == count - 1;
             }
@@ -157,7 +158,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
     // public void testFirstRemoveMultipleItemsShift() {
     // fail("TODO");
     // }
-    //	
+    //  
     // @Test
     // public void testFirstRemoveMultipleItemsCtrl() {
     // fail("TODO");
@@ -175,7 +176,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_FIRST_BUTTON_COPY_ALL);
         selenium.click(LOC_FIRST_BUTTON_REMOVE_ALL);
 
-        Wait.failWith("There should be no lines in the right table.").until(new Condition() {
+        Wait.waitSelenium.failWith("There should be no lines in the right table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_FIRST_RIGHT_ITEMS) == 0;
             }
@@ -214,7 +215,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_SECOND_LEFT_FIRST_ITEM);
         selenium.click(LOC_SECOND_BUTTON_COPY);
 
-        Wait.failWith("There should be only one capital city.").until(new Condition() {
+        Wait.waitSelenium.failWith("There should be only one capital city.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_SECOND_CHOSEN_OPTIONS_LI) == 1;
             }
@@ -231,7 +232,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
     // public void testSecondCopyMultipleItemsShift() {
     // fail("TODO");
     // }
-    //	
+    //  
     // @Test
     // public void testSecondCopyMultipleItemsCtrl() {
     // fail("TODO");
@@ -248,7 +249,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
 
         selenium.click(LOC_SECOND_BUTTON_COPY_ALL);
 
-        Wait.failWith("Not all capital cities were displayed in the panel.").until(new Condition() {
+        Wait.waitSelenium.failWith("Not all capital cities were displayed in the panel.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_SECOND_CHOSEN_OPTIONS_LI) == count;
             }
@@ -278,7 +279,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_SECOND_RIGHT_FIRST_ITEM);
         selenium.click(LOC_SECOND_BUTTON_REMOVE);
 
-        Wait.failWith("The capital city was not removed from panel.").until(new Condition() {
+        Wait.waitSelenium.failWith("The capital city was not removed from panel.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_SECOND_CHOSEN_OPTIONS_LI) == count - 1;
             }
@@ -295,7 +296,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
     // public void testSecondRemoveMultipleItemsShift() {
     // fail("TODO");
     // }
-    //	
+    //  
     // @Test
     // public void testSecondRemoveMultipleItemsCtrl() {
     // fail("TODO");
@@ -313,7 +314,7 @@ public class PickListTestCase extends AbstractSeleniumRichfacesTestCase {
         selenium.click(LOC_SECOND_BUTTON_COPY_ALL);
         selenium.click(LOC_SECOND_BUTTON_REMOVE_ALL);
 
-        Wait.failWith("All capitals from the panel should be removed.").until(new Condition() {
+        Wait.waitSelenium.failWith("All capitals from the panel should be removed.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_SECOND_CHOSEN_OPTIONS_LI) == 0;
             }

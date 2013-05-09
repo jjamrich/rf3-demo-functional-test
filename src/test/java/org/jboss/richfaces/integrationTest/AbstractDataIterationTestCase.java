@@ -21,10 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
 import java.util.Properties;
 
-import org.jboss.test.selenium.waiting.*;
-import static org.testng.Assert.*;
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
@@ -32,13 +39,13 @@ import static org.testng.Assert.*;
  */
 public abstract class AbstractDataIterationTestCase extends AbstractSeleniumRichfacesTestCase {
 
-	protected final String LOC_TABLE_COMMON = getLoc("data-table-common--table");
-	protected final String LOC_BUTTON_FIRST_PAGE = getLoc("data-scroller--button--first-page");
-	protected final String LOC_BUTTON_LAST_PAGE = getLoc("data-scroller--button--last-page");
-	protected final String LOC_BUTTON_NEXT_PAGE = getLoc("data-scroller--button--next-page");
-	protected final String LOC_BUTTON_PREVIOUS_PAGE = getLoc("data-scroller--button--previous-page");
+	protected final JQueryLocator LOC_TABLE_COMMON = jq(getLoc("data-table-common--table"));
+	protected final JQueryLocator LOC_BUTTON_FIRST_PAGE = jq(getLoc("data-scroller--button--first-page"));
+	protected final JQueryLocator LOC_BUTTON_LAST_PAGE = jq(getLoc("data-scroller--button--last-page"));
+	protected final JQueryLocator LOC_BUTTON_NEXT_PAGE = jq(getLoc("data-scroller--button--next-page"));
+	protected final JQueryLocator LOC_BUTTON_PREVIOUS_PAGE = jq(getLoc("data-scroller--button--previous-page"));
 	protected final String LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED = getLoc("data-scroller--button--numbered-page-preformatted");
-	protected final String LOC_OUTPUT_ACTIVE_PAGE = getLoc("data-scroller--output--active-page");
+	protected final JQueryLocator LOC_OUTPUT_ACTIVE_PAGE = jq(getLoc("data-scroller--output--active-page"));
 
 	/**
 	 * Overwritten loading of locator properties from files bounded to test
@@ -89,30 +96,36 @@ public abstract class AbstractDataIterationTestCase extends AbstractSeleniumRich
 	 *            one of the defined buttons to control page movement
 	 */
 	protected void gotoPage(String button) {
-		final String previousPage = getActivePage().toString();
-		
-		if (previousPage.equals(selenium.getText(button))) {
-			return;
-		}
-
-		if (previousPage.equals("1")
-				&& (LOC_BUTTON_FIRST_PAGE.equals(button) || LOC_BUTTON_PREVIOUS_PAGE.equals(button))) {
-			return;
-		}
-		
-		if (previousPage.equals(getLastVisiblePage().toString())
-				&& (LOC_BUTTON_LAST_PAGE.equals(button) || LOC_BUTTON_NEXT_PAGE.equals(button))) {
-			return;
-		}
-		// move to specified page
-		selenium.click(button);
-		
-		Wait.failWith("The page never changed as required").until(new Condition() {
-			public boolean isTrue() {
-				return !previousPage.equals(getActivePage().toString());
-			}
-		});
+		gotoPage(jq(button));
 	}
+
+	protected void gotoPage(JQueryLocator button) {
+        final String previousPage = getActivePage().toString();
+        
+        if (previousPage.equals(selenium.getText(button))) {
+            return;
+        }
+
+        if (previousPage.equals("1")
+                && (LOC_BUTTON_FIRST_PAGE.getRawLocator().equals(button.getRawLocator()) 
+                    || LOC_BUTTON_PREVIOUS_PAGE.getRawLocator().equals(button.getRawLocator()))) {
+            return;
+        }
+        
+        if (previousPage.equals(getLastVisiblePage().toString())
+                && (LOC_BUTTON_LAST_PAGE.equals(button) || LOC_BUTTON_NEXT_PAGE.equals(button))) {
+            return;
+        }
+        // move to specified page
+        selenium.click(button);
+        
+        Graphene.waitModel.until(new SeleniumCondition() {
+            
+            public boolean isTrue() {
+                return !previousPage.equals(getActivePage().toString());
+            }
+        });
+    }
 
 	/**
 	 * Get a active page number
@@ -120,7 +133,7 @@ public abstract class AbstractDataIterationTestCase extends AbstractSeleniumRich
 	 * @return number of active page
 	 */
 	protected Integer getActivePage() {
-		selenium.waitForCondition(format("selenium.isElementPresent('{0}')", LOC_OUTPUT_ACTIVE_PAGE), "5000");
+		selenium.waitForCondition(new JavaScript(format("selenium.isElementPresent('{0}')", LOC_OUTPUT_ACTIVE_PAGE)), 5000);
 		return Integer.valueOf(selenium.getText(LOC_OUTPUT_ACTIVE_PAGE));
 	}
 
@@ -130,8 +143,8 @@ public abstract class AbstractDataIterationTestCase extends AbstractSeleniumRich
 	 * @return number of last page visible on page control
 	 */
 	protected Integer getLastVisiblePage() {
-		Number pages = getJQueryCount(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, -1)) - 6;
-		String lastVisiblePage = selenium.getText(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, pages.intValue()));
+		Number pages = selenium.getCount(jq(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, -1))) - 6;
+		String lastVisiblePage = selenium.getText(jq(format(LOC_BUTTON_NUMBERED_PAGE_PREFORMATTED, pages.intValue())));
 		return Integer.valueOf(lastVisiblePage);
 	}
 
@@ -178,13 +191,14 @@ public abstract class AbstractDataIterationTestCase extends AbstractSeleniumRich
 				gotoPage(LOC_BUTTON_NEXT_PAGE);
 			}
 
-			final int rows = getJQueryCount(format(columnsPreformatted[0], 0));
-			
+			// final int rows = getJQueryCount(format(columnsPreformatted[0], 0));
+			final int rows = selenium.getCount(jq(format(columnsPreformatted[0], 0)));
+
 			assertTrue(rows > 0, "There must be at least one row in the table");
 
 			for (int row = 1; row <= rows; row++) {
 				for (int column = 0; column < columns; column++) {
-					String text = selenium.getText(format(columnsPreformatted[column], row));
+					String text = selenium.getText(jq(format(columnsPreformatted[column], row)));
 					if (lastText[column] != null) {
 						int comparison = text.compareTo(lastText[column]);
 						try {

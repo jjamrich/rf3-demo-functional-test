@@ -21,7 +21,12 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.extendedDataTable;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
 import static org.testng.Assert.*;
+
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.testng.annotations.Test;
 
 /**
@@ -43,14 +48,14 @@ public class SortingTestCase extends AbstractExtendedDataTableTestCase {
 	 */
 	@Test
 	public void testSortingModeSingle() {
-		selectMode(LOC_SELECT_SORT_MODE, MSG_OPTION_SORT_SINGLE);
+		selectMode(jq(LOC_SELECT_SORT_MODE), MSG_OPTION_SORT_SINGLE);
 
 		for (String columnHeader : LOC_TH_SORTING_TESTS) {
 			// two iterations -- one for ascending and one for descending order
 		    String columnText = columnHeader.equals(LOC_TH_STATE) ? LOC_SPAN_STATE : LOC_SPAN_CAPITAL;
 		    
 			for (int i = 0; i < 2; i++) {
-				selenium.click(columnText);
+				selenium.click(jq(columnText));
 				waitForSplash();
 
 				String columnPreformatted = preformatColumn(columnHeader);
@@ -65,7 +70,7 @@ public class SortingTestCase extends AbstractExtendedDataTableTestCase {
 	 */
 	@Test
 	public void testSortingModeMulti() {
-		selectMode(LOC_SELECT_SORT_MODE, MSG_OPTION_SORT_MULTI);
+		selectMode(jq(LOC_SELECT_SORT_MODE), MSG_OPTION_SORT_MULTI);
 
 		assertTrue(LOC_TH_SORTING_TESTS.length == 2, "There should be 2 columns to sort by");
 
@@ -74,12 +79,12 @@ public class SortingTestCase extends AbstractExtendedDataTableTestCase {
 
 		// two iterations -- one for ascending and one for descending order
 		for (int i = 0; i < 2; i++) {
-			selenium.click(LOC_TH_LABELS[0]);
+			selenium.click(jq(LOC_TH_LABELS[0]));
 			waitForSplash();
 			
 			// two iterations -- one for ascending and one for descending order
 			for (int j = 0; j < 2; j++) {
-				selenium.click(LOC_TH_LABELS[1]);
+				selenium.click(jq(LOC_TH_LABELS[1]));
 				waitForSplash();
 
 				checkSortingForColumnOrder(columnsPreformatted);

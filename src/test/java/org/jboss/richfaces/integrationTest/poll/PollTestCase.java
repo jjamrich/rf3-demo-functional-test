@@ -21,11 +21,14 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.poll;
 
-import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.*;
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
 
-import org.testng.annotations.BeforeMethod;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
 import org.testng.annotations.Test;
 
 /**
@@ -33,9 +36,9 @@ import org.testng.annotations.Test;
  * @version $Revision$
  */
 public class PollTestCase extends AbstractSeleniumRichfacesTestCase {
-	private final String LOC_BUTTON_POLL_CONTROL = getLoc("BUTTON_POLL_CONTROL");
-	private final String LOC_OUTPUT_POLL_STATUS = getLoc("OUTPUT_POLL_STATUS");
-	private final String LOC_OUTPUT_SERVER_DATE = getLoc("OUTPUT_SERVER_DATE");
+	private final JQueryLocator LOC_BUTTON_POLL_CONTROL = jq(getLoc("BUTTON_POLL_CONTROL"));
+	private final JQueryLocator LOC_OUTPUT_POLL_STATUS = jq(getLoc("OUTPUT_POLL_STATUS"));
+	private final JQueryLocator LOC_OUTPUT_SERVER_DATE = jq(getLoc("OUTPUT_SERVER_DATE"));
 
 	private final String MSG_POLLING_ACTIVE = getMsg("POLLING_ACTIVE");
 	private final String MSG_POLLING_INACTIVE = getMsg("POLLING_INACTIVE");
@@ -90,7 +93,7 @@ public class PollTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		final String oldServerDate = selenium.getText(LOC_OUTPUT_SERVER_DATE);
 
-		Wait.failWith("Server date didn't changed before timeout").timeout(3000).until(new Condition() {
+		Wait.waitSelenium.failWith("Server date didn't changed before timeout").timeout(3000).until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String currentServerDate = selenium.getText(LOC_OUTPUT_SERVER_DATE);
 
@@ -117,7 +120,7 @@ public class PollTestCase extends AbstractSeleniumRichfacesTestCase {
 
 			selenium.click(LOC_BUTTON_POLL_CONTROL);
 
-			Wait.failWith("Polling status didn't change").until(new Condition() {
+			Wait.waitSelenium.failWith("Polling status didn't change").until(new SeleniumCondition() {
 				public boolean isTrue() {
 					return requiredPollingStatus == MSG_POLLING_ACTIVE.equals(selenium.getText(LOC_OUTPUT_POLL_STATUS));
 				}

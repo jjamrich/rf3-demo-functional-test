@@ -21,6 +21,8 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.status;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.fail;
@@ -28,9 +30,10 @@ import static org.testng.Assert.fail;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.thoughtworks.selenium.SeleniumException;
@@ -46,7 +49,7 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 	private final String LOC_BUTTON_REQUEST_PREFORMATTED = getLoc("BUTTON_REQUEST_PREFORMATTED");
 	private final String LOC_INPUT_NAME = getLoc("INPUT_NAME");
 	private final String LOC_INPUT_JOB = getLoc("INPUT_JOB");
-	private final String LOC_OUTPUT_TEXT = getLoc("OUTPUT_TEXT");
+	private final JQueryLocator LOC_OUTPUT_TEXT = jq(getLoc("OUTPUT_TEXT"));
 
 	private final String MSG_PATTERN_NAME_JOB = getMsg("PATTERN_NAME_JOB");
 	
@@ -93,22 +96,23 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 
 		// PAGE COMPONENTS
 		final String locOutputStatusMessage = format(LOC_OUTPUT_STATUS_MESSAGE_PREFORMATTED, testNumber);
-		final String locButtonRequest = format(LOC_BUTTON_REQUEST_PREFORMATTED, testNumber);
+		final JQueryLocator locButtonRequest = jq(format(LOC_BUTTON_REQUEST_PREFORMATTED, testNumber));
 
 		assertFalse(isDisplayed(locOutputStatusMessage), "Status message should not be visible at start.");
 
 		for (int i = 0; i < 20; i++) {
 			selenium.click(locButtonRequest);
 			try {
-				selenium.waitForCondition(format("jqFind('{0}').is(':visible')", locOutputStatusMessage.replaceFirst(
-						"^jquery=", "")), "500");
+				selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':visible')", locOutputStatusMessage.replaceFirst(
+						"^jquery=", ""))), 500l);
 			} catch (SeleniumException e) {
 				if (e.getMessage().startsWith("Timed out")) {
 					continue;
 				}
 				throw e;
 			}
-			selenium.waitForCondition(format("jqFind('{0}').is(':hidden')", locOutputStatusMessage.replaceFirst("^jquery=", "")), "5000");
+			selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':hidden')", 
+			    locOutputStatusMessage.replaceFirst("^jquery=", ""))), 5000l);
 			break;
 		}
 	}
@@ -142,7 +146,7 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 		// cycle over 30 chars and alternating between two inputs
 		for (int counter = 1; counter <= 15; counter++) {
 			// select input and it's buffered text by state of counter
-			final String selectedInput = (counter % 3 == 0) ? LOC_INPUT_NAME : LOC_INPUT_JOB;
+			final JQueryLocator selectedInput = jq((counter % 3 == 0) ? LOC_INPUT_NAME : LOC_INPUT_JOB);
 			final StringBuilder selectedText = (counter % 3 == 0) ? textName : textJob;
 
 			// add one char according to chars [0-9] given by cycle counter
@@ -154,8 +158,8 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 			try {
 				// wait for style is changed to "processing" state indicates
 				// that request is in progress
-				selenium.waitForCondition(format("jqFind('{0}').is(':visible')", locOutputStatusMessage.replaceFirst(
-						"^jquery=", "")), "500");
+				selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':visible')", locOutputStatusMessage.replaceFirst(
+						"^jquery=", ""))), 500l);
 			} catch (SeleniumException e) {
 				// we can found that the request is so fast we cannot catch the
 				// element in visible state
@@ -165,8 +169,8 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 			}
 			// wait for element is back to hidden state after request is
 			// complete
-			selenium.waitForCondition(format("jqFind('{0}').is(':hidden')", locOutputStatusMessage.replaceFirst(
-					"^jquery=", "")), "5000");
+			selenium.waitForCondition(new JavaScript(format("jqFind('{0}').is(':hidden')", locOutputStatusMessage.replaceFirst(
+					"^jquery=", ""))), 5000l);
 
 			String outputText = selenium.getText(LOC_OUTPUT_TEXT);
 
@@ -189,6 +193,6 @@ public class StatusTestCase extends AbstractSeleniumRichfacesTestCase {
 		openComponent("Status");
 		openTab("Usage");
 		
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

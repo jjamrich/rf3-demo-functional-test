@@ -21,14 +21,17 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.queue;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.dom.Event;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.utils.array.ArrayTransform;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.dom.Event;
-import org.jboss.test.selenium.utils.array.ArrayTransform;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -36,16 +39,16 @@ import org.testng.annotations.Test;
  * @version $Revision$
  */
 public class QueueSettingsTestCase extends AbstractSeleniumRichfacesTestCase {
-	private final String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private final String LOC_INPUT_TYPED_TEXT = getLoc("INPUT_TYPED_TEXT");
-	private final String LOC_OUTPUT_TYPED_TEXT = getLoc("OUTPUT_TYPED_TEXT");
-	private final String LOC_OUTPUT_EVENTS_COUNT = getLoc("OUTPUT_EVENTS_COUNT");
-	private final String LOC_OUTPUT_REQUESTS_COUNT = getLoc("OUTPUT_REQUESTS_COUNT");
-	private final String LOC_OUTPUT_DOM_UPDATES_COUNT = getLoc("OUTPUT_DOM_UPDATES_COUNT");
-	private final String LOC_INPUT_REQUEST_DELAY = getLoc("INPUT_REQUEST_DELAY");
-	private final String LOC_CHECKBOX_IGNORE_DUP_RESPONSES = getLoc("CHECKBOX_IGNORE_DUP_RESPONSES");
-	private final String LOC_CHECKBOX_DISABLE_QUEUE = getLoc("CHECKBOX_DISABLE_QUEUE");
-	private final String LOC_BUTTON_APPLY_SETTINGS = getLoc("BUTTON_APPLY_SETTINGS");
+	private final JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+	private final JQueryLocator LOC_INPUT_TYPED_TEXT = jq(getLoc("INPUT_TYPED_TEXT"));
+	private final JQueryLocator LOC_OUTPUT_TYPED_TEXT = jq(getLoc("OUTPUT_TYPED_TEXT"));
+	private final JQueryLocator LOC_OUTPUT_EVENTS_COUNT = jq(getLoc("OUTPUT_EVENTS_COUNT"));
+	private final JQueryLocator LOC_OUTPUT_REQUESTS_COUNT = jq(getLoc("OUTPUT_REQUESTS_COUNT"));
+	private final JQueryLocator LOC_OUTPUT_DOM_UPDATES_COUNT = jq(getLoc("OUTPUT_DOM_UPDATES_COUNT"));
+	private final JQueryLocator LOC_INPUT_REQUEST_DELAY = jq(getLoc("INPUT_REQUEST_DELAY"));
+	private final JQueryLocator LOC_CHECKBOX_IGNORE_DUP_RESPONSES = jq(getLoc("CHECKBOX_IGNORE_DUP_RESPONSES"));
+	private final JQueryLocator LOC_CHECKBOX_DISABLE_QUEUE = jq(getLoc("CHECKBOX_DISABLE_QUEUE"));
+	private final JQueryLocator LOC_BUTTON_APPLY_SETTINGS = jq(getLoc("BUTTON_APPLY_SETTINGS"));
 
 	private final String[] MSG_DELAY_LIST = StringUtils.split(getMsg("DELAY_LIST"), ',');
 	private final String MSG_CHAR_FAST_TYPING = getMsg("MSG_CHAR_FAST_TYPING");
@@ -138,7 +141,7 @@ public class QueueSettingsTestCase extends AbstractSeleniumRichfacesTestCase {
 				selenium.fireEvent(LOC_INPUT_TYPED_TEXT, Event.KEYUP);
 
 				// check that text will not change for defined time (delay)
-				Wait.dontFail().interval(delay / 4).timeout(delay).until(new Condition() {
+				Wait.waitSelenium.dontFail().interval(delay / 4).timeout(delay).until(new SeleniumCondition() {
 					public boolean isTrue() {
 						final String actualText = selenium.getText(LOC_OUTPUT_TYPED_TEXT);
 						long currentTime = currentTime();
@@ -169,12 +172,12 @@ public class QueueSettingsTestCase extends AbstractSeleniumRichfacesTestCase {
 		check(LOC_CHECKBOX_DISABLE_QUEUE, disableQueue);
 		
 		selenium.click(LOC_BUTTON_APPLY_SETTINGS);
-		selenium.waitForPageToLoad(Long.toString(Wait.DEFAULT_TIMEOUT));
+		selenium.waitForPageToLoad(Wait.DEFAULT_TIMEOUT);
 		
 		scrollIntoView(LOC_FIELDSET_HEADER, true);
 	}
 
-	private void check(String locator, boolean check) {
+	private void check(JQueryLocator locator, boolean check) {
 		if (check) {
 			selenium.check(locator);
 		} else {
@@ -192,7 +195,7 @@ public class QueueSettingsTestCase extends AbstractSeleniumRichfacesTestCase {
 			selenium.fireEvent(LOC_INPUT_TYPED_TEXT, Event.KEYUP);
 		}
 
-		waitModelUpdate.waitForTimeout();
+		Wait.waitSelenium.waitForTimeout();
 	}
 
 	private final ArrayTransform<String, Integer> stringsToInteger = new ArrayTransform<String, Integer>(Integer.class) {

@@ -22,14 +22,17 @@
 
 package org.jboss.richfaces.integrationTest.dropDownMenu;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -40,15 +43,15 @@ import org.testng.annotations.Test;
  */
 public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
 
-    private final String LOC_FIRST_EXAMPLE_HEADER = getLoc("FIRST_EXAMPLE_HEADER");
-    private final String LOC_FIRST_CURRENT_SELECTION = getLoc("FIRST_CURRENT_SELECTION");
-    private final String LOC_FIRST_MENU = getLoc("FIRST_MENU");
-    private final String LOC_FIRST_MENU_NEW = getLoc("FIRST_MENU_NEW");
-    private final String LOC_FIRST_MENU_SAVE_ALL = getLoc("FIRST_MENU_SAVE_ALL");
-    private final String LOC_FIRST_MENU_SEPARATOR = getLoc("FIRST_MENU_SEPARATOR");
-    private final String LOC_FIRST_MENU_IMAGE = getLoc("FIRST_MENU_IMAGE");
-    private final String LOC_FIRST_MENU_LINK_HOMEPAGE = getLoc("FIRST_MENU_LINK_HOMEPAGE");
-    private final String LOC_FIRST_MENU_LINK_FORUM = getLoc("FIRST_MENU_LINK_FORUM");
+    private final JQueryLocator LOC_FIRST_EXAMPLE_HEADER = jq(getLoc("FIRST_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_FIRST_CURRENT_SELECTION = jq(getLoc("FIRST_CURRENT_SELECTION"));
+    private final JQueryLocator LOC_FIRST_MENU = jq(getLoc("FIRST_MENU"));
+    private final JQueryLocator LOC_FIRST_MENU_NEW = jq(getLoc("FIRST_MENU_NEW"));
+    private final JQueryLocator LOC_FIRST_MENU_SAVE_ALL = jq(getLoc("FIRST_MENU_SAVE_ALL"));
+    private final JQueryLocator LOC_FIRST_MENU_SEPARATOR = jq(getLoc("FIRST_MENU_SEPARATOR"));
+    private final JQueryLocator LOC_FIRST_MENU_IMAGE = jq(getLoc("FIRST_MENU_IMAGE"));
+    private final JQueryLocator LOC_FIRST_MENU_LINK_HOMEPAGE = jq(getLoc("FIRST_MENU_LINK_HOMEPAGE"));
+    private final JQueryLocator LOC_FIRST_MENU_LINK_FORUM = jq(getLoc("FIRST_MENU_LINK_FORUM"));
 
     private final String MSG_FIRST_INITIAL_CURRENT_SELECTION = getMsg("FIRST_INITIAL_CURRENT_SELECTION");
     private final String MSG_FIRST_CURRENT_SELECTION_NEW = getMsg("FIRST_CURRENT_SELECTION_NEW");
@@ -60,7 +63,7 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testHorizontalMenu() {
-        assertFalse(isDisplayed(LOC_FIRST_MENU), "Menu should not be expanded at start.");
+        assertFalse(Graphene.elementVisible.locator(LOC_FIRST_MENU).isTrue(), "Menu should not be expanded at start.");
 
         String text = selenium.getText(LOC_FIRST_CURRENT_SELECTION);
         assertEquals(text, MSG_FIRST_INITIAL_CURRENT_SELECTION, "Last menu action should be empty.");
@@ -74,7 +77,7 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testMenuItem() {
         selenium.click(LOC_FIRST_MENU_NEW);
 
-        Wait.failWith("Text shown in current selection.").until(new Condition() {
+        Wait.waitSelenium.failWith("Text shown in current selection.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return MSG_FIRST_CURRENT_SELECTION_NEW.equals(selenium.getText(LOC_FIRST_CURRENT_SELECTION));
             }
@@ -88,7 +91,7 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testMenuGroup() {
         selenium.click(LOC_FIRST_MENU_SAVE_ALL);
 
-        Wait.failWith("Text shown in current Selection.").until(new Condition() {
+        Wait.waitSelenium.failWith("Text shown in current Selection.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return MSG_FIRST_CURRENT_SELECTION_SAVE_ALL.equals(selenium.getText(LOC_FIRST_CURRENT_SELECTION));
             }
@@ -109,8 +112,8 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testIcon() {
-        int width = selenium.getElementWidth(LOC_FIRST_MENU_IMAGE).intValue();
-        int height = selenium.getElementHeight(LOC_FIRST_MENU_IMAGE).intValue();
+        int width = selenium.getElementWidth(LOC_FIRST_MENU_IMAGE);
+        int height = selenium.getElementHeight(LOC_FIRST_MENU_IMAGE);
 
         assertTrue(width > 0, "Menu item \"File\" should have a visible icon (width > 0).");
         assertTrue(height > 0, "Menu item \"File\" should have a visible icon (height > 0).");
@@ -121,7 +124,7 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testLinkRFHomePage() {
-        String location = selenium.getAttribute(LOC_FIRST_MENU_LINK_HOMEPAGE + "@href");
+        String location = selenium.getAttribute(LOC_FIRST_MENU_LINK_HOMEPAGE, Attribute.HREF);
         assertTrue(location.contains("http://"), "Href has to contain http://");
     }
 
@@ -130,7 +133,7 @@ public class HorizontalMenuTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testLinkRFForum() {
-        String location = selenium.getAttribute(LOC_FIRST_MENU_LINK_FORUM + "@href");
+        String location = selenium.getAttribute(LOC_FIRST_MENU_LINK_FORUM, Attribute.HREF);
         assertTrue(location.contains("http://"), "Href has to contain http://");
     }
 

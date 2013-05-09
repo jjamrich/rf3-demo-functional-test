@@ -22,13 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.listShuttle;
 
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -42,19 +44,19 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
     private final String LOC_LEFT_TABLE_LINES = getLoc("LEFT_TABLE_LINES");
     private final String LOC_RIGHT_TABLE_LINES = getLoc("RIGHT_TABLE_LINES");
-    private final String LOC_LEFT_TABLE_LINE_1 = getLoc("LEFT_TABLE_LINE_1");
+    private final JQueryLocator LOC_LEFT_TABLE_LINE_1 = jq(getLoc("LEFT_TABLE_LINE_1"));
     private final String LOC_RIGHT_TABLE_LINE_PREFORMATTED = getLoc("RIGHT_TABLE_LINE_PREFORMATTED");
     private final String LOC_TOOLBAR_ITEMS = getLoc("TOOLBAR_ITEMS");
     private final String LOC_TOOLBAR_ITEM_PREFORMATTED = getLoc("TOOLBAR_ITEM_PREFORMATTED");
 
-    private final String LOC_COPY_ALL_BUTTON = getLoc("COPY_ALL_BUTTON");
-    private final String LOC_COPY_BUTTON = getLoc("COPY_BUTTON");
-    private final String LOC_REMOVE_BUTTON = getLoc("REMOVE_BUTTON");
-    private final String LOC_REMOVE_ALL_BUTTON = getLoc("REMOVE_ALL_BUTTON");
-    private final String LOC_FIRST_BUTTON = getLoc("FIRST_BUTTON");
-    private final String LOC_UP_BUTTON = getLoc("UP_BUTTON");
-    private final String LOC_DOWN_BUTTON = getLoc("DOWN_BUTTON");
-    private final String LOC_LAST_BUTTON = getLoc("LAST_BUTTON");
+    private final JQueryLocator LOC_COPY_ALL_BUTTON = jq(getLoc("COPY_ALL_BUTTON"));
+    private final JQueryLocator LOC_COPY_BUTTON = jq(getLoc("COPY_BUTTON"));
+    private final JQueryLocator LOC_REMOVE_BUTTON = jq(getLoc("REMOVE_BUTTON"));
+    private final JQueryLocator LOC_REMOVE_ALL_BUTTON = jq(getLoc("REMOVE_ALL_BUTTON"));
+    private final JQueryLocator LOC_FIRST_BUTTON = jq(getLoc("FIRST_BUTTON"));
+    private final JQueryLocator LOC_UP_BUTTON = jq(getLoc("UP_BUTTON"));
+    private final JQueryLocator LOC_DOWN_BUTTON = jq(getLoc("DOWN_BUTTON"));
+    private final JQueryLocator LOC_LAST_BUTTON = jq(getLoc("LAST_BUTTON"));
 
     /**
      * Tests copy button. Fist it clicks on the first item in left table, checks
@@ -71,19 +73,19 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
         assertTrue(isDisplayed(LOC_COPY_BUTTON), "Copy button should be enabled.");
         selenium.click(LOC_COPY_BUTTON);
         
-        Wait.failWith("In left table, one item should be removed.").until(new Condition() {
+        Wait.waitSelenium.failWith("In left table, one item should be removed.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_LEFT_TABLE_LINES) == leftCount - 1;
             }
         });
 
-        Wait.failWith("In right table, one item should be added.").until(new Condition() {
+        Wait.waitSelenium.failWith("In right table, one item should be added.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_RIGHT_TABLE_LINES) == rightCount + 1;
             }
         });
 
-        Wait.failWith("Number of items in toolbar.").until(new Condition() {
+        Wait.waitSelenium.failWith("Number of items in toolbar.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_TOOLBAR_ITEMS) == rightCount + 1;
             }
@@ -114,19 +116,19 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
 
         selenium.click(LOC_COPY_ALL_BUTTON);
 
-        Wait.failWith("All items from left table should be removed.").until(new Condition() {
+        Wait.waitSelenium.failWith("All items from left table should be removed.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_LEFT_TABLE_LINES) == 0;
             }
         });
         
-        Wait.failWith("All items should be added to the right table.").until(new Condition() {
+        Wait.waitSelenium.failWith("All items should be added to the right table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_RIGHT_TABLE_LINES) == rightCount + leftCount;
             }
         });
         
-        Wait.failWith("Number of items in toolbar.").until(new Condition() {
+        Wait.waitSelenium.failWith("Number of items in toolbar.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_TOOLBAR_ITEMS) == rightCount + leftCount;
             }
@@ -144,24 +146,24 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
         final int leftCount = getJQueryCount(LOC_LEFT_TABLE_LINES);
         final int rightCount = getJQueryCount(LOC_RIGHT_TABLE_LINES);
 
-        selenium.click(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
+        selenium.click(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
         assertTrue(isDisplayed(LOC_REMOVE_BUTTON), "Remove button should be enabled.");
 
         selenium.click(LOC_REMOVE_BUTTON);
 
-        Wait.failWith("One item should be added to the left table.").until(new Condition() {
+        Wait.waitSelenium.failWith("One item should be added to the left table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_LEFT_TABLE_LINES) == leftCount + 1;
             }
         });
         
-        Wait.failWith("One item should be removed from the right table.").until(new Condition() {
+        Wait.waitSelenium.failWith("One item should be removed from the right table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_RIGHT_TABLE_LINES) == rightCount - 1;
             }
         });
         
-        Wait.failWith("Number of items in toolbar.").until(new Condition() {
+        Wait.waitSelenium.failWith("Number of items in toolbar.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_TOOLBAR_ITEMS) == rightCount - 1;
             }
@@ -192,19 +194,19 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
 
         selenium.click(LOC_REMOVE_ALL_BUTTON);
 
-        Wait.failWith("All items should be added to the left table.").until(new Condition() {
+        Wait.waitSelenium.failWith("All items should be added to the left table.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_LEFT_TABLE_LINES) == leftCount + rightCount;
             }
         });
         
-        Wait.failWith("All items from right table should be removed.").until(new Condition() {
+        Wait.waitSelenium.failWith("All items from right table should be removed.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_RIGHT_TABLE_LINES) == 0;
             }
         });
         
-        Wait.failWith("Number of items in toolbar.").until(new Condition() {
+        Wait.waitSelenium.failWith("Number of items in toolbar.").until(new SeleniumCondition() {
             public boolean isTrue() {
                 return getJQueryCount(LOC_TOOLBAR_ITEMS) == 0;
             }
@@ -218,39 +220,39 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testUpButton() {
-        final String firstItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
-        final String firstItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0));
-        final String secondItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1));
-        final String secondItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1));
+        final String firstItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
+        final String firstItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)));
+        final String secondItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)));
+        final String secondItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)));
 
         assertEquals(secondItemFromToolbar, secondItemFromTable,
                 "The second item in right table and toolbar should be the same.");
 
-        selenium.click(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1));
+        selenium.click(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)));
         selenium.click(LOC_UP_BUTTON);
 
         // check items in the table
-        Wait.failWith("The first and the second item in the table should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the table should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)).equals(secondItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0))).equals(secondItemFromTable);
             }
         });
         
-        Wait.failWith("The first and the second item in the table should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the table should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)).equals(firstItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1))).equals(firstItemFromTable);
             }
         });
         
-        Wait.failWith("The first and the second item in the toolbar should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the toolbar should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)).equals(secondItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0))).equals(secondItemFromToolbar);
             }
         });
         
-        Wait.failWith("The first and the second item in the toolbar should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the toolbar should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)).equals(firstItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1))).equals(firstItemFromToolbar);
             }
         });
     }
@@ -272,52 +274,52 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testFirstButton() {
-        final String firstItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
-        final String firstItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0));
-        final String secondItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1));
-        final String secondItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1));
-        final String thirdItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2));
-        final String thirdItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2));
+        final String firstItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
+        final String firstItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)));
+        final String secondItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)));
+        final String secondItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)));
+        final String thirdItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2)));
+        final String thirdItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2)));
 
         assertEquals(secondItemFromToolbar, secondItemFromTable,
                 "The second item in right table and toolbar should be the same.");
 
-        selenium.click(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2));
+        selenium.click(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2)));
         selenium.click(LOC_FIRST_BUTTON);
 
         
         // check items in the table
-        Wait.failWith("The first item from the table should be now the second.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first item from the table should be now the second.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)).equals(firstItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1))).equals(firstItemFromTable);
             }
         });
-        Wait.failWith("The second item from the table should be now the third.").until(new Condition() {
+        Wait.waitSelenium.failWith("The second item from the table should be now the third.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2)).equals(secondItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2))).equals(secondItemFromTable);
             }
         });
-        Wait.failWith("The third item from the table should be now the first.").until(new Condition() {
+        Wait.waitSelenium.failWith("The third item from the table should be now the first.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)).equals(thirdItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0))).equals(thirdItemFromTable);
             }
         });
         
         
         // check items in the toolbar
-        Wait.failWith("The first item from the toolbar should be now the second.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first item from the toolbar should be now the second.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)).equals(firstItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1))).equals(firstItemFromToolbar);
             }
         });
-        Wait.failWith("The second item from the toolbar should be now the third.").until(new Condition() {
+        Wait.waitSelenium.failWith("The second item from the toolbar should be now the third.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2)).equals(secondItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2))).equals(secondItemFromToolbar);
             }
         });
-        Wait.failWith("The third item from the toolbar should be now the first.").until(new Condition() {
+        Wait.waitSelenium.failWith("The third item from the toolbar should be now the first.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)).equals(thirdItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0))).equals(thirdItemFromToolbar);
             }
         });
     }
@@ -329,40 +331,40 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testDownButton() {
-        final String firstItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
-        final String firstItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0));
-        final String secondItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1));
-        final String secondItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1));
+        final String firstItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
+        final String firstItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)));
+        final String secondItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)));
+        final String secondItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)));
 
         assertEquals(secondItemFromToolbar, secondItemFromTable,
                 "The second item in right table and toolbar should be the same.");
 
-        selenium.click(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
+        selenium.click(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
         selenium.click(LOC_DOWN_BUTTON);
 
         
         // check items in the table
-        Wait.failWith("The first and the second item in the table should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the table should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)).equals(secondItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0))).equals(secondItemFromTable);
             }
         });
-        Wait.failWith("The first and the second item in the table should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the table should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)).equals(firstItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1))).equals(firstItemFromTable);
             }
         });
         
         
         // check items in the toolbar
-        Wait.failWith("The first and the second item in the toolbar should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the toolbar should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)).equals(secondItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0))).equals(secondItemFromToolbar);
             }
         });
-        Wait.failWith("The first and the second item in the toolbar should be swapped.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first and the second item in the toolbar should be swapped.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)).equals(firstItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1))).equals(firstItemFromToolbar);
             }
         });
     }
@@ -384,50 +386,50 @@ public class ListShuttleTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testLastButton() {
-        final String firstItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
-        final String firstItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0));
-        final String secondItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1));
-        final String secondItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1));
-        final String thirdItemFromTable = selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2));
-        final String thirdItemFromToolbar = selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2));
+        final String firstItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
+        final String firstItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)));
+        final String secondItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)));
+        final String secondItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)));
+        final String thirdItemFromTable = selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2)));
+        final String thirdItemFromToolbar = selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2)));
 
         assertEquals(secondItemFromToolbar, secondItemFromTable,
                 "The second item in right table and toolbar should be the same.");
 
-        selenium.click(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0));
+        selenium.click(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)));
         selenium.click(LOC_LAST_BUTTON);
 
         // check items in the table
-        Wait.failWith("The first item from the table should be now last.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first item from the table should be now last.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2)).equals(firstItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 2))).equals(firstItemFromTable);
             }
         });
-        Wait.failWith("The second item from the table should be now the first.").until(new Condition() {
+        Wait.waitSelenium.failWith("The second item from the table should be now the first.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0)).equals(secondItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 0))).equals(secondItemFromTable);
             }
         });
-        Wait.failWith("The third item from the table should be now the second.").until(new Condition() {
+        Wait.waitSelenium.failWith("The third item from the table should be now the second.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1)).equals(thirdItemFromTable);
+                return selenium.getText(jq(format(LOC_RIGHT_TABLE_LINE_PREFORMATTED, 1))).equals(thirdItemFromTable);
             }
         });
      
         // check items in the toolbar
-        Wait.failWith("The first item from the toolbar should be now last.").until(new Condition() {
+        Wait.waitSelenium.failWith("The first item from the toolbar should be now last.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2)).equals(firstItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 2))).equals(firstItemFromToolbar);
             }
         });
-        Wait.failWith("The second item from the toolbar should be now the first.").until(new Condition() {
+        Wait.waitSelenium.failWith("The second item from the toolbar should be now the first.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0)).equals(secondItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 0))).equals(secondItemFromToolbar);
             }
         });
-        Wait.failWith("The third item from the toolbar should be now the second.").until(new Condition() {
+        Wait.waitSelenium.failWith("The third item from the toolbar should be now the second.").until(new SeleniumCondition() {
             public boolean isTrue() {
-                return selenium.getText(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1)).equals(thirdItemFromToolbar);
+                return selenium.getText(jq(format(LOC_TOOLBAR_ITEM_PREFORMATTED, 1))).equals(thirdItemFromToolbar);
             }
         });
     }

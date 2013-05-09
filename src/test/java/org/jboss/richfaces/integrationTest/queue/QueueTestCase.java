@@ -21,9 +21,13 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.queue;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -43,15 +47,15 @@ public class QueueTestCase extends AbstractSeleniumRichfacesTestCase {
 		int[] order = new int[] { 3, 7, 15, 3, 15 };
 
 		for (int i = 0; i < order.length; i++) {
-			final String locButtonImage = format(LOC_BUTTON_IMAGE_PREFORMATTED, order[i]);
-			final String locQueueItem = format(LOC_OUTPUT_QUEUE_ITEM, order[i]);
+			final JQueryLocator locButtonImage = jq(format(LOC_BUTTON_IMAGE_PREFORMATTED, order[i]));
+			final JQueryLocator locQueueItem = jq(format(LOC_OUTPUT_QUEUE_ITEM, order[i]));
 
 			selenium.click(locButtonImage);
 
 			scrollIntoView(locQueueItem, false);
 
-			waitModelUpdate.failWith(format("The enqueued item isn't present '{0}'", locQueueItem)).until(
-					new Condition() {
+			Wait.waitSelenium.failWith(format("The enqueued item isn't present '{0}'", locQueueItem)).until(
+					new SeleniumCondition() {
 
 						public boolean isTrue() {
 							return selenium.isElementPresent(locQueueItem);

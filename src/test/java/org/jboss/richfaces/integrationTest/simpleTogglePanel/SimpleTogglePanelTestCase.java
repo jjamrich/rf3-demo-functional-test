@@ -22,11 +22,13 @@
 
 package org.jboss.richfaces.integrationTest.simpleTogglePanel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -47,12 +49,12 @@ public class SimpleTogglePanelTestCase extends AbstractSeleniumRichfacesTestCase
     private final String MSG_BODY_SHOULD_NOT_BE_VISIBLE = getMsg("BODY_SHOULD_NOT_BE_VISIBLE");
 
     // locators
-    private final String LOC_EXAMPLE_1_HEADER = getLoc("EXAMPLE_1_HEADER");
-    private final String LOC_EXAMPLE_2_HEADER = getLoc("EXAMPLE_2_HEADER");
-    private final String LOC_FIRST_EXAMPLE_HEADER = getLoc("FIRST_EXAMPLE_HEADER");
-    private final String LOC_FIRST_EXAMPLE_ARROWS_LEFT = getLoc("FIRST_EXAMPLE_ARROWS_LEFT");
-    private final String LOC_FIRST_EXAMPLE_ARROWS_RIGHT = getLoc("FIRST_EXAMPLE_ARROWS_RIGHT");
-    private final String LOC_FIRST_EXAMPLE_BODY = getLoc("FIRST_EXAMPLE_BODY");
+    private final JQueryLocator LOC_EXAMPLE_1_HEADER = jq(getLoc("EXAMPLE_1_HEADER"));
+    private final JQueryLocator LOC_EXAMPLE_2_HEADER = jq(getLoc("EXAMPLE_2_HEADER"));
+    private final JQueryLocator LOC_FIRST_EXAMPLE_HEADER = jq(getLoc("FIRST_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_FIRST_EXAMPLE_ARROWS_LEFT = jq(getLoc("FIRST_EXAMPLE_ARROWS_LEFT"));
+    private final JQueryLocator LOC_FIRST_EXAMPLE_ARROWS_RIGHT = jq(getLoc("FIRST_EXAMPLE_ARROWS_RIGHT"));
+    private final JQueryLocator LOC_FIRST_EXAMPLE_BODY = jq(getLoc("FIRST_EXAMPLE_BODY"));
     private final String LOC_SECOND_EXAMPLE_N_HEADER = getLoc("SECOND_EXAMPLE_N_HEADER");
     private final String LOC_SECOND_EXAMPLE_N_ARROWS_LEFT = getLoc("SECOND_EXAMPLE_N_ARROWS_LEFT");
     private final String LOC_SECOND_EXAMPLE_N_ARROWS_RIGHT = getLoc("SECOND_EXAMPLE_N_ARROWS_RIGHT");
@@ -163,7 +165,7 @@ public class SimpleTogglePanelTestCase extends AbstractSeleniumRichfacesTestCase
     private void abstractTestPanelInSecondExample(int index, String header) {
         scrollIntoView(LOC_EXAMPLE_2_HEADER, true);
 
-        String text = selenium.getText(format(LOC_SECOND_EXAMPLE_N_HEADER, index));
+        String text = selenium.getText(jq(format(LOC_SECOND_EXAMPLE_N_HEADER, index)));
         assertTrue(text.contains(header), format(MSG_PANEL_HEADER, header));
 
         assertTrue(isDisplayed(format(LOC_SECOND_EXAMPLE_N_ARROWS_LEFT, index)), MSG_LEFT_ARROWS_SHOULD_BE_VISIBLE);
@@ -172,7 +174,7 @@ public class SimpleTogglePanelTestCase extends AbstractSeleniumRichfacesTestCase
         // client type is a bit different
         assertTrue(isDisplayed(format(LOC_SECOND_EXAMPLE_N_BODY, index)), MSG_BODY_SHOULD_BE_VISIBLE);
 
-        selenium.click(format(LOC_SECOND_EXAMPLE_N_HEADER, index));
+        selenium.click(jq(format(LOC_SECOND_EXAMPLE_N_HEADER, index)));
         waitFor(2000);
 
         assertFalse(isDisplayed(format(LOC_SECOND_EXAMPLE_N_ARROWS_LEFT, index)), MSG_LEFT_ARROWS_SHOULD_NOT_BE_VISIBLE);

@@ -22,12 +22,15 @@
 
 package org.jboss.richfaces.integrationTest.tabPanel;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -52,14 +55,14 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
     private final String LOC_USAGE_PANEL_3_TEXT_PREFORMATTED = getLoc("USAGE_PANEL_3_TEXT_PREFORMATTED");
 
     private final String LOC_CUST_EXAMPLE_HEADER = getLoc("CUST_EXAMPLE_HEADER");
-    private final String LOC_CUST_TABS_ALIGN = getLoc("CUST_TABS_ALIGN");
+    private final JQueryLocator LOC_CUST_TABS = jq(getLoc("CUST_TABS"));
     private final String LOC_CUST_PANEL_TEXT_PREFORMATTED = getLoc("CUST_PANEL_TEXT_PREFORMATTED");
     private final String LOC_CUST_PANEL_TAB_PREFORMATTED = getLoc("CUST_PANEL_TAB_PREFORMATTED");
 
     private final String LOC_DELET_EXAMPLE_HEADER = getLoc("DELET_EXAMPLE_HEADER");
     private final String LOC_DELET_PANEL_TABS = getLoc("DELET_PANEL_TABS");
     private final String LOC_DELET_PANEL_TAB_CLOSE_PREFORMATTED = getLoc("DELET_PANEL_TAB_CLOSE_PREFORMATTED");
-    private final String LOC_DELET_RESET_BUTTON = getLoc("DELET_RESET_BUTTON");
+    private final JQueryLocator LOC_DELET_RESET_BUTTON = jq(getLoc("DELET_RESET_BUTTON"));
 
     /**
      * Tests three tab panels from the usage tab. It click on each tab and
@@ -75,21 +78,21 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
             scrollIntoView(LOC_USAGE_EXAMPLE_HEADER, true); // scrolling is
             // forgotten after
             // page reload
-            selenium.click(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 0, i));
+            selenium.click(jq(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 0, i)));
             waitFor(2000);
-            text = selenium.getText(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 0));
+            text = selenium.getText(jq(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 0)));
             assertEquals(text, "Here is tab #" + (i+1), format(MSG_USAGE_CONTENT_OF_PANEL_PREFORMATTED, 1));
         }
 
         // test the second tab panel
         scrollIntoView(LOC_USAGE_EXAMPLE_HEADER, true);
-        selenium.click(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 2));
+        selenium.click(jq(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 2)));
         waitFor(2000);
-        text = selenium.getText(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1));
+        text = selenium.getText(jq(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1)));
         assertEquals(text, "Here is tab #" + 3, format(MSG_USAGE_CONTENT_OF_PANEL_PREFORMATTED, 2));
-        selenium.click(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 0));
+        selenium.click(jq(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 0)));
         waitFor(2000);
-        text = selenium.getText(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1));
+        text = selenium.getText(jq(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1)));
         assertEquals(text, "Here is tab #" + 1, format(MSG_USAGE_CONTENT_OF_PANEL_PREFORMATTED, 2));
 
         // test the disabled tab
@@ -100,15 +103,15 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         } catch (Exception e) {
             // OK - there is no class attribute
         }
-        selenium.click(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 1));
+        selenium.click(jq(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 1, 1)));
         waitFor(2000);
-        text = selenium.getText(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1));
+        text = selenium.getText(jq(format(LOC_USAGE_PANEL_TEXT_PREFORMATTED, 1)));
         assertEquals(text, "Here is tab #1", format(MSG_USAGE_CONTENT_OF_PANEL_PREFORMATTED, 2));
 
         // test the third tab panel -- client type work different
         scrollIntoView(LOC_USAGE_EXAMPLE_HEADER, true);
         for (int i = 2; i >= 0; i--) {
-            selenium.click(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 2, i));
+            selenium.click(jq(format(LOC_USAGE_PANEL_TAB_PREFORMATTED, 2, i)));
             waitFor(2000);
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -132,7 +135,7 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         String text;
 
         for (int i = 2; i >= 0; i--) {
-            selenium.click(format(LOC_CUST_PANEL_TAB_PREFORMATTED, i));
+            selenium.click(jq(format(LOC_CUST_PANEL_TAB_PREFORMATTED, i)));
             waitFor(2000);
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -145,7 +148,7 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
             }
         }
 
-        text = selenium.getAttribute(LOC_CUST_TABS_ALIGN);
+        text = selenium.getAttribute(LOC_CUST_TABS, Attribute.ALIGN);
         assertEquals(text, "right", MSG_CUST_TABS_RIGHT_ALIGNED);
     }
 
@@ -164,7 +167,7 @@ public class TabPanelTestCase extends AbstractSeleniumRichfacesTestCase {
         assertEquals(count, 3, MSG_DELET_NUMBER_OF_TABS);
 
         for (int i = 2; i >= 0; i--) {
-            selenium.click(format(LOC_DELET_PANEL_TAB_CLOSE_PREFORMATTED, i+1));
+            selenium.click(jq(format(LOC_DELET_PANEL_TAB_CLOSE_PREFORMATTED, i+1)));
             waitFor(2000);
             count = getJQueryCount(LOC_DELET_PANEL_TABS);
             assertEquals(count, i, MSG_DELET_NUMBER_OF_TABS);

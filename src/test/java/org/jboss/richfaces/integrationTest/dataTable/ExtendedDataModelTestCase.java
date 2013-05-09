@@ -21,24 +21,30 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataTable;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.jboss.test.selenium.waiting.*;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ExtendedDataModelTestCase extends AbstractDataIterationTestCase {
 
-	private final String LOC_TD_HIGHEST_BID = getLoc("TD_HIGHEST_BID");
-	private final String LOC_TD_CELL_AMOUNT = getLoc("TD_CELL_AMOUNT");
-	private final String LOC_INPUT_YOUR_BID = getLoc("INPUT_YOUR_BID");
-	private final String LOC_LINK_PLACE_BID = getLoc("LINK_PLACE_BID");
+	private final JQueryLocator LOC_TD_HIGHEST_BID = jq(getLoc("TD_HIGHEST_BID"));
+	private final JQueryLocator LOC_TD_CELL_AMOUNT = jq(getLoc("TD_CELL_AMOUNT"));
+	private final JQueryLocator LOC_INPUT_YOUR_BID = jq(getLoc("INPUT_YOUR_BID"));
+	private final JQueryLocator LOC_LINK_PLACE_BID = jq(getLoc("LINK_PLACE_BID"));
 
 	private final String MSG_TAB_TO_OPEN = getMsg("TAB_TO_OPEN");
 	private final String MSG_MESSAGE_LOWER_BID = getMsg("MESSAGE_LOWER_BID");
@@ -70,7 +76,7 @@ public class ExtendedDataModelTestCase extends AbstractDataIterationTestCase {
 		selenium.click(LOC_LINK_PLACE_BID);
 
 		// waits for validation fails message
-		waitForText(MSG_MESSAGE_LOWER_BID);
+		Graphene.textEquals.locator(null).text(MSG_MESSAGE_LOWER_BID);
 
 		// fix your bid to number greater than actual bid
 		selenium.type(LOC_INPUT_YOUR_BID, Double.toString(highestBid + 1));
@@ -79,7 +85,7 @@ public class ExtendedDataModelTestCase extends AbstractDataIterationTestCase {
 		// test that amount was saved as a highest bid
 		final String yourBid = format(MSG_INPUT_AMOUNT_PREFORMATTED, highestBid + 1);
 
-		Wait.until(new Condition() {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				String actual = selenium.getText(LOC_TD_CELL_AMOUNT);
 				if (StringUtils.isNotBlank(actual)) {
@@ -94,7 +100,7 @@ public class ExtendedDataModelTestCase extends AbstractDataIterationTestCase {
 		// relocate on second page
 		selenium.click(LOC_BUTTON_NEXT_PAGE);
 
-		Wait.until(new Condition() {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return "2".equals(selenium.getText(LOC_OUTPUT_ACTIVE_PAGE));
 			}
@@ -103,7 +109,7 @@ public class ExtendedDataModelTestCase extends AbstractDataIterationTestCase {
 		// relocate on first page
 		selenium.click(LOC_BUTTON_PREVIOUS_PAGE);
 
-		Wait.until(new Condition() {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
 				return "1".equals(selenium.getText(LOC_OUTPUT_ACTIVE_PAGE));
 			}

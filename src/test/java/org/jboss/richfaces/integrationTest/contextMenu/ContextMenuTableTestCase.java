@@ -22,15 +22,18 @@
 
 package org.jboss.richfaces.integrationTest.contextMenu;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import org.jboss.arquillian.ajocado.Graphene;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -41,18 +44,18 @@ import org.testng.annotations.Test;
  */
 public class ContextMenuTableTestCase extends AbstractSeleniumRichfacesTestCase {
 
-    private final String LOC_SECOND_EXAMPLE_HEADER = getLoc("SECOND_EXAMPLE_HEADER");
-    private final String LOC_SECOND_CONTEXT_MENU = getLoc("SECOND_CONTEXT_MENU");
-    private final String LOC_SECOND_LAST_MENU_ACTION = getLoc("SECOND_LAST_MENU_ACTION");
+    private final JQueryLocator LOC_SECOND_EXAMPLE_HEADER = jq(getLoc("SECOND_EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_SECOND_CONTEXT_MENU = jq(getLoc("SECOND_CONTEXT_MENU"));
+    private final JQueryLocator LOC_SECOND_LAST_MENU_ACTION = jq(getLoc("SECOND_LAST_MENU_ACTION"));
 
-    private final String LOC_SECOND_CAR_DETAILS = getLoc("SECOND_CAR_DETAILS");
-    private final String LOC_SECOND_ACTIONS = getLoc("SECOND_ACTIONS");
+    private final JQueryLocator LOC_SECOND_CAR_DETAILS = jq(getLoc("SECOND_CAR_DETAILS"));
+
     private final String LOC_SECOND_ACTION_PREFORMATTED = getLoc("SECOND_ACTION_PREFORMATTED");
 
-    private final String LOC_SECOND_LINE_3_COLUMN_1 = getLoc("SECOND_LINE_3_COLUMN_1");
-    private final String LOC_SECOND_LINE_3_COLUMN_2 = getLoc("SECOND_LINE_3_COLUMN_2");
-    private final String LOC_SECOND_LINE_6_COLUMN_2 = getLoc("SECOND_LINE_6_COLUMN_2");
-    private final String LOC_SECOND_LINE_1_COLUMN_3 = getLoc("SECOND_LINE_1_COLUMN_3");
+    private final JQueryLocator LOC_SECOND_LINE_3_COLUMN_1 = jq(getLoc("SECOND_LINE_3_COLUMN_1"));
+    private final JQueryLocator LOC_SECOND_LINE_3_COLUMN_2 = jq(getLoc("SECOND_LINE_3_COLUMN_2"));
+    private final JQueryLocator LOC_SECOND_LINE_6_COLUMN_2 = jq(getLoc("SECOND_LINE_6_COLUMN_2"));
+    private final JQueryLocator LOC_SECOND_LINE_1_COLUMN_3 = jq(getLoc("SECOND_LINE_1_COLUMN_3"));
 
     private final String MSG_SECOND_CAR_DETAILS_PREFORMATTED = getMsg("SECOND_CAR_DETAILS_PREFORMATTED");
     private final String MSG_SECOND_PUT_PRODUCER_MODEL_TO_BASKET_PREFORMATTED = getMsg("SECOND_PUT_PRODUCER_MODEL_TO_BASKET_PREFORMATTED");
@@ -75,20 +78,20 @@ public class ContextMenuTableTestCase extends AbstractSeleniumRichfacesTestCase 
 
         // open context menu on third line, first column
         selenium.click(LOC_SECOND_LINE_3_COLUMN_1);
-        waitForElement(LOC_SECOND_CONTEXT_MENU, 200);
-        assertTrue(isDisplayed(LOC_SECOND_CONTEXT_MENU),
+        Graphene.waitGui.until(Graphene.elementPresent.locator(LOC_SECOND_CONTEXT_MENU));
+        assertTrue(Graphene.elementVisible.locator(LOC_SECOND_CONTEXT_MENU).isTrue(),
                 "Context menu should be visible after clicking on first column.");
 
         // open context menu on sixth line, second column
         selenium.click(LOC_SECOND_LINE_6_COLUMN_2);
-        waitForElement(LOC_SECOND_CONTEXT_MENU, 200);
-        assertTrue(isDisplayed(LOC_SECOND_CONTEXT_MENU),
+        Graphene.waitGui.until(Graphene.elementPresent.locator(LOC_SECOND_CONTEXT_MENU));
+        assertTrue(Graphene.elementVisible.locator(LOC_SECOND_CONTEXT_MENU).isTrue(),
                 "Context menu should be visible after clicking on second column.");
 
         // open context menu on first line, third column
         selenium.click(LOC_SECOND_LINE_1_COLUMN_3);
-        waitForElement(LOC_SECOND_CONTEXT_MENU, 200);
-        assertTrue(isDisplayed(LOC_SECOND_CONTEXT_MENU),
+        Graphene.waitGui.until(Graphene.elementPresent.locator(LOC_SECOND_CONTEXT_MENU));
+        assertTrue(Graphene.elementVisible.locator(LOC_SECOND_CONTEXT_MENU).isTrue(),
                 "Context menu should be visible after clicking on third column.");
     }
 
@@ -102,8 +105,8 @@ public class ContextMenuTableTestCase extends AbstractSeleniumRichfacesTestCase 
 
         // open context menu on third line, first column
         selenium.click(LOC_SECOND_LINE_3_COLUMN_1);
-        waitForElement(LOC_SECOND_CONTEXT_MENU, 200);
-        assertTrue(isDisplayed(LOC_SECOND_CONTEXT_MENU),
+        Graphene.waitGui.until(Graphene.elementPresent.locator(LOC_SECOND_CONTEXT_MENU));
+        assertTrue(Graphene.elementVisible.locator(LOC_SECOND_CONTEXT_MENU).isTrue(),
                 "Context menu should be visible after clicking on first column.");
 
         // click '<car> details'
@@ -170,15 +173,15 @@ public class ContextMenuTableTestCase extends AbstractSeleniumRichfacesTestCase 
 
         // open context menu on third line, first column
         selenium.click(LOC_SECOND_LINE_3_COLUMN_1);
-        waitForElement(LOC_SECOND_CONTEXT_MENU, 200);
-        assertTrue(isDisplayed(LOC_SECOND_CONTEXT_MENU),
+        Graphene.waitGui.until(Graphene.elementPresent.locator(LOC_SECOND_CONTEXT_MENU));
+        assertTrue(Graphene.elementVisible.locator(LOC_SECOND_CONTEXT_MENU).isTrue(),
                 "Context menu should be visible after clicking on first column.");
 
         // click "Put <car> To Basket", "Read Comments" or
         // "Go to <producer> site"
-        selenium.click(format(LOC_SECOND_ACTION_PREFORMATTED, index));
-        
-        Wait.timeout(15000).failWith("Action was not performed.").until(new Condition() {
+        selenium.click(jq(format(LOC_SECOND_ACTION_PREFORMATTED, index)));
+
+        Wait.waitSelenium.timeout(15000).failWith("Action was not performed.").until(new SeleniumCondition() {            
             public boolean isTrue() {
                 return !selenium.getText(LOC_SECOND_LAST_MENU_ACTION).equals("");
             }

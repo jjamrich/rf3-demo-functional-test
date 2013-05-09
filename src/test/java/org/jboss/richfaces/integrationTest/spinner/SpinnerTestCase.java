@@ -22,11 +22,14 @@
 
 package org.jboss.richfaces.integrationTest.spinner;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -38,13 +41,13 @@ import org.testng.annotations.Test;
 public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
 
     // locators
-    private final String LOC_EXAMPLE_HEADER = getLoc("EXAMPLE_HEADER");
-    private final String LOC_UPPER_SPINNER_INPUT = getLoc("UPPER_SPINNER_INPUT");
-    private final String LOC_UPPER_SPINNER_UP = getLoc("UPPER_SPINNER_UP");
-    private final String LOC_UPPER_SPINNER_DOWN = getLoc("UPPER_SPINNER_DOWN");
-    private final String LOC_LOWER_SPINNER_INPUT = getLoc("LOWER_SPINNER_INPUT");
-    private final String LOC_LOWER_SPINNER_UP = getLoc("LOWER_SPINNER_UP");
-    private final String LOC_LOWER_SPINNER_DOWN = getLoc("LOWER_SPINNER_DOWN");
+    private final JQueryLocator LOC_EXAMPLE_HEADER = jq(getLoc("EXAMPLE_HEADER"));
+    private final JQueryLocator LOC_UPPER_SPINNER_INPUT = jq(getLoc("UPPER_SPINNER_INPUT"));
+    private final JQueryLocator LOC_UPPER_SPINNER_UP = jq(getLoc("UPPER_SPINNER_UP"));
+    private final JQueryLocator LOC_UPPER_SPINNER_DOWN = jq(getLoc("UPPER_SPINNER_DOWN"));
+    private final JQueryLocator LOC_LOWER_SPINNER_INPUT = jq(getLoc("LOWER_SPINNER_INPUT"));
+    private final JQueryLocator LOC_LOWER_SPINNER_UP = jq(getLoc("LOWER_SPINNER_UP"));
+    private final JQueryLocator LOC_LOWER_SPINNER_DOWN = jq(getLoc("LOWER_SPINNER_DOWN"));
 
     // messages
     private final int MSG_INITIAL_STATE_UPPER = Integer.parseInt(getMsg("INITIAL_STATE_UPPER"));
@@ -105,7 +108,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testUpperClickUp() {
         int oldValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
 
-        selenium.clickAt(LOC_UPPER_SPINNER_UP, "0,0");
+        selenium.clickAt(LOC_UPPER_SPINNER_UP, new Point(0,0));
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
         assertEquals(newValue, oldValue + 1, "The value should increase by 1 after clicking on up arrow.");
@@ -118,7 +121,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testUpperClickDown() {
         int oldValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
 
-        selenium.clickAt(LOC_UPPER_SPINNER_DOWN, "0,0");
+        selenium.clickAt(LOC_UPPER_SPINNER_DOWN, new Point(0,0));
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
         assertEquals(newValue, oldValue - 1, "The value should decrease by 1 after clicking on down arrow.");
@@ -132,7 +135,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testLowerClickUp() {
         int oldValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));
 
-        selenium.clickAt(LOC_LOWER_SPINNER_UP, "0,0");
+        selenium.clickAt(LOC_LOWER_SPINNER_UP, new Point(0,0));
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));
         assertEquals(newValue, oldValue + 10, "The value should increase by 10 after clicking on up arrow.");
@@ -145,7 +148,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
     public void testLowerClickDown() {
         int oldValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));
 
-        selenium.clickAt(LOC_LOWER_SPINNER_DOWN, "0,0");
+        selenium.clickAt(LOC_LOWER_SPINNER_DOWN, new Point(0,0));
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));
         assertEquals(newValue, oldValue - 10, "The value should decrease by 10 after clicking on down arrow.");
@@ -238,7 +241,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
         // it starts at 50, maximum is 100, increment 1, it will try to click 51
         // times
         for (int i = 0; i < 51; i++) {
-            selenium.clickAt(LOC_UPPER_SPINNER_UP, "0,0");
+            selenium.clickAt(LOC_UPPER_SPINNER_UP, new Point(0,0));
         }
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
@@ -248,7 +251,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
         // it starts at 50, maximum is 100, increment 10, it will try to click 6
         // times
         for (int i = 0; i < 6; i++) {
-            selenium.clickAt(LOC_LOWER_SPINNER_UP, "0,0");
+            selenium.clickAt(LOC_LOWER_SPINNER_UP, new Point(0,0));
         }
 
         newValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));
@@ -267,7 +270,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
         // it starts at 50, minimum is 0, increment 1, it will try to click 51
         // times
         for (int i = 0; i < 51; i++) {
-            selenium.clickAt(LOC_UPPER_SPINNER_DOWN, "0,0");
+            selenium.clickAt(LOC_UPPER_SPINNER_DOWN, new Point(0,0));
         }
 
         int newValue = Integer.parseInt(selenium.getValue(LOC_UPPER_SPINNER_INPUT));
@@ -277,7 +280,7 @@ public class SpinnerTestCase extends AbstractSeleniumRichfacesTestCase {
         // it starts at 50, minimum is 0, increment 10, it will try to click 6
         // times
         for (int i = 0; i < 6; i++) {
-            selenium.clickAt(LOC_LOWER_SPINNER_DOWN, "0,0");
+            selenium.clickAt(LOC_LOWER_SPINNER_DOWN, new Point(0,0));
         }
 
         newValue = Integer.parseInt(selenium.getValue(LOC_LOWER_SPINNER_INPUT));

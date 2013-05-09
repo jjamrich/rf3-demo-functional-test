@@ -21,15 +21,21 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dragSupport;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.util.regex.Pattern;
 
-import static org.testng.Assert.*;
-
+import org.jboss.arquillian.ajocado.actions.Drag;
+import org.jboss.arquillian.ajocado.css.CssProperty;
+import org.jboss.arquillian.ajocado.dom.Attribute;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.actions.Drag;
-import org.jboss.test.selenium.waiting.Condition;
-import org.jboss.test.selenium.waiting.Wait;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -38,10 +44,10 @@ import org.testng.annotations.Test;
  */
 public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 
-	private final String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	private final String LOC_DIV_DRAG_INDICATOR = getLoc("DIV_DRAG_INDICATOR");
-	private final String LOC_CLASS_DRAG_INDICATOR = getLoc("CLASS_DRAG_INDICATOR");
-	private final String LOC_IMGSRC_DRAG_INDICATOR = getLoc("IMGSRC_DRAG_INDICATOR");
+	private final JQueryLocator LOC_FIELDSET_HEADER = jq(getLoc("FIELDSET_HEADER"));
+	private final JQueryLocator LOC_DIV_DRAG_INDICATOR = jq(getLoc("DIV_DRAG_INDICATOR"));
+	// private final JQueryLocator LOC_DRAG_INDICATOR = jq(getLoc("CLASS_DRAG_INDICATOR"));
+	private final JQueryLocator LOC_IMG_DRAG_INDICATOR = jq(getLoc("IMG_DRAG_INDICATOR"));
 	private final String LOC_CHOICES_OF_DIV_TARGETS = getLoc("CHOICES_OF_DIV_TARGETS");
 	private final String LOC_TBODY_TARGET_ITEMS_AREA_RELATIVE = getLoc("TBODY_TARGET_ITEMS_AREA_RELATIVE");
 	private final String LOC_DIV_DRAGGED_ITEM_PREFORMATTED = getLoc("DIV_DRAGGED_ITEM_PREFORMATTED");
@@ -108,32 +114,32 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	private void accepting(int phase) {
 		String itemText = format(MSG_CHOICES_FRAMEWORKS, 1);
-		String item = format(LOC_DIV_DRAGGED_ITEM_PREFORMATTED, 1);
-		String target = format(LOC_CHOICES_OF_DIV_TARGETS, 0);
+		JQueryLocator item = jq(format(LOC_DIV_DRAGGED_ITEM_PREFORMATTED, 1));
+		JQueryLocator target = jq(format(LOC_CHOICES_OF_DIV_TARGETS, 0));
 
 		if (phase == 0) {
 			assertTrue(selenium.isElementPresent(LOC_DIV_DRAG_INDICATOR),
 					"Drag indicator isn't present (in DOM) at initial state");
-			assertEquals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"), "none",
+			assertEquals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY), "none",
 					"Drag indicator is displayed as not expected");
 		}
 
-		Drag drag = new Drag(selenium, item, target);
+		Drag drag = new Drag(item, target);
 		
 		drag.move();
 
 		if (phase == 0) {
-			Wait.failWith("Drag indicator never get displayed").until(new Condition() {
+			Wait.waitSelenium.failWith("Drag indicator never get displayed").until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"));
+					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY));
 				}
 			});
 
-			String actual = selenium.getAttribute(LOC_CLASS_DRAG_INDICATOR);
+			String actual = selenium.getAttribute(LOC_DIV_DRAG_INDICATOR, Attribute.CLASS);
 			assertTrue(Pattern.matches(MSG_REGEXP_CLASS_OF_MOVING, actual), format(
 					"The class of indicator '{0}' doesn't match '{1}'", actual, MSG_REGEXP_CLASS_OF_MOVING));
 
-			actual = selenium.getAttribute(LOC_IMGSRC_DRAG_INDICATOR);
+			actual = selenium.getAttribute(LOC_IMG_DRAG_INDICATOR, Attribute.SRC);
 			assertTrue(Pattern.matches(MSG_REGEXP_IMGSRC_OF_MOVING, actual), format(
 					"The image source of indicator '{0}' doesn't match '{1}", actual, MSG_REGEXP_IMGSRC_OF_MOVING));
 		}
@@ -141,22 +147,22 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 		drag.enter();
 
 		if (phase == 1) {
-			Wait.failWith("Drag indicator wasn't displayed").until(new Condition() {
+			Wait.waitSelenium.failWith("Drag indicator wasn't displayed").until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"));
+					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY));
 				}
 			});
 
-			String actual = selenium.getAttribute(LOC_CLASS_DRAG_INDICATOR);
+			String actual = selenium.getAttribute(LOC_DIV_DRAG_INDICATOR, Attribute.CLASS);
 			assertTrue(Pattern.matches(MSG_REGEXP_CLASS_OF_ACCEPTING, actual), format(
 					"The class of indicator '{0}' doesn't match '{1}'", actual, MSG_REGEXP_CLASS_OF_ACCEPTING));
 
-			actual = selenium.getAttribute(LOC_IMGSRC_DRAG_INDICATOR);
+			actual = selenium.getAttribute(LOC_IMG_DRAG_INDICATOR, Attribute.SRC);
 			assertTrue(Pattern.matches(MSG_REGEXP_IMGSRC_OF_ACCEPTING, actual), format(
 					"The image source of indicator '{0}' doesn't match '{1}", actual, MSG_REGEXP_IMGSRC_OF_ACCEPTING));
 		}
 
-		final String locTargetItemsArea = format(LOC_TBODY_TARGET_ITEMS_AREA_RELATIVE, target);
+		final JQueryLocator locTargetItemsArea = jq(format(LOC_TBODY_TARGET_ITEMS_AREA_RELATIVE, target));
 		
 		if (phase == 2) {
 			assertEquals(selenium.getText(locTargetItemsArea), "",
@@ -166,9 +172,9 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 		drag.drop();
 		
 		if (phase == 2) {
-			Wait.failWith("Drag indicator never disappeared when item dropped").until(new Condition() {
+			Wait.waitSelenium.failWith("Drag indicator never disappeared when item dropped").until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return "none".equals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"));
+					return "none".equals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY));
 				}
 			});
 
@@ -181,30 +187,30 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	private void rejecting(int phase) {
 		String itemText = format(MSG_CHOICES_FRAMEWORKS, 1);
-		String item = format(LOC_DIV_DRAGGED_ITEM_PREFORMATTED, 1);
-		String target = format(LOC_CHOICES_OF_DIV_TARGETS, 1);
+		JQueryLocator item = jq(format(LOC_DIV_DRAGGED_ITEM_PREFORMATTED, 1));
+		JQueryLocator target = jq(format(LOC_CHOICES_OF_DIV_TARGETS, 1));
 
-		Drag drag = new Drag(selenium, item, target);
+		Drag drag = new Drag(item, target);
 		drag.move();
 		drag.enter();
 
 		if (phase == 1) {
-			Wait.until(new Condition() {
+			Wait.waitSelenium.until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"));
+					return "block".equals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY));
 				}
 			});
 			
-			String actual = selenium.getAttribute(LOC_CLASS_DRAG_INDICATOR);
+			String actual = selenium.getAttribute(LOC_DIV_DRAG_INDICATOR, Attribute.CLASS);
 			assertTrue(Pattern.matches(MSG_REGEXP_CLASS_OF_REJECTING, actual), format(
 					"The class of indicator '{0}' doesn't match '{1}'", actual, MSG_REGEXP_CLASS_OF_REJECTING));
 
-			actual = selenium.getAttribute(LOC_IMGSRC_DRAG_INDICATOR);
+			actual = selenium.getAttribute(LOC_IMG_DRAG_INDICATOR, Attribute.SRC);
 			assertTrue(Pattern.matches(MSG_REGEXP_IMGSRC_OF_REJECTING, actual), format(
 					"The image source of indicator '{0}' doesn't match '{1}", actual, MSG_REGEXP_IMGSRC_OF_REJECTING));
 		}
 
-		final String locTargetItemsArea = format(LOC_TBODY_TARGET_ITEMS_AREA_RELATIVE, target);
+		final JQueryLocator locTargetItemsArea = jq(format(LOC_TBODY_TARGET_ITEMS_AREA_RELATIVE, target));
 		
 		if (phase == 2) {
 			assertEquals(selenium.getText(locTargetItemsArea), "",
@@ -214,9 +220,9 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 		drag.drop();
 
 		if (phase == 2) {
-			Wait.failWith("Drag indicator never disappeared when item dropped").until(new Condition() {
+			Wait.waitSelenium.failWith("Drag indicator never disappeared when item dropped").until(new SeleniumCondition() {
 				public boolean isTrue() {
-					return "none".equals(getStyle(LOC_DIV_DRAG_INDICATOR, "display"));
+					return "none".equals(getStyle(LOC_DIV_DRAG_INDICATOR, CssProperty.DISPLAY));
 				}
 			});
 			
@@ -230,6 +236,6 @@ public class DragSupportTestCase extends AbstractSeleniumRichfacesTestCase {
 	protected void loadPage() {
 		openComponent("Drag Support");
 		scrollIntoView(LOC_FIELDSET_HEADER, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

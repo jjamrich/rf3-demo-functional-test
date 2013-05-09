@@ -22,10 +22,12 @@
 
 package org.jboss.richfaces.integrationTest.calendar;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
 import static org.testng.Assert.assertTrue;
 
+import org.jboss.arquillian.ajocado.dom.Attribute;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -49,19 +51,19 @@ public class CalendarStylingTestCase extends AbstractSeleniumRichfacesTestCase {
      */
     @Test
     public void testStyling() {
-        selenium.click(LOC_STYLING_CALENDAR_BUTTON);
-        selenium.click(LOC_STYLING_RIGHT_ARROW);
-        selenium.click(LOC_STYLING_RIGHT_ARROW);
+        selenium.click(jq(LOC_STYLING_CALENDAR_BUTTON));
+        selenium.click(jq(LOC_STYLING_RIGHT_ARROW));
+        selenium.click(jq(LOC_STYLING_RIGHT_ARROW));
 
         String text = null;
         int date = 0;
 
         for (int i = 1; i < 7; i++) {
             for (int j = 1; j < 8; j++) {
-                text = selenium.getText(format(LOC_STYLING_CELL_PREFORMATTED, i, j));
+                text = selenium.getText(jq(format(LOC_STYLING_CELL_PREFORMATTED, i, j)));
                 date = Integer.parseInt(text);
                 if (date % 3 == 0) {
-                    text = selenium.getAttribute(format(LOC_STYLING_CELL_PREFORMATTED, i, j) + "@class");
+                    text = selenium.getAttribute(jq(format(LOC_STYLING_CELL_PREFORMATTED, i, j)).getAttribute(Attribute.CLASS));
                     assertTrue(text.contains("everyThirdDay") || text.contains("rich-calendar-boundary-dates"),
                             "Every third cell should be either disabled (boundary dates) or styled (dates from current month).");
                 }

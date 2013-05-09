@@ -21,12 +21,22 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.tooltip;
 
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.fail;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.arquillian.ajocado.geometry.Point;
+import org.jboss.arquillian.ajocado.javascript.JavaScript;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
+import org.jboss.arquillian.ajocado.waiting.Wait;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumCondition;
+import org.jboss.arquillian.ajocado.waiting.selenium.SeleniumRetriever;
 import org.jboss.richfaces.integrationTest.AbstractSeleniumRichfacesTestCase;
-import org.jboss.test.selenium.waiting.*;
-import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 /**
@@ -36,13 +46,13 @@ import org.testng.annotations.Test;
 public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 
 	private final String LOC_FIELDSET_HEADER_1 = getLoc("FIELDSET_HEADER_1");
-	private final String LOC_PANEL_SAMPLE_1 = getLoc("PANEL_SAMPLE_1");
-	private final String LOC_PANEL_SAMPLE_2 = getLoc("PANEL_SAMPLE_2");
-	private final String LOC_PANEL_SAMPLE_3 = getLoc("PANEL_SAMPLE_3");
-	private final String LOC_PANEL_SAMPLE_4 = getLoc("PANEL_SAMPLE_4");
-	private final String LOC_SPAN_TOOLTIPS_REQUESTED = getLoc("SPAN_TOOLTIPS_REQUESTED");
+	private final JQueryLocator LOC_PANEL_SAMPLE_1 = jq(getLoc("PANEL_SAMPLE_1"));
+	private final JQueryLocator LOC_PANEL_SAMPLE_2 = jq(getLoc("PANEL_SAMPLE_2"));
+	private final JQueryLocator LOC_PANEL_SAMPLE_3 = jq(getLoc("PANEL_SAMPLE_3"));
+	private final JQueryLocator LOC_PANEL_SAMPLE_4 = jq(getLoc("PANEL_SAMPLE_4"));
+	private final JQueryLocator LOC_SPAN_TOOLTIPS_REQUESTED = jq(getLoc("SPAN_TOOLTIPS_REQUESTED"));
 
-	private final String MSG_EVENT_COORDS_AT_PANEL = getMsg("EVENT_COORDS_AT_PANEL");
+	private final Point COORDS_AT_PANEL = new Point(5,5);
 	private final String MSG_OUTPUT_TOOLTIP_1 = getMsg("OUTPUT_TOOLTIP_1");
 	private final String MSG_OUTPUT_TOOLTIP_2 = getMsg("OUTPUT_TOOLTIP_2");
 	private final String MSG_OUTPUT_TOOLTIP_3_4_WAITING = getMsg("OUTPUT_TOOLTIP_3_4_WAITING");
@@ -75,8 +85,8 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 						 * satisfies that mouseOverAt will work as expected -
 						 * without this mouseOverAt do nothing
 						 */
-				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_1, MSG_EVENT_COORDS_AT_PANEL);
-			mouseOverAt(LOC_PANEL_SAMPLE_1, MSG_EVENT_COORDS_AT_PANEL);
+				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_1, COORDS_AT_PANEL);
+			mouseOverAt(LOC_PANEL_SAMPLE_1, COORDS_AT_PANEL);
 
 			waitForText(MSG_OUTPUT_TOOLTIP_1);
 
@@ -97,8 +107,8 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 			assertFalse(selenium.isTextPresent(MSG_OUTPUT_TOOLTIP_2));
 
 			if (i == 0)
-				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_2, MSG_EVENT_COORDS_AT_PANEL);
-			mouseOverAt(LOC_PANEL_SAMPLE_2, MSG_EVENT_COORDS_AT_PANEL);
+				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_2, COORDS_AT_PANEL);
+			mouseOverAt(LOC_PANEL_SAMPLE_2, COORDS_AT_PANEL);
 
 			waitForText(MSG_OUTPUT_TOOLTIP_2);
 
@@ -119,16 +129,16 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 		Integer tooltipsRequested = null;
 
 		for (int i = 0; i < 3; i++) {
-			assertEquals(selenium.getEval(format("{0}.size()", jqFindTooltipWait)), "0");
-			assertEquals(selenium.getEval(format("{0}.size()", jqFindTooltipText)), "0");
+			assertEquals(selenium.getEval(new JavaScript(format("{0}.size()", jqFindTooltipWait))), 0l);
+			assertEquals(selenium.getEval(new JavaScript(format("{0}.size()", jqFindTooltipText))), 0l);
 
 			if (i == 0)
-				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_3, MSG_EVENT_COORDS_AT_PANEL);
-			mouseOverAt(LOC_PANEL_SAMPLE_3, MSG_EVENT_COORDS_AT_PANEL);
+				selenium.mouseMoveAt(LOC_PANEL_SAMPLE_3, COORDS_AT_PANEL);
+			mouseOverAt(LOC_PANEL_SAMPLE_3, COORDS_AT_PANEL);
 			tooltipsRequested = waitForTooltipChanges(tooltipsRequested, i == 0);
 
 			selenium.mouseOut(LOC_PANEL_SAMPLE_3);
-			selenium.waitForCondition(conditionTooltipTextDisappears, "3000");
+			selenium.waitForCondition(new JavaScript(conditionTooltipTextDisappears), 3000l);
 		}
 	}
 
@@ -143,14 +153,14 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 		Integer tooltipsRequested = null;
 
 		for (int i = 0; i < 3; i++) {
-			assertEquals(selenium.getEval(format("{0}.size()", jqFindTooltipWait)), "0");
-			assertEquals(selenium.getEval(format("{0}.size()", jqFindTooltipText)), "0");
+			assertEquals(selenium.getEval(new JavaScript(format("{0}.size()", jqFindTooltipWait))), 0l);
+			assertEquals(selenium.getEval(new JavaScript(format("{0}.size()", jqFindTooltipText))), 0l);
 
-			selenium.clickAt(LOC_PANEL_SAMPLE_4, MSG_EVENT_COORDS_AT_PANEL);
+			selenium.clickAt(LOC_PANEL_SAMPLE_4, COORDS_AT_PANEL);
 			tooltipsRequested = waitForTooltipChanges(tooltipsRequested, i == 0);
 			
 			selenium.mouseOut(LOC_PANEL_SAMPLE_4);
-			selenium.waitForCondition(conditionTooltipTextDisappears, "3000");
+			selenium.waitForCondition(new JavaScript(conditionTooltipTextDisappears), 3000l);
 		}
 	}
 
@@ -158,27 +168,41 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 		Integer tooltipsRequested = null;
 
 		if (firstLoop) {
-			selenium.waitForCondition(conditionTooltipWaitAppears, "3000");
-			selenium.waitForCondition(conditionTooltipTextAppears, "3000");
+			selenium.waitForCondition(new JavaScript(conditionTooltipWaitAppears), 3000l);
+			selenium.waitForCondition(new JavaScript(conditionTooltipTextAppears), 3000l);
 
 			tooltipsRequested = retrieveRequestedTooltips.retrieve();
 		} else {
-			selenium.waitForCondition(conditionTooltipTextAppears, "3000");
+			selenium.waitForCondition(new JavaScript(conditionTooltipTextAppears), 3000l);
 			
-			tooltipsRequested = Wait.waitForChangeAndReturn(tooltipsRequestedOld, retrieveRequestedTooltips);
+			tooltipsRequested = Wait.waitSelenium.waitForChangeAndReturn(tooltipsRequestedOld, retrieveRequestedTooltips);
 			assertEquals(tooltipsRequested, Integer.valueOf(tooltipsRequestedOld + 1));
 		}
 
 		return tooltipsRequested;
 	}
 
-	private Retrieve<Integer> retrieveRequestedTooltips = new Retrieve<Integer>() {
+	private SeleniumRetriever<Integer> retrieveRequestedTooltips = new SeleniumRetriever<Integer>() {
+	    Integer val;
 		public Integer retrieve() {
-			String text = Wait.interval(10).timeout(2000).waitForChangeAndReturn(null, new Retrieve<String>() {
+			String text = Wait.waitSelenium.interval(10).timeout(2000).waitForChangeAndReturn(null, new SeleniumRetriever<String>() {
+                String val;
 				public String retrieve() {
 				    String retrieved = getTextOrNull(LOC_SPAN_TOOLTIPS_REQUESTED);
 					return retrieved;
 				}
+
+                public void initializeValue() {
+                    val = retrieve();
+                }
+
+                public void setValue(String value) {
+                    val = value;                    
+                }
+
+                public String getValue() {
+                    return val;
+                }
 			});
 			Matcher matcher = MSG_REGEXP_TOOLTIPS_REQUESTED.matcher(text);
 			if (!matcher.matches()) {
@@ -186,12 +210,24 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 			}
 			return Integer.valueOf(text);
 		}
+
+        public void initializeValue() {
+            val = retrieve();
+        }
+
+        public void setValue(Integer value) {
+            val = value;
+        }
+
+        public Integer getValue() {
+            return val;
+        }
 	};
 
 	private void waitForTextDisappears(final String text) {
-		waitModelUpdate.until(new Condition() {
+		Wait.waitSelenium.until(new SeleniumCondition() {
 			public boolean isTrue() {
-				return !selenium.isElementPresent(text);
+				return !selenium.isElementPresent(jq(text));
 			}
 		});
 	}
@@ -200,6 +236,6 @@ public class TooltipTestCase extends AbstractSeleniumRichfacesTestCase {
 		openComponent("ToolTip");
 		openTab("Usage");
 		scrollIntoView(LOC_FIELDSET_HEADER_1, true);
-		selenium.allowNativeXpath("true");
+		selenium.allowNativeXpath(true);
 	}
 }

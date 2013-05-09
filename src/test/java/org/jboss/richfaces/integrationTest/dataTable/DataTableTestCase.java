@@ -21,11 +21,12 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.dataTable;
 
-import static org.testng.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
+import static org.testng.Assert.assertEquals;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.arquillian.ajocado.locator.JQueryLocator;
 import org.jboss.richfaces.integrationTest.AbstractDataIterationTestCase;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -35,7 +36,7 @@ import org.testng.annotations.Test;
 public class DataTableTestCase extends AbstractDataIterationTestCase {
 
 	String LOC_FIELDSET_HEADER = getLoc("FIELDSET_HEADER");
-	String LOC_TABLE = getLoc("TABLE");
+	JQueryLocator LOC_TABLE = jq(getLoc("TABLE"));
 
 	String MSG_TAB_TO_OPEN = getMsg("TAB_TO_OPEN");
 	String MSG_TABLE_TEXT_CONTENT = getMsg("TABLE_TEXT_CONTENT");

@@ -21,7 +21,10 @@
  *******************************************************************************/
 package org.jboss.richfaces.integrationTest.ajaxValidator;
 
+import org.jboss.arquillian.ajocado.Graphene;
 import org.testng.annotations.Test;
+import static org.jboss.arquillian.ajocado.format.SimplifiedFormat.format;
+import static org.jboss.arquillian.ajocado.Graphene.jq;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
@@ -53,7 +56,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testNameValueRequired() {
 		final String validationMessage = format(MSG_OUTPUT_VALUE_REQUIRED_PREFORMATTED, LOC_INPUT_NAME);
 		typeAndBlur(LOC_INPUT_NAME, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(validationMessage));
 	}
 
 	/**
@@ -64,7 +67,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testNameMinimumLength() {
 		final String validationMessage = format(MSG_OUTPUT_VALUE_IS_LESS_THAN_MINIMUM, LOC_INPUT_NAME);
 		typeAndBlur(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_LESS_THAN_MINIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(validationMessage));
 	}
 
 	/**
@@ -75,7 +78,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testNameMaximumLength() {
 		final String validationMessage = format(MSG_OUTPUT_VALUE_IS_GREATER_THAN_MAXIMUM_PREFORMATTED, LOC_INPUT_NAME);
 		typeAndBlur(LOC_INPUT_NAME, MSG_INPUT_VALUE_IS_GREATER_THAN_MAXIMUM);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(validationMessage));
 	}
 
 	/**
@@ -88,7 +91,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 		testNameValueRequired();
 		// then try valid input
 		typeAndBlur(LOC_INPUT_NAME, MSG_INPUT_VALID_NAME);
-		waitForTextEquals(getMessageFor(LOC_INPUT_NAME), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_NAME))).text(""));
 	}
 
 	/**
@@ -99,7 +102,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testAgeValueRequired() {
 		final String validationMessage = format(MSG_OUTPUT_VALUE_REQUIRED_PREFORMATTED, LOC_INPUT_AGE);
 		typeAndBlur(LOC_INPUT_AGE, "");
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -110,7 +113,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testAgeMinimumValue() {
 		final String validationMessage = format(MSG_OUTPUT_NOT_BETWEEN_EXPECTED_VALUES_PREFORMATTED, LOC_INPUT_AGE);
 		typeAndBlur(LOC_INPUT_AGE, MSG_INPUT_NOT_BETWEEN_EXPECTED_VALUES_BELLOW);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -121,7 +124,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testAgeMaximumValue() {
 		final String validationMessage = format(MSG_OUTPUT_NOT_BETWEEN_EXPECTED_VALUES_PREFORMATTED, LOC_INPUT_AGE);
 		typeAndBlur(LOC_INPUT_AGE, MSG_INPUT_NOT_BETWEEN_EXPECTED_VALUES_ABOVE);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -132,7 +135,7 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 	public void testAgeIntegerOnly() {
 		final String validationMessage = format(MSG_OUTPUT_IS_NOT_NUMBER_PREFORMATTED, LOC_INPUT_AGE);
 		typeAndBlur(LOC_INPUT_AGE, MSG_INPUT_IS_NOT_NUMBER);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), validationMessage);
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(validationMessage));
 	}
 
 	/**
@@ -145,6 +148,6 @@ public class AjaxValidatorTestCase extends AbstractAjaxValidatorTestCase {
 		testAgeValueRequired();
 		// then try valid input
 		typeAndBlur(LOC_INPUT_AGE, MSG_INPUT_VALID_AGE);
-		waitForTextEquals(getMessageFor(LOC_INPUT_AGE), "");
+		Graphene.waitAjax.until(Graphene.textEquals.locator(jq(getMessageFor(LOC_INPUT_AGE))).text(""));
 	}
 }
