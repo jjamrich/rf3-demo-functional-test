@@ -167,7 +167,7 @@
 									<suiteXmlFiles>
 										<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
 									</suiteXmlFiles>
-									<argLine>-Dbrowser='${browser}' -Dcontext.root='${context.root}' -Dcontext.path='${context.path}' -Dselenium.host='${selenium.host}' -Dselenium.port='${selenium.port}' -Dselenium.debug='${selenium.debug}' -Dselenium.maximize='${selenium.maximize}' -Dmaven.resources.dir='${resources.dir}' -Dmaven.project.build.directory='${project.build.directory}' -Djsf.majorVersion='${jsf.majorVersion}'</argLine>
+									<argLine>-Dbrowser='${browser}' -Dcontext.root='${context.root}' -Dcontext.path='${context.path}' -Dselenium.host='${selenium.host}' -Dselenium.port='${selenium.port}' -Dselenium.debug='${selenium.debug}' -Dselenium.maximize='${selenium.maximize}' -Dmaven.resources.dir='${resources.dir}' -Dmaven.project.build.directory='${project.build.directory}' -Djsf.majorVersion='${jsf.majorVersion}' -Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties</argLine>
 									<properties>
 										<property>
 											<name>listener</name>
