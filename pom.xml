@@ -75,6 +75,10 @@
         <arquillian.android.version>1.0.0.Alpha2</arquillian.android.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-4</shrinkwrap.descriptors.version>
         <version.jbossas7-1>7.1.1.Final</version.jbossas7-1>
+
+        <!-- arquillian properties -->
+        <!-- default values according to http://docs.oracle.com/javase/7/docs/technotes/guides/net/ipv6_guide/index.html -->
+        <arquillian.container.all.jvm.args>-Xms1024m -Xmx1024m -XX:MaxPermSize=512m</arquillian.container.all.jvm.args>        
 	</properties>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -170,6 +174,9 @@
 											<value>org.jboss.richfaces.integrationTest.ConsoleStatusTestListener</value>
 										</property>
 									</properties>
+	                                <systemPropertyVariables>
+	                                   <arquillian.container.all.jvm.args>${arquillian.container.all.jvm.args}</arquillian.container.all.jvm.args>
+	                                </systemPropertyVariables>
 								</configuration>
 							</execution>
 						</executions>
